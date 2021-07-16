@@ -1,0 +1,14 @@
+# Editors
+.vscode/
+# Trash
+.DS_Store
+Thumbs.db
+# Binaries
+bin
+/flux
+*.iso
+# Temp folders
+.temp*
+.ignore/
+.logs/
+.task/
