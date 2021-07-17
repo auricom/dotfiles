@@ -1,0 +1,5 @@
+alias ls='lsd'
+alias ll='lsd -l'
+command -v bat > /dev/null && alias cat='bat --pager=never'
+alias vi='nvim'
+alias vim='nvim'
