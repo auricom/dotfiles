@@ -38,7 +38,7 @@ window:
     y: 5
 
   # Spread additional padding evenly around the terminal content.
-  #dynamic_padding: false
+  dynamic_padding: false
 
   # Window decorations
   #
@@ -49,7 +49,7 @@ window:
   # Values for `decorations` (macOS only):
   #     - transparent: Title bar, transparent background and title bar buttons
   #     - buttonless: Title bar, transparent background, but no title bar buttons
-  #decorations: full
+  decorations: full
 
   # Startup Mode (changes require restart)
   #
@@ -60,7 +60,7 @@ window:
   #
   # Values for `startup_mode` (macOS only):
   #   - SimpleFullscreen
-  #startup_mode: Windowed
+  startup_mode: Windowed
 
   # Window title
   #title: Alacritty
@@ -84,7 +84,7 @@ window:
 scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
-  history: 10000
+  history: 0
 
   # Scrolling distance multiplier.
   multiplier: 3
@@ -149,9 +149,9 @@ font:
   # Glyph offset determines the locations of the glyphs within their cells with
   # the default being at the bottom. Increasing `x` moves the glyph to the right,
   # increasing `y` moves the glyph upward.
-  #glyph_offset:
-  #  x: 0
-  #  y: 0
+  glyph_offset:
+    x: 0
+    y: 0
 
   # Thin stroke font rendering (macOS only)
   #
@@ -160,7 +160,7 @@ font:
   #use_thin_strokes: true
 
 # If `true`, bold text is drawn using the bright color variants.
-#draw_bold_text_with_bright_colors: false
+draw_bold_text_with_bright_colors: false
 
 # Colors (Tomorrow Night)
 #colors:
@@ -341,13 +341,13 @@ colors:
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-#background_opacity: 1.0
+background_opacity: 1.0
 
-#selection:
+selection:
   #semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
 
   # When set to `true`, selected text will be copied to the primary clipboard.
-  #save_to_clipboard: false
+  save_to_clipboard: true
 
 #cursor:
   # Cursor style
@@ -410,17 +410,17 @@ shell:
 # Send ESC (\x1b) before characters when alt is pressed.
 #alt_send_esc: true
 
-#mouse:
+mouse:
   # Click settings
   #
   # The `double_click` and `triple_click` settings control the time
   # alacritty should wait for accepting multiple clicks as one double
   # or triple click.
-  #double_click: { threshold: 300 }
-  #triple_click: { threshold: 300 }
+  double_click: { threshold: 300 }
+  triple_click: { threshold: 300 }
 
   # If this is `true`, the cursor is temporarily hidden when typing.
-  #hide_when_typing: false
+  hide_when_typing: true
 
   #url:
     # URL launcher
@@ -466,8 +466,8 @@ shell:
 # And optionally:
 #
 # - `mods` (see key bindings)
-#mouse_bindings:
-#  - { mouse: Middle, action: PasteSelection }
+mouse_bindings:
+  - { mouse: Middle, action: PasteSelection }
 
 # Key bindings
 #

@@ -1,6 +1,5 @@
-set PATH ~/.local/bin $PATH
-set PATH ~/.local/scripts $PATH
-set PATH /var/lib/snapd/snap/bin $PATH
-set PATH /home/linuxbrew/.linuxbrew/Homebrew/bin/ $PATH
+fish_add_path ~/.local/bin
+fish_add_path /var/lib/snapd/snap/bin
+fish_add_path /home/linuxbrew/.linuxbrew/Homebrew/sbin
 
 set -x KUBECONFIG ~/.kubeconfig.yaml
