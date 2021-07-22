@@ -8,6 +8,4 @@ function fedora-upgrade
     brew upgrade
     # flatpak
     flatpak update
-    # snap
-    sudo snap refresh
 end
