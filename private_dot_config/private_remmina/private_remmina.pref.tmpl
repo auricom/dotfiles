@@ -1,8 +1,8 @@
 [remmina_pref]
 secret=XDH+E7+161OcDtT/4KNN4tCCz36+rP+vK90Mxms8pC8=
-datadir_path=/home/claude/.local/share/remmina
+datadir_path={{ .chezmoi.homeDir }}/.local/share/remmina
 remmina_file_name=%G_%P_%N_%h
-screenshot_path=/home/claude/Pictures
+screenshot_path={{ .chezmoi.homeDir }}/Pictures
 screenshot_name=remmina_%p_%h_%Y%m%d-%H%M%S
 deny_screenshot_clipboard=true
 save_view_mode=true
@@ -24,7 +24,7 @@ ssh_loglevel=1
 ssh_parseconfig=true
 hide_toolbar=false
 small_toolbutton=false
-view_file_mode=0
+view_file_mode=1
 resolutions=640x480,800x600,1024x768,1152x864,1280x960,1400x1050
 keystrokes=Send hello world§hello world\\n
 main_width=659
@@ -68,7 +68,7 @@ vte_shortcutkey_select_all=97
 vte_shortcutkey_increase_font=65365
 vte_shortcutkey_decrease_font=65366
 vte_shortcutkey_search_text=103
-vte_font=FiraCode Nerd Font Mono weight=450 9
+vte_font=FiraCode Nerd Font Mono weight=450 {{ .remmina_font_size }}
 grab_color=#00ff00
 grab_color_switch=false
 vte_allow_bold_text=true
