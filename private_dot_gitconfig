@@ -31,6 +31,8 @@
   uncommit = reset --soft HEAD~1
   # Remove file(s) from Git but not from disk
   untrack = rm --cache --
+  # Cleaning up local git branches deleted on a remote
+  gone = ! "git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D"
 [core]
   # Don't paginate output by default
   pager = less --tabs=4 -RFX

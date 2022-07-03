@@ -42,3 +42,4 @@ username=root
 protocol=SSH
 sshlogname=
 ssh_tunnel_passphrase=
+keyboard_grab=0

@@ -42,3 +42,4 @@ enable-autostart=0
 ssh_tunnel_passphrase=
 sshlogname=
 ssh_tunnel_privatekey=
+keyboard_grab=0
