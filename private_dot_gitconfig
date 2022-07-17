@@ -127,6 +127,7 @@
   default = upstream
   # When pushing, also push tags whose commit-ishs are now reachable upstream
   followTags = true
+  autoSetupRemote = true
 # [rebase]
   # Rebase advanced usage.
   # Automagically reorder and prefix your commands while doing an interactive
