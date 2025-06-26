@@ -36,4 +36,10 @@ repositories:
   - user: ngnodehq
     repo: renovate-config
   - user: rollkit
+    repo: docs
+  - user: rollkit
+    repo: lumen
+  - user: rollkit
     repo: rollkit
+  - user: rollkit
+    repo: lumen
