@@ -1,4 +1,9 @@
 mise_wrappers:
-  - age
-  - node
-  - sops
+  age:
+    subdir: age
+  ansible:
+    subdir: bin
+  node:
+    subdir: bin
+  sops:
+    subdir: ""
