@@ -13,9 +13,14 @@ source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
 main() {
     log_section "Installing system extensions"
 
-    # Check if sysexts-manager is available
-    if ! command_exists sysexts-manager; then
-        log_error "sysexts-manager is not installed. Please install it first."
+    # Check if systemd-sysext.service exists and is enabled
+    if ! systemctl list-unit-files systemd-sysext.service &>/dev/null; then
+        log_error "systemd-sysext.service does not exist. Please ensure systemd-sysext is available."
+        return 1
+    fi
+
+    if ! systemctl is-enabled systemd-sysext.service &>/dev/null; then
+        log_error "systemd-sysext.service is not enabled. Please enable it first."
         return 1
     fi
 
