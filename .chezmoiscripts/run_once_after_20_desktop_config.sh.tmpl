@@ -18,6 +18,9 @@ main() {
     # Configure Ptyxis transparency
     configure_ptyxis
 
+    # Deactivate swap if system has > 32GB RAM
+    deactivate_swap_if_high_memory
+
     # Install GNOME extensions (commented out for now)
     # install_gnome_extensions
 
@@ -55,6 +58,55 @@ configure_ptyxis() {
         ujust ptyxis-transparency
     else
         log_warn "ujust not available, skipping Ptyxis configuration"
+    fi
+}
+
+deactivate_swap_if_high_memory() {
+    log_info "Checking system memory for swap configuration"
+
+    # Get total memory in KB from /proc/meminfo
+    local total_memory_kb
+    total_memory_kb=$(grep '^MemTotal:' /proc/meminfo | awk '{print $2}')
+
+    if [[ -z "$total_memory_kb" ]]; then
+        log_warn "Could not determine total system memory, skipping swap configuration"
+        return
+    fi
+
+    # Convert to GB (1 GB = 1024 * 1024 KB)
+    local total_memory_gb=$((total_memory_kb / 1024 / 1024))
+
+    log_info "Total system memory: ${total_memory_gb}GB"
+
+    if [[ $total_memory_gb -gt 32 ]]; then
+        log_info "System has more than 32GB RAM (${total_memory_gb}GB), deactivating swap"
+
+        # Check if swap is currently active
+        if swapon --show | grep -q .; then
+            log_info "Deactivating active swap"
+            if sudo swapoff -a; then
+                log_info "Successfully deactivated swap"
+            else
+                log_warn "Failed to deactivate swap"
+                return
+            fi
+        else
+            log_info "No active swap found"
+        fi
+
+        # Comment out swap entries in /etc/fstab to prevent swap activation on boot
+        if [[ -f /etc/fstab ]] && grep -q '^[^#].*swap' /etc/fstab; then
+            log_info "Disabling swap entries in /etc/fstab"
+            if sudo sed -i 's/^\([^#].*swap.*\)$/#\1/' /etc/fstab; then
+                log_info "Successfully disabled swap entries in /etc/fstab"
+            else
+                log_warn "Failed to modify /etc/fstab"
+            fi
+        else
+            log_info "No uncommented swap entries found in /etc/fstab"
+        fi
+    else
+        log_info "System has ${total_memory_gb}GB RAM (≤32GB), keeping swap configuration unchanged"
     fi
 }
 
