@@ -30,12 +30,8 @@ repositories:
   - user: ngnodehq
     repo: renovate-config
   - user: evstack
-    repo: docs
-  - user: evstack
-    repo: lumen
+    repo: ev-reth
   - user: evstack
     repo: ev-toolbox
-  - user: evstack
-    repo: lumen
   - user: evstack
     repo: ev-node
