@@ -36,5 +36,7 @@ fish -c "{{ .chezmoi.homeDir }}/scripts/fish_plugins_completion.fish"
 # Fisher plugins
 fish -c "source {{ .chezmoi.homeDir }}/.config/fish/functions/fisher.fish; fisher update"
 
+{{- if .desktop }}
 # Mise
 mise upgrade
+{{- end }}
