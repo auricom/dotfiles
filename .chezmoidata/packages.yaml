@@ -10,6 +10,7 @@ packages:
     - chezmoi
     - dysk
     - mise
+    - kubectl
     - nmap
     - thefuck
     - uutils-coreutils

@@ -3,6 +3,8 @@ mise_wrappers:
     subdir: age
   ansible:
     subdir: bin
+  bat:
+    subdir: bat-v*
   node:
     subdir: bin
   sops:
