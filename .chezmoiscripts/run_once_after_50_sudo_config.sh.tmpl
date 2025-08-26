@@ -1,3 +1,4 @@
+{{- if .desktop -}}
 #!/usr/bin/env bash
 
 # Sudo configuration script
@@ -45,3 +46,4 @@ configure_sudo_permissions() {
 
 # Run main function
 main "$@"
+{{- end -}}

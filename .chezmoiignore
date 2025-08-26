@@ -5,18 +5,18 @@ README.md
 {{- if (not .desktop) }}
 .config/autostart/
 .config/discord/
+.config/containers/
+.config/git/
 .config/k9s/
+.config/mise/
 .config/sops/
-.config/topgrade.d
-.local/applications/
-.local/bin/
+.config/systemd/
+.config/xkb/
+.local
 .kube/config
 .talos/config
-.mc/config
-scripts/configure_nfs_mounts.sh
+scripts/import_dji_osmo.sh
 {{- end }}
 {{- if .desktop  }}
-.config/systemd/user/nas-*
 scripts/zfs-inplace-rebalancing.sh
-scripts/nas_photo_sorter.sh
 {{- end }}

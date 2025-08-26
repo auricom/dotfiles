@@ -1,3 +1,4 @@
+{{- if .desktop -}}
 #!/usr/bin/env bash
 
 # Systemd services management script
@@ -9,10 +10,8 @@ set -euo pipefail
 source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
 
 # Hash dependencies for change detection
-{{- if .desktop }}
 # resilio-sync hash: {{ include "private_dot_config/private_containers/systemd/resilio-sync.container.tmpl" | sha256sum }}
 # tdarr-node hash: {{ include "private_dot_config/private_containers/systemd/tdarr-node.container.tmpl" | sha256sum }}
-{{- end }}
 # ublue_update_custom service: {{ include "private_dot_config/private_systemd/user/ublue-update-custom.service.tmpl" | sha256sum }}
 # ublue_update_custom timer: {{ include "private_dot_config/private_systemd/user/ublue-update-custom.timer.tmpl" | sha256sum }}
 
@@ -26,15 +25,12 @@ main() {
     # Enable and start ublue-update-custom timer
     systemd_enable_start "ublue-update-custom.timer"
 
-    {{- if .desktop }}
     # Enable container services if they exist
     enable_container_services
-    {{- end }}
 
     log_info "Systemd configuration completed"
 }
 
-{{- if .desktop }}
 enable_container_services() {
     local services=(
         "resilio-sync.service"
@@ -49,7 +45,7 @@ enable_container_services() {
         fi
     done
 }
-{{- end }}
 
 # Run main function
 main "$@"
+{{- end -}}
