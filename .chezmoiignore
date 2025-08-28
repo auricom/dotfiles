@@ -14,7 +14,7 @@ README.md
 .config/xkb/
 .local
 .kube/config
-.talos/config
+.talos
 scripts/import_dji_osmo.sh
 {{- end }}
 {{- if .desktop  }}
