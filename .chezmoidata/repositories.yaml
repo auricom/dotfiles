@@ -14,6 +14,8 @@ repositories:
   - user: auricom
     repo: orches-storage
   - user: 01builders
+    repo: eth-indexer
+  - user: 01builders
     repo: infra
   - user: 01builders
     repo: infra_libs
