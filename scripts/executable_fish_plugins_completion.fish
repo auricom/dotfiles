@@ -3,8 +3,6 @@
 # Fish shell setup script
 # Installs Fisher and sets up completions
 
-set -e
-
 # Fish-specific logging functions
 function log_info
     echo -e "\033[0;32m[INFO]\033[0m $argv" >&2
