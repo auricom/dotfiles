@@ -21,6 +21,8 @@ repositories:
     repo: infra_libs
   - user: 01builders
     repo: raas-poc
+  - user: celestiaorg
+    repo: eden-docs
   - user: ngnodehq
     repo: console
   - user: ngnodehq
