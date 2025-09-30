@@ -2,7 +2,6 @@ set -gx KUBE_EDITOR nano
 set -gx VISUAL nano
 set -gx EDITOR nano
 set -gx HOMEBREW_NO_ANALYTICS 1
-set -gx GOPATH "{{ .chezmoi.homeDir }}/.go"
 set -gx ANSIBLE_FORCE_COLOR true
 set -gx ANSIBLE_HOST_KEY_CHECKING False
 set -gx PY_COLORS true
