@@ -11,7 +11,6 @@ source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
 
 # Hash dependencies for change detection
 # resilio-sync hash: {{ include "private_dot_config/private_containers/systemd/resilio-sync.container.tmpl" | sha256sum }}
-# tdarr-node hash: {{ include "private_dot_config/private_containers/systemd/tdarr-node.container.tmpl" | sha256sum }}
 # ublue_update_custom service: {{ include "private_dot_config/private_systemd/user/ublue-update-custom.service.tmpl" | sha256sum }}
 # ublue_update_custom timer: {{ include "private_dot_config/private_systemd/user/ublue-update-custom.timer.tmpl" | sha256sum }}
 
