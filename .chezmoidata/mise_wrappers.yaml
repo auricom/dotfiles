@@ -1,11 +1,11 @@
 mise_wrappers:
   age:
     subdir: age
-  ansible:
-    subdir: bin
   bat:
     subdir: bat-v*
   node:
+    subdir: bin
+  pipx-ansible-lint:
     subdir: bin
   sops:
     subdir: ""
