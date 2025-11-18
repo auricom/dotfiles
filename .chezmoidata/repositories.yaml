@@ -34,8 +34,10 @@ repositories:
   - user: ngnodehq
     repo: renovate-config
   - user: evstack
-    repo: ev-reth
-  - user: evstack
     repo: ev-toolbox
   - user: evstack
+    repo: ev-metrics
+  - user: evstack
     repo: ev-node
+  - user: evstack
+    repo: ev-reth
