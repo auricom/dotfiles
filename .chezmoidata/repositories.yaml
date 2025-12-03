@@ -41,3 +41,5 @@ repositories:
     repo: ev-node
   - user: evstack
     repo: ev-reth
+  - user: Collect-Labs
+    repo: collect-blockchain
