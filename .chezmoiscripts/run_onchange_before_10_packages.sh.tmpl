@@ -29,6 +29,12 @@ main() {
     brew tap {{ . }}
     {{- end }}
 
+    # Install casks via Homebrew
+    log_info "Installing Homebrew casks"
+{{- range .packages.cask }}
+brew install --cask {{ . | quote }}
+{{- end }}
+
     # Install packages via Homebrew
     log_info "Installing Homebrew packages"
     brew bundle --file=/dev/stdin <<EOF

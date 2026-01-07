@@ -10,7 +10,7 @@ set -euo pipefail
 source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
 
 NFS_SERVER_IP="192.168.9.10"
-SHARE_PREFIX="/var/mnt/vol1"
+SHARE_PREFIX="/mnt/vol1"
 MOUNTPOINT_PREFIX="/var/mnt/storage.feisar.ovh"
 OPTS="soft,timeo=150,retrans=10,_netdev,nofail,x-systemd.automount,rw"
 
@@ -47,7 +47,6 @@ add_fstab_entry() {
 main() {
     log_section "Configuring NFS mounts"
 
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/apps/frigate" "${MOUNTPOINT_PREFIX}/apps-frigate" "${OPTS}" 0 0
     add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/photo" "${MOUNTPOINT_PREFIX}/photo" "${OPTS}" 0 0
     add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/video" "${MOUNTPOINT_PREFIX}/video" "${OPTS}" 0 0
     add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/shared-documents" "${MOUNTPOINT_PREFIX}/shared-documents" "${OPTS}" 0 0

@@ -5,6 +5,9 @@ appimages:
   - lmstudio
 packages:
   taps:
+    - ublue-os/tap
+  cask:
+    - 1password-gui-linux
   brew:
     - atuin
     - chezmoi
