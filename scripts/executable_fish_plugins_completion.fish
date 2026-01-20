@@ -46,7 +46,8 @@ function main
         meaningful-ooo/sponge \
         gazorby/fish-chezmoi \
         gazorby/fish-abbreviation-tips \
-        kidonng/zoxide.fish
+        kidonng/zoxide.fish \
+        SpaceShaman/autoenv.fish
 
     for plugin in $plugins
         if not fisher list | grep -q $plugin
