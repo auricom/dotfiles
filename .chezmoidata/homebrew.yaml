@@ -1,0 +1,43 @@
+homebrew:
+  # Modern CLI tools
+  - bat                 # cat with syntax highlighting
+  - duf                 # Disk Usage/Free Utility
+  - dysk                # Like df but better
+  - eza                 # Modern replacement for ls
+  - fd                  # Simple, fast alternative to find
+  - fzf                 # A command-line fuzzy finder
+  - rg                  # ripgrep - faster grep
+  # Development tools
+  - age                 # A simple, modern and secure encryption tool
+  - sops                # Simple and flexible tool for managing secrets
+  - gh                  # GitHub CLI
+  - git                 # Git version control
+  - mise                # dev tools, env vars, task runner
+  - yq                  # yq is a portable command-line YAML, JSON, XML, CSV, TOML, HCL and properties processor
+  # Shell enhancements
+  - atuin               # Magical shell history
+  - starship            # Cross-shell prompt
+  - zoxide              # Smarter cd command
+  # Utilities
+  - btop                # Interactive process viewer
+  - chezmoi             # Dotfiles management
+  - nmap                # Network scanning
+  # Kubernetes
+  - fluxcd/tap/flux     # Flux CLI
+  - kubectl             # Kubernetes CLI
+  - k9s                 # Kubernetes TUI
+  - kubeconform         # FAST Kubernetes manifests validator, with support for Custom Resources!
+  - helm                # Kubernetes package manager
+  - helmfile            # Tools to test Helm chats with "kubeconform".
+  - talosctl            # Talos CLI
+  - talhelper           # Tool to help creating Talos configuration files declaratively
+cask:
+  - ublue-os/tap/1password-gui-linux
+  - font-fira-code-nerd-font
+  - font-jetbrains-mono-nerd-font
+  - font-meslo-lg-nerd-font
+  - font-hack-nerd-font
+  - font-ubuntu-nerd-font
+  - font-source-code-pro
+  - font-caskaydia-cove-nerd-font
+  - font-ibm-plex-mono

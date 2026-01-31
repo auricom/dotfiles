@@ -35,6 +35,3 @@ fish -c "~/scripts/fish_plugins_completion.fish"
 
 # Fisher plugins
 fish -c "source ~/.config/fish/functions/fisher.fish; fisher update"
-
-# Mise
-mise upgrade

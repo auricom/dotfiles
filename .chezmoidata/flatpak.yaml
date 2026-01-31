@@ -1,0 +1,23 @@
+flatpak:
+  # apps
+  - app.zen_browser.zen
+  - com.github.rafostar.Clapper
+  - com.github.PintaProject.Pinta
+  - com.logseq.Logseq
+  - com.slack.Slack
+  - dev.vencord.Vesktop
+  - fr.handbrake.ghb
+  - info.portfolio_performance.PortfolioPerformance
+  - io.github.quodlibet.QuodLibet
+  - io.kopia.KopiaUI
+  - me.timschneeberger.GalaxyBudsClient
+  - net.cozic.joplin_desktop
+  - org.bunkus.mkvtoolnix-gui
+  - org.chromium.Chromium
+  - org.musicbrainz.Picard
+  - com.rtosta.zapzap
+  - org.telegram.desktop
+  # games
+  - com.github.Matoking.protontricks
+  - com.valvesoftware.Steam
+

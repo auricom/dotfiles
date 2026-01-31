@@ -8,7 +8,6 @@ README.md
 .config/containers/
 .config/git/
 .config/k9s/
-.config/mise/
 .config/sops/
 .config/systemd/
 .config/xkb/

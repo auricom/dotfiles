@@ -50,47 +50,14 @@
     url = "https://raw.githubusercontent.com/eza-community/eza-themes/refs/heads/main/themes/catppuccin-mocha.yml"
     refreshPeriod = "168h"
 
-# zellij catppucin theme
-[".config/zellij/themes/catppuccin.kdl"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/zellij/main/catppuccin.kdl"
-    refreshPeriod = "168h"
-
 
 {{ if .desktop }}
-# HyperFluent GRUB Theme
-[".local/share/grub/hyperfluent-fedora.tar.gz"]
-    type = "archive"
-    format = "zip"
-    url = "https://github.com/Coopydood/HyperFluent-GRUB-Theme/releases/latest/download/hyperfluent-fedora.tar.gz"
-    refreshPeriod = "168h"
-
-
 # k9s Catppuccin themes
 [".config/k9s/skins"]
     type = "archive"
     url = "https://github.com/catppuccin/k9s/archive/main.tar.gz"
     exact = true
     stripComponents = 2
-    refreshPeriod = "168h"
-
-# nerd font CascadiaCode
-[".local/share/fonts/CaskaydiaCoveNerdFont-Italic.ttf"]
-    type = 'file'
-    url = "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/CascadiaCode/CaskaydiaCoveNerdFont-Italic.ttf"
-    refreshPeriod = "168h"
-[".local/share/fonts/CaskaydiaCoveNerdFont-Regular.ttf"]
-    type = 'file'
-    url = "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/CascadiaCode/CaskaydiaCoveNerdFont-Regular.ttf"
-    refreshPeriod = "168h"
-# nerd font IBM Plex Mono
-[".local/share/fonts/BlexMonoNerdFontMono-Medium.ttf"]
-    type = 'file'
-    url = "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/IBMPlexMono/Mono/BlexMonoNerdFontMono-Medium.ttf"
-    refreshPeriod = "168h"
-[".local/share/fonts/BlexMonoNerdFontMono-Regular.ttf"]
-    type = 'file'
-    url = "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/IBMPlexMono/Mono/BlexMonoNerdFontMono-Regular.ttf"
     refreshPeriod = "168h"
 
 # qwerty-fr
@@ -100,19 +67,6 @@
     refreshPeriod = "168h"
 {{ end }}
 
-{{ if eq .chezmoi.hostname "claude-fixe" }}
-# streamdeck
-[".local/share/streamdeck/icons/lovely-streamdeck-icons"]
-    type = "archive"
-    format = "zip"
-    url = "https://github.com/Lovely-Sim-Racing/lovely-streamdeck-icons/releases/download/v1.6.1/lovely-streamdeckicons-v1.6.1-png.zip"
-    refreshPeriod = "0"
-[".local/share/streamdeck/icons/dev-streamdeck-icons"]
-    type = "archive"
-    format = "zip"
-    url = "https://github.com/daniilshat/dev-streamdeck-icons/archive/refs/tags/v1.0.0.zip"
-    refreshPeriod = "0"
-{{ end }}
 
 {{ if not .desktop }}
 ["scripts/zfs-inplace-rebalancing.sh"]

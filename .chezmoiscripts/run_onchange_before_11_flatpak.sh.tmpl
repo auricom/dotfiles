@@ -1,0 +1,37 @@
+{{- if .desktop -}}
+#!/usr/bin/env bash
+
+# Package installation script
+# This script installs packages via Flatpak
+# Hash dependencies: {{ include ".chezmoidata/flatpak.yaml" | sha256sum }}
+
+set -euo pipefail
+
+# Source utility functions
+source "{{ .chezmoi.workingTree }}/scripts/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Installing Flatpak packages"
+
+    # Install Flatpak packages
+    if command_exists flatpak; then
+        log_info "Installing Flatpak packages"
+
+        # Common desktop packages
+        {{- range .flatpak }}
+        flatpak_install_if_missing "{{ . }}"
+        {{- end }}
+    else
+        log_warn "Flatpak not available, skipping Flatpak packages"
+    fi
+
+    log_info "Package installation completed"
+}
+
+# Only run if conditions are met
+if should_run; then
+    main "$@"
+else
+    log_debug "Skipping package installation"
+fi
+{{- end -}}

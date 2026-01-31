@@ -1,0 +1,49 @@
+{{- if .desktop -}}
+#!/usr/bin/env bash
+
+# Package installation script
+# This script installs packages via Homebrew
+# Hash dependencies: {{ include ".chezmoidata/homebrew.yaml" | sha256sum }}
+
+set -euo pipefail
+
+# Source utility functions
+source "{{ .chezmoi.workingTree }}/scripts/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Installing Homebrew packages"
+
+    # Validate Homebrew is available
+    if ! command_exists brew; then
+        log_error "Homebrew is not installed"
+        exit 1
+    fi
+
+    # Update Homebrew
+    log_info "Updating Homebrew"
+    brew update
+
+    # Install casks via Homebrew
+    log_info "Installing Homebrew casks"
+{{- range .cask }}
+brew install --cask {{ . | quote }}
+{{- end }}
+
+    # Install packages via Homebrew
+    log_info "Installing Homebrew packages"
+    brew bundle --file=/dev/stdin <<EOF
+{{- range .homebrew }}
+brew {{ . | quote }}
+{{- end }}
+EOF
+
+    log_info "Homebrew packages installation completed"
+}
+
+# Only run if conditions are met
+if should_run; then
+    main "$@"
+else
+    log_debug "Skipping package installation"
+fi
+{{- end -}}
