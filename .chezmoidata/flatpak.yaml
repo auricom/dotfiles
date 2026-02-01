@@ -17,7 +17,7 @@ flatpak:
   - org.musicbrainz.Picard
   - com.rtosta.zapzap
   - org.telegram.desktop
+  - com.onepassword.OnePassword
   # games
   - com.github.Matoking.protontricks
   - com.valvesoftware.Steam
-

@@ -33,7 +33,6 @@ homebrew:
   - talosctl            # Talos CLI
   - talhelper           # Tool to help creating Talos configuration files declaratively
 cask:
-  - ublue-os/tap/1password-gui-linux
   - font-fira-code-nerd-font
   - font-jetbrains-mono-nerd-font
   - font-meslo-lg-nerd-font
