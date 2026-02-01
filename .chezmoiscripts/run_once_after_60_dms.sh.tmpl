@@ -1,0 +1,51 @@
+{{- if .desktop -}}
+#!/usr/bin/env bash
+
+# DankMaterialShell configuration script
+
+set -euo pipefail
+
+# Source utility functions
+source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Configuring DankMaterialShell"
+
+    if command_exists dms; then
+        log_info "Begining DankMaterialShell configuration"
+
+        application_theme_zen
+        greeter
+
+        log_info "DankMaterialShell configuration completed"
+    else
+        log_warn "dms not available, skipping DankMaterialShell configuration"
+    fi
+}
+
+application_theme_zen() {
+    log_info "Zen browser theme installation"
+
+    # Find default profile directory
+    PROFILE_DIR=$(find {{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen -maxdepth 1 -type d -name "*.Default (release)" | head -n 1)
+
+    if [[ -d "$PROFILE_DIR" ]]; then
+        log_info "Zen browser default profile found"
+        mkdir -p "$PROFILE_DIR/chrome"
+        ln -sf {{ .chezmoi.homeDir }}/.config/DankMaterialShell/zen.css "$PROFILE_DIR/chrome/userChrome.css"
+        log_info "Created symbolic link to ~/.config/DankMaterialShell/zen.css"
+        log_info "Theming must be enabled in Zen browser for changes to userChrome.css to take effect! Open about:config and enable toolkit.legacyUserProfileCustomizations.stylesheets. Restart your browser."
+    else
+        log_error "Zen browser default profile not found"
+        exit 1
+    fi
+}
+
+greeter() {
+    log_info "Greeter configuration"
+    dms greeter sync
+}
+
+# Run main function
+main "$@"
+{{- end -}}

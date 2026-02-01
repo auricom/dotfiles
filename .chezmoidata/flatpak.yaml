@@ -18,6 +18,7 @@ flatpak:
   - com.rtosta.zapzap
   - org.telegram.desktop
   - com.onepassword.OnePassword
+  - com.visualstudio.code
   # games
   - com.github.Matoking.protontricks
   - com.valvesoftware.Steam

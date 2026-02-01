@@ -23,6 +23,7 @@ homebrew:
   - btop                # Interactive process viewer
   - chezmoi             # Dotfiles management
   - nmap                # Network scanning
+  - yt-dlp              # Music and video downloader 
   # Kubernetes
   - fluxcd/tap/flux     # Flux CLI
   - kubectl             # Kubernetes CLI

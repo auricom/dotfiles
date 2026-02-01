@@ -10,8 +10,8 @@ hostname=$(hostname)
 trap 'error_handler "$hostname" "$( { $BASH_COMMAND 2>&1 1>&3; } 3>&1 )"' ERR
 
 # Source and destination directories
-DJI_SOURCE_DIR="/run/media/claude/SD_Card/DCIM"
-SORT_DEST_DIR="/mnt/storage.feisar.ovh/photo"
+DJI_SOURCE_DIR="/run/media/auricom/SD_Card/DCIM"
+SORT_DEST_DIR="/var/mnt/storage.feisar.ovh/photo"
 
 # Check if necessary directories exist
 if [[ ! -d "${DJI_SOURCE_DIR}" ]] || [[ ! -d "${SORT_DEST_DIR}" ]]; then
