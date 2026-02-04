@@ -50,6 +50,15 @@
     url = "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/mocha/catppuccin-mocha-mauve.yml"
     refreshPeriod = "168h"
 
+{{ if .desktop }}
+# k9s Catppuccin themes
+[".config/k9s/skins"]
+    type = "archive"
+    url = "https://github.com/catppuccin/k9s/archive/main.tar.gz"
+    exact = true
+    stripComponents = 2
+    refreshPeriod = "168h"
+
 # foot catppuccin themes
 [".config/foot/catppuccin_frappe.ini"]
     type = "file"
@@ -60,13 +69,30 @@
     url = "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-mocha.ini"
     refreshPeriod = "168h"
 
-{{ if .desktop }}
-# k9s Catppuccin themes
-[".config/k9s/skins"]
-    type = "archive"
-    url = "https://github.com/catppuccin/k9s/archive/main.tar.gz"
-    exact = true
-    stripComponents = 2
+# zen catppuccin themes
+[".local/share/catppuccin/zen/mocha_sky_userChrome.css"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Mocha/Sky/userChrome.css"
+    refreshPeriod = "168h"
+[".local/share/catppuccin/zen/mocha_sky_userContent.css"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Mocha/Sky/userContent.css"
+    refreshPeriod = "168h"
+[".local/share/catppuccin/zen/mocha_sky_zen-logo.svg"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Mocha/Sky/zen-logo-mocha.svg"
+    refreshPeriod = "168h"
+[".local/share/catppuccin/zen/latte_sky_userChrome.css"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Latte/Sky/userChrome.css"
+    refreshPeriod = "168h"
+[".local/share/catppuccin/zen/latte_sky_userContent.css"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Latte/Sky/userContent.css"
+    refreshPeriod = "168h"
+[".local/share/catppuccin/zen/latte_sky_zen-logo.svg"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Latte/Sky/zen-logo-latte.svg"
     refreshPeriod = "168h"
 
 # qwerty-fr

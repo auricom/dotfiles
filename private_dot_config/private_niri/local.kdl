@@ -2,3 +2,17 @@ layout {
     default-column-width { proportion 0.33333; }
     gaps 10
 }
+
+binds {
+    Mod+P hotkey-overlay-title="Print screen" { spawn-sh "dms screenshot"; }
+    XF86AudioLowerVolume { spawn "dms" "ipc" "call" "audio" "decrement" "5"; }
+    XF86AudioMute { spawn "dms" "ipc" "call" "audio" "mute"; }
+    XF86AudioNext { spawn "dms" "ipc" "call" "mpris" "next"; }
+    XF86AudioPause { spawn "dms" "ipc" "call" "mpris" "playPause"; }
+    XF86AudioPlay { spawn "dms" "ipc" "call" "mpris" "playPause"; }
+    XF86AudioPrev { spawn "dms" "ipc" "call" "mpris" "previous"; }
+    XF86AudioRaiseVolume { spawn "dms" "ipc" "call" "audio" "increment" "5"; }
+    XF86MonBrightnessDown { spawn "dms" "ipc" "call" "brightness" "decrement" "5"; }
+    XF86MonBrightnessUp { spawn "dms" "ipc" "call" "brightness" "increment" "5"; }
+    XF86Tools { spawn "dms" "ipc" "call" "audio" "micmute"; }
+}

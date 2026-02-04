@@ -27,18 +27,18 @@ application_theme_zen() {
     log_info "Zen browser theme installation"
 
     # Find default profile directory
-    PROFILE_DIR=$(find {{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen -maxdepth 1 -type d -name "*.Default (release)" | head -n 1)
+    log_info "Concatenate catppuccin mocha and catppucin latte in userChrome.css and userContent.css for every found profile"
+    find {{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen -maxdepth 1 -type d -name "????????.*" -print0 | while IFS= read -r -d '' profile_dir; do
+        log_info "Found profile $profile_dir. Executing..."
+        mkdir -p "$profile_dir/chrome"
+        cat {{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/latte_sky_userChrome.css > "$profile_dir/chrome/userChrome.css"
+        cat {{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/mocha_sky_userChrome.css >> "$profile_dir/chrome/userChrome.css"
+        cat {{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/latte_sky_userContent.css > "$profile_dir/chrome/userContent.css"
+        cat {{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/mocha_sky_userContent.css >> "$profile_dir/chrome/userContent.css"
+    done
 
-    if [[ -d "$PROFILE_DIR" ]]; then
-        log_info "Zen browser default profile found"
-        mkdir -p "$PROFILE_DIR/chrome"
-        ln -sf {{ .chezmoi.homeDir }}/.config/DankMaterialShell/zen.css "$PROFILE_DIR/chrome/userChrome.css"
-        log_info "Created symbolic link to ~/.config/DankMaterialShell/zen.css"
-        log_info "Theming must be enabled in Zen browser for changes to userChrome.css to take effect! Open about:config and enable toolkit.legacyUserProfileCustomizations.stylesheets. Restart your browser."
-    else
-        log_error "Zen browser default profile not found"
-        exit 1
-    fi
+    log_info "Profiles configured."
+    log_info "Theming must be enabled in Zen browser for changes to userChrome.css to take effect! Open about:config and enable toolkit.legacyUserProfileCustomizations.stylesheets. Restart your browser."
 }
 
 greeter() {
