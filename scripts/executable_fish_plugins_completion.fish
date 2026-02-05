@@ -40,6 +40,7 @@ function main
     # Install Fisher plugins
     log_info "Installing Fisher plugins"
     set plugins \
+        catppuccin/fish \
         jorgebucaran/autopair.fish \
         shoriminimoe/fish-extract \
         patrickf3139/fzf.fish \
