@@ -43,3 +43,5 @@ cask:
   - font-caskaydia-cove-nerd-font
   - font-ibm-plex-mono
   - font-jetbrains-mono
+  - ublue-os/tap/goose-linux
+  - ublue-os/tap/vscodium-linux
