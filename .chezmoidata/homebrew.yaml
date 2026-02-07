@@ -1,4 +1,8 @@
 homebrew:
+  # System
+  - autoenv
+  - fish
+  - wget
   # Modern CLI tools
   - bat                 # cat with syntax highlighting
   - duf                 # Disk Usage/Free Utility

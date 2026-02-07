@@ -5,34 +5,8 @@ repositories:
     repo: containers
   - user: auricom
     repo: renovate-config
-  - user: auricom
-    repo: toolboxes
-  - user: auricom
-    repo: cayo-storage
-  - user: auricom
-    repo: cayo-sysexts
-  - user: auricom
-    repo: orches-storage
-  - user: 01builders
-    repo: eth-indexer
   - user: 01builders
     repo: infra
-  - user: 01builders
-    repo: infra_libs
-  - user: 01builders
-    repo: raas-poc
-  - user: celestiaorg
-    repo: eden-docs
-  - user: ngnodehq
-    repo: console
-  - user: ngnodehq
-    repo: containers
-  - user: ngnodehq
-    repo: kube-ops
-  - user: ngnodehq
-    repo: landing-page
-  - user: ngnodehq
-    repo: renovate-config
   - user: evstack
     repo: ev-toolbox
   - user: evstack

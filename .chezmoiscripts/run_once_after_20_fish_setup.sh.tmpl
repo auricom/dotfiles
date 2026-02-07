@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Fish configuration script
+
+set -euo pipefail
+
+# Source utility functions
+source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Configuring Fish shell"
+
+    log_info "Chaging default shell to Fish"
+    sudo usermod -s $(which fish) "${USER}"
+
+    log_info "Executing fish completion script"
+    fish -c "{{ .chezmoi.homeDir }}/scripts/fish_plugins_completion.fish"
+
+    log_info "Sudo configuration completed"
+}
+
+# Run main function
+main "$@"

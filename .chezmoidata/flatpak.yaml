@@ -3,7 +3,6 @@ flatpak:
   - app.zen_browser.zen
   - com.github.rafostar.Clapper
   - com.github.PintaProject.Pinta
-  - com.logseq.Logseq
   - com.slack.Slack
   - dev.vencord.Vesktop
   - fr.handbrake.ghb
@@ -11,14 +10,14 @@ flatpak:
   - io.github.quodlibet.QuodLibet
   - io.kopia.KopiaUI
   - me.timschneeberger.GalaxyBudsClient
-  - net.cozic.joplin_desktop
   - org.bunkus.mkvtoolnix-gui
   - org.chromium.Chromium
   - org.musicbrainz.Picard
   - com.rtosta.zapzap
   - org.telegram.desktop
   - com.onepassword.OnePassword
-  - com.visualstudio.code
+  - dev.zed.Zed
+  - me.amankhanna.opendeck
   # games
   - com.github.Matoking.protontricks
   - com.valvesoftware.Steam

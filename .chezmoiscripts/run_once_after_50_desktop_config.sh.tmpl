@@ -12,54 +12,12 @@ source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
 main() {
     log_section "Configuring desktop environment"
 
-    # Configure GNOME settings
-    configure_gnome_settings
-
-    # Configure Ptyxis transparency
-    configure_ptyxis
-
     # Deactivate swap if system has > 32GB RAM
     deactivate_swap_if_high_memory
-
-    # Install GNOME extensions (commented out for now)
-    # install_gnome_extensions
 
     log_info "Desktop configuration completed"
 }
 
-configure_gnome_settings() {
-    if ! command_exists gsettings; then
-        log_warn "gsettings not available, skipping GNOME configuration"
-        return
-    fi
-
-    log_info "Configuring GNOME settings"
-
-    # Font settings
-    log_info "Setting monospace font"
-    gsettings set org.gnome.desktop.interface monospace-font-name 'IBM Plex Mono Medium 11'
-
-    # Cursor theme
-    log_info "Setting cursor theme"
-    gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic'
-
-    # Dash-to-Dock settings
-    log_info "Configuring Dash-to-Dock"
-    gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
-
-    # Keyboard layout
-    log_info "Setting keyboard layout to qwerty-fr"
-    gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us_qwerty-fr')]"
-}
-
-configure_ptyxis() {
-    if command_exists ujust; then
-        log_info "Configuring Ptyxis transparency"
-        ujust ptyxis-transparency
-    else
-        log_warn "ujust not available, skipping Ptyxis configuration"
-    fi
-}
 
 deactivate_swap_if_high_memory() {
     log_info "Checking system memory for swap configuration"
@@ -108,32 +66,6 @@ deactivate_swap_if_high_memory() {
     else
         log_info "System has ${total_memory_gb}GB RAM (≤32GB), keeping swap configuration unchanged"
     fi
-}
-
-install_gnome_extensions() {
-    if ! command_exists gext; then
-        log_warn "gext not available, skipping GNOME extensions installation"
-        return
-    fi
-
-    log_info "Installing GNOME extensions"
-
-    local extensions=(
-        # "nightthemeswitcher@romainvigier.fr"
-        # "tilingshell@ferrarodomenico.com"
-        # "streamcontroller@core447.com"
-        # "Vitals@CoreCoding.com"
-        # "window-calls@domandoman.xyz"
-    )
-
-    for extension in "${extensions[@]}"; do
-        if ! gnome-extensions list | grep -q "$extension"; then
-            log_info "Installing extension: $extension"
-            gext install "$extension"
-        else
-            log_info "Extension already installed: $extension"
-        fi
-    done
 }
 
 # Run main function
