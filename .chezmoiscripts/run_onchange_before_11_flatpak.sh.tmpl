@@ -15,11 +15,19 @@ main() {
 
     # Install Flatpak packages
     if command_exists flatpak; then
-        log_info "Installing Flatpak packages"
+        log_info "Installing Common flatpak packages"
 
         # Common desktop packages
-        {{- range .flatpak }}
+        {{- range .flatpak.common }}
         flatpak_install_if_missing "{{ . }}"
+        {{- end }}
+
+        log_info "Installing Streamdeck flatpak packages"
+        # Streamdeck packages
+        {{- if .streamdeck -}}
+        {{- range .flatpak.streamdeck }}
+        flatpak_install_if_missing "{{ . }}"
+        {{- end }}
         {{- end }}
     else
         log_warn "Flatpak not available, skipping Flatpak packages"
@@ -27,6 +35,18 @@ main() {
 
     log_info "Package installation completed"
 }
+
+# Install Flatpak package if not already installed
+flatpak_install_if_missing() {
+    local package="$1"
+    if ! flatpak list --app | grep -q "$package"; then
+        log_info "Installing Flatpak package: $package"
+        flatpak install -y --system "$package"
+    else
+        log_debug "Flatpak package already installed: $package"
+    fi
+}
+
 
 # Only run if conditions are met
 if should_run; then

@@ -1,12 +1,12 @@
 [Unit]
-Description=ublue auto update custom
+Description=dotfiles auto update custom
 After=local-fs.target
 After=network-online.target
-ConditionPathExists=%h/scripts/ublue_update_custom.sh
+ConditionPathExists=%h/scripts/dotfiles_update_custom.sh
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -c "%h/scripts/ublue_update_custom.sh"
+ExecStart=/usr/bin/bash -c "%h/scripts/dotfiles_update_custom.sh"
 Environment="PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 [Install]

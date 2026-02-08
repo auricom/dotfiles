@@ -20,16 +20,18 @@ main() {
     if atuin status >/dev/null 2>&1; then
         log_info "Atuin is already configured and logged in"
         return
-    fi
-
-    log_info "Starting Atuin login process"
-    log_info "Please follow the prompts to log in to Atuin"
-
-    # Interactive login
-    if atuin login; then
-        log_info "Atuin login completed successfully"
     else
-        log_warn "Atuin login failed or was cancelled"
+        log_info "Starting Atuin login process"
+        log_info "Please follow the prompts to log in to Atuin"
+
+        # Interactive login
+        if atuin login; then
+            log_info "Atuin login completed successfully"
+            log_info "Syncing history..."
+            atuin sync --force
+        else
+            log_warn "Atuin login failed or was cancelled"
+        fi
     fi
 
     log_info "Atuin configuration completed"

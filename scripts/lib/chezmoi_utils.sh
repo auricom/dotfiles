@@ -119,17 +119,6 @@ fisher_install_if_missing() {
     fi
 }
 
-# Install Flatpak package if not already installed
-flatpak_install_if_missing() {
-    local package="$1"
-    if ! flatpak list --app | grep -q "$package"; then
-        log_info "Installing Flatpak package: $package"
-        flatpak install -y --system "$package"
-    else
-        log_debug "Flatpak package already installed: $package"
-    fi
-}
-
 # Clone git repository if it doesn't exist
 git_clone_if_missing() {
     local repo_url="$1"

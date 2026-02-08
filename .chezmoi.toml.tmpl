@@ -3,12 +3,19 @@
 
 {{- /* Template file for chezmoi config file */ -}}
 {{- $desktop := false -}}{{/* true if this machine is a desktop */}}
+{{- $streamdeck := false -}}{{/* true if this machine is connected to a streamdeck */}}
 
 {{- if hasKey . "desktop" -}}
 {{-   $desktop = .desktop -}}
 {{- else if $interactive -}}
 {{-   $desktop = promptBool "desktop" -}}
 {{- end -}}
+{{- if hasKey . "streamdeck" -}}
+{{-   $streamdeck = .streamdeck -}}
+{{- else if $interactive -}}
+{{-   $streamdeck = promptBool "streamdeck" -}}
+{{- end -}}
+
 
 {{- if $interactive -}}
 {{-   writeToStdout "💡 Tip: you can re-enter your data with `chezmoi init --data=false`.\n" -}}
@@ -20,3 +27,4 @@ encryption = "age"
 
 [data]
   desktop = {{ $desktop }}
+  streamdeck = {{ $streamdeck }}

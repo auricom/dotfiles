@@ -12,7 +12,7 @@ source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
 main() {
     log_section "Installing hardware udev rules"
 
-    {{- if eq .chezmoi.hostname "claude-fixe" }}
+    {{- if .streamdeck }}
     # Install StreamDeck udev rules
     install_streamdeck_rules
     {{- end }}

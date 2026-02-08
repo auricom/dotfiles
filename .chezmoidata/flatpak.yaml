@@ -1,23 +1,25 @@
 flatpak:
-  # apps
-  - app.zen_browser.zen
-  - com.github.rafostar.Clapper
-  - com.github.PintaProject.Pinta
-  - com.slack.Slack
-  - dev.vencord.Vesktop
-  - fr.handbrake.ghb
-  - info.portfolio_performance.PortfolioPerformance
-  - io.github.quodlibet.QuodLibet
-  - io.kopia.KopiaUI
-  - me.timschneeberger.GalaxyBudsClient
-  - org.bunkus.mkvtoolnix-gui
-  - org.chromium.Chromium
-  - org.musicbrainz.Picard
-  - com.rtosta.zapzap
-  - org.telegram.desktop
-  - com.onepassword.OnePassword
-  - dev.zed.Zed
-  - me.amankhanna.opendeck
-  # games
-  - com.github.Matoking.protontricks
-  - com.valvesoftware.Steam
+  common:
+    # apps
+    - app.zen_browser.zen
+    - com.github.rafostar.Clapper
+    - com.github.PintaProject.Pinta
+    - com.slack.Slack
+    - dev.vencord.Vesktop
+    - fr.handbrake.ghb
+    - info.portfolio_performance.PortfolioPerformance
+    - io.github.quodlibet.QuodLibet
+    - io.kopia.KopiaUI
+    - me.timschneeberger.GalaxyBudsClient
+    - org.bunkus.mkvtoolnix-gui
+    - org.chromium.Chromium
+    - org.musicbrainz.Picard
+    - com.rtosta.zapzap
+    - org.telegram.desktop
+    - com.onepassword.OnePassword
+    - dev.zed.Zed
+    # games
+    - com.github.Matoking.protontricks
+    - com.valvesoftware.Steam
+  streamdeck:
+    - me.amankhanna.opendeck

@@ -1,0 +1,40 @@
+{{- if .desktop -}}
+#!/usr/bin/env bash
+
+# Desktop environment configuration script
+# Configures GNOME settings and desktop preferences
+
+set -euo pipefail
+
+# Source utility functions
+source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Configuring desktop environment"
+
+    deactivate_swap
+
+    log_info "Desktop configuration completed"
+}
+
+
+deactivate_swap() {
+    log_info "Checking system memory for swap configuration"
+
+    # Check if swap is currently active
+    if swapon --show | grep -q .; then
+        log_info "Deactivating active swap"
+        if sudo swapoff -a; then
+            log_info "Successfully deactivated swap"
+        else
+            log_warn "Failed to deactivate swap"
+            return
+        fi
+    else
+        log_info "No active swap found"
+    fi
+}
+
+# Run main function
+main "$@"
+{{- end -}}

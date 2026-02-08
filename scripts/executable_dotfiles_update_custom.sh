@@ -5,7 +5,7 @@ set -Eeuo pipefail
 source "${HOME}/scripts/lib/common_utils.sh"
 
 # Trap errors and call error_handler
-script_name="ublue_update_custom.sh"
+script_name="dotfiles_update_custom.sh"
 hostname=$(hostname)
 trap 'error_handler "$hostname" "$( { $BASH_COMMAND 2>&1 1>&3; } 3>&1 )"' ERR
 

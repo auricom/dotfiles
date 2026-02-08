@@ -13,6 +13,7 @@ homebrew:
   - rg                  # ripgrep - faster grep
   # Development tools
   - age                 # A simple, modern and secure encryption tool
+  - ansible             # Configuration management
   - docker-compose      # Containerization
   - gh                  # GitHub CLI
   - git                 # Git version control
