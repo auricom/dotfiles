@@ -18,6 +18,8 @@ flatpak:
     - org.telegram.desktop
     - com.onepassword.OnePassword
     - dev.zed.Zed
+    - it.mijorus.gearlever
+    - io.kinvolk.Headlamp
     # games
     - com.github.Matoking.protontricks
     - com.valvesoftware.Steam
