@@ -14,6 +14,7 @@ homebrew:
   # Development tools
   - age                 # A simple, modern and secure encryption tool
   - ansible             # Configuration management
+  - direnv              # Load and unload environment variables depending on the current directory
   - docker-compose      # Containerization
   - gh                  # GitHub CLI
   - git                 # Git version control
