@@ -2,7 +2,6 @@ flatpak:
   common:
     # apps
     - app.zen_browser.zen
-    - com.github.rafostar.Clapper
     - com.github.PintaProject.Pinta
     - com.slack.Slack
     - dev.vencord.Vesktop
@@ -20,6 +19,9 @@ flatpak:
     - dev.zed.Zed
     - it.mijorus.gearlever
     - io.kinvolk.Headlamp
+    - com.github.tchx84.Flatseal
+    - org.gnome.Calculator
+    - org.gnome.Showtime
     # games
     - com.github.Matoking.protontricks
     - com.valvesoftware.Steam

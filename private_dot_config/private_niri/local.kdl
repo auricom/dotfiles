@@ -5,6 +5,7 @@ layout {
 
 binds {
     Mod+P hotkey-overlay-title="Print screen" { spawn-sh "dms screenshot"; }
+    Mod+Period hotkey-overlay-title="Print screen" { spawn-sh "flatpak run it.mijorus.smile"; }
     XF86AudioLowerVolume { spawn "dms" "ipc" "call" "audio" "decrement" "5"; }
     XF86AudioMute { spawn "dms" "ipc" "call" "audio" "mute"; }
     XF86AudioNext { spawn "dms" "ipc" "call" "mpris" "next"; }
@@ -15,4 +16,20 @@ binds {
     XF86MonBrightnessDown { spawn "dms" "ipc" "call" "brightness" "decrement" "5"; }
     XF86MonBrightnessUp { spawn "dms" "ipc" "call" "brightness" "increment" "5"; }
     XF86Tools { spawn "dms" "ipc" "call" "audio" "micmute"; }
+}
+
+window-rule {
+    match title="Smile"
+    open-maximized false
+    open-floating true
+    default-column-width { proportion 0.1; }
+    default-window-height { fixed 500; }
+}
+
+window-rule {
+    match title="Calculator"
+    open-maximized false
+    open-floating true
+    default-column-width { proportion 0.08; }
+    default-window-height { fixed 500; }
 }
