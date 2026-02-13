@@ -6,9 +6,12 @@ Host *
   IdentityFile ~/.ssh/id_rsa
   IdentityFile ~/.ssh/id_hetzner
 
-Host 192.168.*.*
+# Home network — trusted hosts
+Host 192.168.9.*
   StrictHostKeyChecking no
   UserKnownHostsFile /dev/null
+
+# Other private networks — only if explicitly needed
 Host 172.16.*.*
   StrictHostKeyChecking no
   UserKnownHostsFile /dev/null

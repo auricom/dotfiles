@@ -3,16 +3,17 @@
 
 # NFS mounts configuration script
 # Configures NFS mounts using external script
+# Data hash: {{ include ".chezmoidata/nfs.yaml" | sha256sum }}
 
 set -euo pipefail
 
 # Source utility functions
 source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
 
-NFS_SERVER_IP="192.168.9.10"
-SHARE_PREFIX="/mnt/vol1"
-MOUNTPOINT_PREFIX="/var/mnt/storage.feisar.ovh"
-OPTS="soft,timeo=150,retrans=10,_netdev,nofail,x-systemd.automount,rw"
+NFS_SERVER_IP="{{ .nfs.server_ip }}"
+SHARE_PREFIX="{{ .nfs.share_prefix }}"
+MOUNTPOINT_PREFIX="{{ .nfs.mountpoint_prefix }}"
+OPTS="{{ .nfs.options }}"
 
 should_backup=true
 
@@ -47,15 +48,9 @@ add_fstab_entry() {
 main() {
     log_section "Configuring NFS mounts"
 
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/photo" "${MOUNTPOINT_PREFIX}/photo" "${OPTS}" 0 0
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/video" "${MOUNTPOINT_PREFIX}/video" "${OPTS}" 0 0
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/shared-documents" "${MOUNTPOINT_PREFIX}/shared-documents" "${OPTS}" 0 0
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/music_transcoded" "${MOUNTPOINT_PREFIX}/music_transcoded" "${OPTS}" 0 0
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/downloads" "${MOUNTPOINT_PREFIX}/downloads" "${OPTS}" 0 0
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/home/helene" "${MOUNTPOINT_PREFIX}/home-helene" "${OPTS}" 0 0
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/home/claude" "${MOUNTPOINT_PREFIX}/home-claude" "${OPTS}" 0 0
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/music" "${MOUNTPOINT_PREFIX}/music" "${OPTS}" 0 0
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/piracy" "${MOUNTPOINT_PREFIX}/piracy" "${OPTS}" 0 0
+{{- range .nfs.mounts }}
+    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/{{ .share }}" "${MOUNTPOINT_PREFIX}/{{ .mountpoint }}" "${OPTS}" 0 0
+{{- end }}
 
     systemctl daemon-reload
     sudo mount -a

@@ -1,21 +1,57 @@
+# Repository files (not dotfiles)
 .editorconfig
 install.sh
 LICENSE
 README.md
+
 {{- if (not .desktop) }}
+# Desktop-only: GUI application autostart
 .config/autostart/
+
+# Desktop-only: Discord settings
 .config/discord/
+
+# Desktop-only: Podman/Quadlet containers
 .config/containers/
+
+# Desktop-only: Git config (GPG signing, URL rewrites)
 .config/git/
+
+# Desktop-only: K9s Kubernetes TUI
 .config/k9s/
+
+# Desktop-only: SOPS/age encryption keys
 .config/sops/
+
+# Desktop-only: Systemd user services (dotfiles-update, resilio-sync)
 .config/systemd/
+
+# Desktop-only: Custom keyboard layouts (qwerty-fr)
 .config/xkb/
+
+# Desktop-only: Niri compositor
+.config/niri/
+
+# Desktop-only: Foot terminal
+.config/foot/
+
+# Desktop-only: Zellij multiplexer
+.config/zellij/
+
+# Desktop-only: Local share (icons, catppuccin themes)
 .local
+
+# Desktop-only: Kubernetes config
 .kube/config
+
+# Desktop-only: Talos config
 .talos
+
+# Desktop-only: DJI import script
 scripts/import_dji_osmo.sh
 {{- end }}
-{{- if .desktop  }}
+
+{{- if .desktop }}
+# Server-only: ZFS rebalancing script
 scripts/zfs-inplace-rebalancing.sh
 {{- end }}

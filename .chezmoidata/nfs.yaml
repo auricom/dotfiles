@@ -1,0 +1,24 @@
+nfs:
+  server_ip: "192.168.9.10"
+  share_prefix: "/mnt/vol1"
+  mountpoint_prefix: "/var/mnt/storage.feisar.ovh"
+  options: "soft,timeo=150,retrans=10,_netdev,nofail,x-systemd.automount,rw"
+  mounts:
+    - share: photo
+      mountpoint: photo
+    - share: video
+      mountpoint: video
+    - share: shared-documents
+      mountpoint: shared-documents
+    - share: music_transcoded
+      mountpoint: music_transcoded
+    - share: downloads
+      mountpoint: downloads
+    - share: home/helene
+      mountpoint: home-helene
+    - share: home/claude
+      mountpoint: home-claude
+    - share: music
+      mountpoint: music
+    - share: piracy
+      mountpoint: piracy

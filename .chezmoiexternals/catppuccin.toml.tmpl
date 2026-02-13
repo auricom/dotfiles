@@ -1,3 +1,5 @@
+# Catppuccin themes for various applications
+
 # bat catppuccin themes
 [".config/bat/themes/Catppuccin Latte.tmTheme"]
     type = "file"
@@ -15,16 +17,6 @@
     type = "file"
     url = "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Mocha.tmTheme"
     refreshPeriod = "168h"
-
-{{ if .desktop }}
-# Bibata cursors
-[".local/share/icons"]
-    type = "archive"
-    # url = "https://github.com/ful1e5/Bibata_Cursor/releases/latest/download/Bibata-Modern-Classic.tar.xz"
-    url = "https://github.com/stanio/Bibata_Cursor/releases/download/v2.0.6-stanio-6/Bibata-Classic-Linux-v2.0.6-stanio-6.tar.xz"
-    exact = true
-    include = ["Bibata-Modern-Classic/**"]
-{{ end }}
 
 # btop catppuccin themes
 [".config/btop/themes/catppuccin_latte.theme"]
@@ -99,20 +91,5 @@
 [".config/zellij/catppuccin.kdl"]
     type = "file"
     url = "https://raw.githubusercontent.com/catppuccin/zellij/refs/heads/main/catppuccin.kdl"
-    refreshPeriod = "168h"
-
-# qwerty-fr
-[".config/xkb/symbols/us_qwerty-fr"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/qwerty-fr/qwerty-fr/master/linux/us_qwerty-fr"
-    refreshPeriod = "168h"
-{{ end }}
-
-
-{{ if not .desktop }}
-["scripts/zfs-inplace-rebalancing.sh"]
-    type = "file"
-    executable = true
-    url = "https://raw.githubusercontent.com/markusressel/zfs-inplace-rebalancing/master/zfs-inplace-rebalancing.sh"
     refreshPeriod = "168h"
 {{ end }}

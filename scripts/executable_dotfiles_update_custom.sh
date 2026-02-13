@@ -26,6 +26,16 @@ else
     echo -e "Chezmoi | \n## No files to update without local changes"
 fi
 
+# Check for files with local changes that were NOT applied
+SKIPPED_FILES=$(chezmoi status | awk '!/^ / && NF {print $2}')
+
+if [ -n "$SKIPPED_FILES" ]; then
+    skipped_count=$(echo "$SKIPPED_FILES" | wc -l)
+    skipped_list=$(echo "$SKIPPED_FILES" | head -10 | tr '\n' ', ' | sed 's/,$//')
+    echo -e "Chezmoi | \n## WARNING: ${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
+    send_pushover_message "${hostname}: chezmoi update skipped ${skipped_count} file(s) with local changes: ${skipped_list}"
+fi
+
 # Bat cache
 bat cache --build
 
