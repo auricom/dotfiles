@@ -21,6 +21,7 @@ flatpak:
     - io.kinvolk.Headlamp
     - com.github.tchx84.Flatseal
     - org.gnome.Calculator
+    - org.gnome.Loupe
     - org.gnome.Showtime
     # games
     - com.github.Matoking.protontricks
