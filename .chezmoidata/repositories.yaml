@@ -5,6 +5,8 @@ repositories:
     repo: containers
   - user: auricom
     repo: renovate-config
+  - user: auricom
+    repo: zeroclaw
   - user: 01builders
     repo: infra
   - user: evstack
