@@ -16,8 +16,9 @@ main() {
     # Clone repositories
     clone_repositories
 
-    # Set up dotfiles symlink
+    # Set up symlinks
     setup_dotfiles_symlink
+    setup_agents_symlink
 
     log_info "Git repositories setup completed"
 }
@@ -35,6 +36,13 @@ clone_repositories() {
 setup_dotfiles_symlink() {
     local source="{{ .chezmoi.homeDir }}/.local/share/chezmoi"
     local target="{{ .chezmoi.homeDir }}/repositories/auricom/dotfiles"
+
+    create_symlink_if_missing "$source" "$target"
+}
+
+setup_agents_symlink() {
+    local source="{{ .chezmoi.homeDir }}/repositories/auricom/agents"
+    local target="{{ .chezmoi.homeDir }}/.agents"
 
     create_symlink_if_missing "$source" "$target"
 }
