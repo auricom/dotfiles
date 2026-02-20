@@ -17,3 +17,5 @@ Thumbs.db
 
 # SOPS
 .decrypted~*
+
+**/.claude/settings.local.json

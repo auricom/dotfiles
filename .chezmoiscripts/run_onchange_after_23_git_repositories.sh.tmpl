@@ -41,8 +41,8 @@ setup_dotfiles_symlink() {
 }
 
 setup_agents_symlink() {
-    local source="{{ .chezmoi.homeDir }}/repositories/auricom/agents"
-    local target="{{ .chezmoi.homeDir }}/.agents"
+    local source="{{ .chezmoi.homeDir }}/repositories/auricom/agents/.agent"
+    local target="{{ .chezmoi.homeDir }}/.agent"
 
     create_symlink_if_missing "$source" "$target"
 }
