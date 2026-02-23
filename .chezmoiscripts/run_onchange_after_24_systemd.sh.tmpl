@@ -10,9 +10,9 @@ set -euo pipefail
 source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
 
 # Hash dependencies for change detection
-# doftiles_update_custom service: {{ include "private_dot_config/private_systemd/user/dotfiles-update-custom.service.tmpl" | sha256sum }}
-# dotfiles_update_custom timer: {{ include "private_dot_config/private_systemd/user/dotfiles-update-custom.timer.tmpl" | sha256sum }}
-# resilio-sync hash: {{ include "private_dot_config/private_containers/systemd/resilio-sync.container.tmpl" | sha256sum }}
+# doftiles_update_custom service: {{ include "private_dot_config/systemd/user/dotfiles-update-custom.service.tmpl" | sha256sum }}
+# dotfiles_update_custom timer: {{ include "private_dot_config/systemd/user/dotfiles-update-custom.timer.tmpl" | sha256sum }}
+# resilio-sync hash: {{ include "private_dot_config/containers/systemd/resilio-sync.container.tmpl" | sha256sum }}
 
 main() {
     log_section "Managing systemd services and quadlets"

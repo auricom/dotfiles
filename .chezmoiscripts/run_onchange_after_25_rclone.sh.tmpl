@@ -3,8 +3,8 @@
 # Rclone configuration script
 # Generates rclone configuration from template and token
 # Hash dependencies for change detection:
-# rclone.conf.base: {{ include "private_dot_config/private_rclone/encrypted_rclone.conf.base.age" | sha256sum }}
-# rclone.conf.token: {{ include "private_dot_config/private_rclone/encrypted_rclone.conf.token.age" | sha256sum }}
+# rclone.conf.base: {{ include "private_dot_config/rclone/encrypted_rclone.conf.base.age" | sha256sum }}
+# rclone.conf.token: {{ include "private_dot_config/rclone/encrypted_rclone.conf.token.age" | sha256sum }}
 
 set -euo pipefail
 

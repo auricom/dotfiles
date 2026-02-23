@@ -19,8 +19,7 @@ main() {
     # Set up symlinks
     setup_dotfiles_symlink
     setup_agents_symlink
-    setup_claude_skills
-    setup_claude_md
+    setup_claude_symlinks
 
     log_info "Git repositories setup completed"
 }
@@ -43,24 +42,20 @@ setup_dotfiles_symlink() {
 }
 
 setup_agents_symlink() {
-    local source="{{ .chezmoi.homeDir }}/repositories/auricom/agents/.agent"
-    local target="{{ .chezmoi.homeDir }}/.agent"
+    local source="{{ .chezmoi.homeDir }}/repositories/auricom/agents"
+    local target="{{ .chezmoi.homeDir }}/.config/agents"
 
     create_symlink_if_missing "$source" "$target"
 }
 
-setup_claude_skills() {
-    local source="{{ .chezmoi.homeDir }}/repositories/auricom/agents/.agent/skills"
-    local target="{{ .chezmoi.homeDir }}/.claude/skills"
+setup_claude_symlinks() {
+    local agents_source="{{ .chezmoi.homeDir }}/repositories/auricom/agents/AGENTS.md"
+    local agents_target="{{ .chezmoi.homeDir }}/.claude/CLAUDE.md"
+    local skills_source="{{ .chezmoi.homeDir }}/repositories/auricom/agents/skills"
+    local skills_target="{{ .chezmoi.homeDir }}/.claude/skills"
 
-    create_symlink_if_missing "$source" "$target"
-}
-
-setup_claude_md() {
-    local source="{{ .chezmoi.homeDir }}/repositories/auricom/agents/AGENTS.md"
-    local target="{{ .chezmoi.homeDir }}/.claude/CLAUDE.md"
-
-    create_symlink_if_missing "$source" "$target"
+    create_symlink_if_missing "$agents_source" "$agents_target"
+    create_symlink_if_missing "$skills_source" "$skills_target"
 }
 
 # Run main function
