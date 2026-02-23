@@ -18,6 +18,15 @@ binds {
     XF86Tools { spawn "dms" "ipc" "call" "audio" "micmute"; }
 }
 
+input {
+    keyboard {
+        xkb {
+              layout "us_qwerty-fr"
+              file "~/.config/xkb/symbols/us_qwerty-fr"
+        }
+    }
+}
+
 window-rule {
     match title="Smile"
     open-maximized false
