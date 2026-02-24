@@ -3,6 +3,7 @@
 install.sh
 LICENSE
 README.md
+.local/share/icons/**
 
 {{- if (not .desktop) }}
 # Desktop-only: GUI application autostart

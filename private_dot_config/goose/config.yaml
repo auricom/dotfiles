@@ -108,9 +108,10 @@ extensions:
     display_name: Summon
     bundled: true
     available_tools: []
-GOOSE_PROVIDER: openrouter
-GOOSE_MODEL: moonshotai/kimi-k2.5
+GOOSE_PROVIDER: codex
+GOOSE_MODEL: gpt-5.2-codex
 TETRATE_HOST: https://api.router.tetrate.ai
 GOOSE_TELEMETRY_ENABLED: false
 CLAUDE_CODE_COMMAND: /home/linuxbrew/.linuxbrew/bin/claude
 OPENROUTER_HOST: https://openrouter.ai
+CODEX_COMMAND: /home/linuxbrew/.linuxbrew/bin/codex
