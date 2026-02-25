@@ -13,6 +13,7 @@ main() {
     log_section "Configuring desktop environment"
 
     deactivate_swap
+    activate_brew_timers
 
     log_info "Desktop configuration completed"
 }
@@ -33,6 +34,26 @@ deactivate_swap() {
     else
         log_info "No active swap found"
     fi
+}
+
+activate_brew_timers() {
+    log_info "Activating Homebrew systemd timers"
+
+    for timer in brew-update.timer brew-upgrade.timer; do
+        if systemctl --user list-unit-files "$timer" &>/dev/null 2>&1; then
+            if systemctl --user is-active "$timer" &>/dev/null; then
+                log_info "$timer is already active"
+            else
+                if systemctl --user enable --now "$timer"; then
+                    log_info "Activated $timer"
+                else
+                    log_warn "Failed to activate $timer"
+                fi
+            fi
+        else
+            log_info "$timer not found, skipping"
+        fi
+    done
 }
 
 # Run main function

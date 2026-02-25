@@ -1,47 +1,188 @@
 #!/usr/bin/bash
 
 set -Eeuo pipefail
+IFS=$'\n\t'
 
 source "${HOME}/scripts/lib/common_utils.sh"
 
+readonly SCRIPT_PATH="${BASH_SOURCE[0]}"
+HOSTNAME="$(hostname)"
+readonly HOSTNAME
+readonly CHEZMOI_BIN="${CHEZMOI_BIN:-chezmoi}"
+
+CLEAN_FILES=()
+SKIPPED_FILES=()
+
 # Trap errors and call error_handler
-script_name="dotfiles_update_custom.sh"
-hostname=$(hostname)
-trap 'error_handler "$hostname" "$( { $BASH_COMMAND 2>&1 1>&3; } 3>&1 )"' ERR
+trap 'error_handler "$HOSTNAME" "$( { $BASH_COMMAND 2>&1 1>&3; } 3>&1 )"' ERR
 
-# Chezmoi
-echo "Chezmoi | ## Pulling latest from GitHub"
-chezmoi git pull
+log() {
+    printf '%s\n' "$*"
+}
 
-# get a list of files to update that don't have local changes
-FILES=$(chezmoi status | awk '/^ / {print $2}')
+warn() {
+    printf 'WARNING: %s\n' "$*" >&2
+}
 
-if [ -n "$FILES" ]; then
-    echo -e "Chezmoi | \n## Updating files without local changes"
-    for f in $FILES; do
-        echo "... ${f}"
-        chezmoi apply "~/${f}"
+require_cmd() {
+    command -v "$1" > /dev/null 2>&1
+}
+
+get_chezmoi_source_dir() {
+    local source_dir
+    if ! source_dir="$("$CHEZMOI_BIN" source-path 2> /dev/null)"; then
+        return 1
+    fi
+    if [ -d "$source_dir" ]; then
+        printf '%s\n' "$source_dir"
+        return 0
+    fi
+    return 1
+}
+
+collect_chezmoi_status() {
+    CLEAN_FILES=()
+    SKIPPED_FILES=()
+
+    mapfile -t CHEZMOI_STATUS_LINES < <("$CHEZMOI_BIN" status)
+    local line status_char path
+    for line in "${CHEZMOI_STATUS_LINES[@]}"; do
+        [ -z "$line" ] && continue
+        status_char="${line:0:1}"
+        path="${line:2}"
+        [ -z "$path" ] && continue
+        if [ "$status_char" = " " ]; then
+            CLEAN_FILES+=("$path")
+        else
+            SKIPPED_FILES+=("$path")
+        fi
     done
-else
-    echo -e "Chezmoi | \n## No files to update without local changes"
-fi
+}
 
-# Check for files with local changes that were NOT applied
-SKIPPED_FILES=$(chezmoi status | awk '!/^ / && NF {print $2}')
+chezmoi_pull() {
+    log "Chezmoi | ## Pulling latest from GitHub"
+    "$CHEZMOI_BIN" git pull
+}
 
-if [ -n "$SKIPPED_FILES" ]; then
-    skipped_count=$(echo "$SKIPPED_FILES" | wc -l)
-    skipped_list=$(echo "$SKIPPED_FILES" | head -10 | tr '\n' ', ' | sed 's/,$//')
-    echo -e "Chezmoi | \n## WARNING: ${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
-    send_pushover_message "${hostname}: chezmoi update skipped ${skipped_count} file(s) with local changes: ${skipped_list}"
-fi
+chezmoi_apply_clean() {
+    collect_chezmoi_status
 
-# Bat cache
-bat cache --build
+    if [ "${#CLEAN_FILES[@]}" -gt 0 ]; then
+        log "Chezmoi | "
+        log "## Updating files without local changes"
+        local f
+        for f in "${CLEAN_FILES[@]}"; do
+            log "... ${f}"
+            "$CHEZMOI_BIN" apply "${HOME}/${f}"
+        done
+    else
+        log "Chezmoi | "
+        log "## No files to update without local changes"
+    fi
+}
 
-# Fish completion
-echo "Fish completion..."
-fish -c "~/scripts/fish_plugins_completion.fish"
+chezmoi_warn_skipped() {
+    if [ "${#SKIPPED_FILES[@]}" -eq 0 ]; then
+        return 0
+    fi
 
-# Fisher plugins
-fish -c "source ~/.config/fish/functions/fisher.fish; fisher update"
+    local skipped_count skipped_list
+    skipped_count="${#SKIPPED_FILES[@]}"
+    skipped_list="$(printf '%s, ' "${SKIPPED_FILES[@]:0:10}")"
+    skipped_list="${skipped_list%, }"
+
+    log "Chezmoi | "
+    log "## WARNING: ${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
+    send_pushover_message "${HOSTNAME}: chezmoi update skipped ${skipped_count} file(s) with local changes: ${skipped_list}"
+}
+
+bat_cache_build() {
+    if require_cmd bat; then
+        bat cache --build
+        return 0
+    fi
+    warn "bat not found; skipping cache build."
+}
+
+fish_completion() {
+    if require_cmd fish; then
+        log "Fish completion..."
+        fish -c "${HOME}/scripts/fish_plugins_completion.fish"
+        return 0
+    fi
+    warn "fish not found; skipping completions."
+}
+
+fisher_update() {
+    if require_cmd fish; then
+        fish -c "source ~/.config/fish/functions/fisher.fish; fisher update"
+        return 0
+    fi
+    warn "fish not found; skipping fisher update."
+}
+
+build_steps() {
+    local raw_steps raw_skip
+    local -a parsed_steps parsed_skip
+
+    raw_steps="${UPDATE_CUSTOM_STEPS:-}"
+    raw_skip="${UPDATE_CUSTOM_SKIP:-}"
+
+    if [ -n "$raw_steps" ]; then
+        read -r -a parsed_steps <<< "${raw_steps//,/ }"
+    else
+        parsed_steps=(
+            chezmoi_pull
+            chezmoi_apply_clean
+            chezmoi_warn_skipped
+            bat_cache_build
+            fish_completion
+            fisher_update
+        )
+    fi
+
+    if [ -n "$raw_skip" ]; then
+        read -r -a parsed_skip <<< "${raw_skip//,/ }"
+    fi
+
+    STEPS=("${parsed_steps[@]}")
+    SKIP_STEPS=("${parsed_skip[@]}")
+}
+
+should_skip_step() {
+    local step="$1"
+    local skip
+    for skip in "${SKIP_STEPS[@]:-}"; do
+        if [ "$skip" = "$step" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+run_steps() {
+    local step
+    for step in "${STEPS[@]}"; do
+        if should_skip_step "$step"; then
+            log "Skipping step: ${step}"
+            continue
+        fi
+        if declare -F "$step" > /dev/null; then
+            "$step"
+        else
+            warn "Unknown step '${step}' (skipping)."
+        fi
+    done
+}
+
+main() {
+    if ! require_cmd "$CHEZMOI_BIN"; then
+        warn "chezmoi not found; aborting."
+        return 1
+    fi
+
+    build_steps
+    run_steps
+}
+
+main "$@"
