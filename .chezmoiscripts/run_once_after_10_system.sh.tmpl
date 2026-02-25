@@ -40,11 +40,11 @@ activate_brew_timers() {
     log_info "Activating Homebrew systemd timers"
 
     for timer in brew-update.timer brew-upgrade.timer; do
-        if systemctl --user list-unit-files "$timer" &>/dev/null 2>&1; then
-            if systemctl --user is-active "$timer" &>/dev/null; then
+        if systemctl list-unit-files "$timer" &>/dev/null 2>&1; then
+            if systemctl is-active "$timer" &>/dev/null; then
                 log_info "$timer is already active"
             else
-                if systemctl --user enable --now "$timer"; then
+                if sudo systemctl enable --now "$timer"; then
                     log_info "Activated $timer"
                 else
                     log_warn "Failed to activate $timer"
