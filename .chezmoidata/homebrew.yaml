@@ -1,8 +1,8 @@
 homebrew:
   # System
-  - autoenv
-  - fish
-  - wget
+  - autoenv             # Automatically source .env files when entering directories
+  - fish                # Friendly interactive shell
+  - wget                # Internet file retriever
   # Modern CLI tools
   - bat                 # cat with syntax highlighting
   - duf                 # Disk Usage/Free Utility
@@ -19,7 +19,8 @@ homebrew:
   - docker-compose      # Containerization
   - gh                  # GitHub CLI
   - git                 # Git version control
-  - mise                # dev tools, env vars, task runner
+  - mise                # Dev tools, env vars, task runner
+  - ramalama            # Local serving of AI models
   - sops                # Simple and flexible tool for managing secrets
   - yq                  # yq is a portable command-line YAML, JSON, XML, CSV, TOML, HCL and properties processor
   # Shell enhancements
@@ -41,14 +42,17 @@ homebrew:
   - talosctl            # Talos CLI
   - talhelper           # Tool to help creating Talos configuration files declaratively
 cask:
-  - font-fira-code-nerd-font
-  - font-jetbrains-mono-nerd-font
-  - font-meslo-lg-nerd-font
-  - font-hack-nerd-font
-  - font-ubuntu-nerd-font
-  - font-source-code-pro
-  - font-caskaydia-cove-nerd-font
-  - font-ibm-plex-mono
-  - font-jetbrains-mono
-  - ublue-os/tap/goose-linux
-  - ublue-os/tap/vscodium-linux
+  # Nerd Fonts (patched with icons for terminal use)
+  - font-fira-code-nerd-font         # Fira Code with Nerd Font icons
+  - font-jetbrains-mono-nerd-font    # JetBrains Mono with Nerd Font icons
+  - font-meslo-lg-nerd-font          # Meslo LG with Nerd Font icons
+  - font-hack-nerd-font              # Hack with Nerd Font icons
+  - font-ubuntu-nerd-font            # Ubuntu with Nerd Font icons
+  - font-caskaydia-cove-nerd-font    # Cascadia Code with Nerd Font icons
+  # Standard fonts
+  - font-source-code-pro             # Adobe Source Code Pro monospace font
+  - font-ibm-plex-mono               # IBM Plex Mono monospace font
+  - font-jetbrains-mono              # JetBrains Mono monospace font (unpatched)
+  # Applications
+  - ublue-os/tap/goose-linux         # Goose AI agent desktop app (Linux)
+  - ublue-os/tap/vscodium-linux      # VSCodium (VS Code without telemetry, Linux)

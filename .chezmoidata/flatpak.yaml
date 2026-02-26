@@ -1,30 +1,30 @@
 flatpak:
   common:
     # apps
-    - app.zen_browser.zen
-    - com.github.PintaProject.Pinta
-    - com.slack.Slack
-    - dev.vencord.Vesktop
-    - fr.handbrake.ghb
-    - info.portfolio_performance.PortfolioPerformance
-    - io.github.quodlibet.QuodLibet
-    - io.kopia.KopiaUI
-    - me.timschneeberger.GalaxyBudsClient
-    - org.bunkus.mkvtoolnix-gui
-    - org.chromium.Chromium
-    - org.musicbrainz.Picard
-    - com.rtosta.zapzap
-    - org.telegram.desktop
-    - com.onepassword.OnePassword
-    - dev.zed.Zed
-    - it.mijorus.gearlever
-    - io.kinvolk.Headlamp
-    - com.github.tchx84.Flatseal
-    - org.gnome.Calculator
-    - org.gnome.Loupe
-    - org.gnome.Showtime
+    - app.zen_browser.zen                              # Zen Browser - privacy-focused Firefox-based browser
+    - com.github.PintaProject.Pinta                   # Pinta - simple drawing and image editing
+    - com.slack.Slack                                  # Slack - team messaging and collaboration
+    - dev.vencord.Vesktop                             # Vesktop - Discord client with Vencord mods
+    - fr.handbrake.ghb                                # HandBrake - video transcoder
+    - info.portfolio_performance.PortfolioPerformance # Portfolio Performance - investment portfolio tracker
+    - io.github.quodlibet.QuodLibet                   # Quod Libet - music player and library manager
+    - io.kopia.KopiaUI                                # Kopia UI - backup and restore tool
+    - me.timschneeberger.GalaxyBudsClient             # Galaxy Buds Client - manage Samsung Galaxy Buds
+    - org.bunkus.mkvtoolnix-gui                       # MKVToolNix - create and edit MKV files
+    - org.chromium.Chromium                           # Chromium - open-source web browser
+    - org.musicbrainz.Picard                          # MusicBrainz Picard - music file tagger
+    - com.rtosta.zapzap                               # ZapZap - WhatsApp desktop client
+    - org.telegram.desktop                            # Telegram - messaging app
+    - com.onepassword.OnePassword                     # 1Password - password manager
+    - dev.zed.Zed                                     # Zed - high-performance code editor
+    - it.mijorus.gearlever                            # Gear Lever - manage AppImage files
+    - io.kinvolk.Headlamp                             # Headlamp - Kubernetes dashboard
+    - com.github.tchx84.Flatseal                      # Flatseal - manage Flatpak permissions
+    - org.gnome.Calculator                            # GNOME Calculator
+    - org.gnome.Loupe                                 # Loupe - GNOME image viewer
+    - org.gnome.Showtime                              # Showtime - GNOME video player
     # games
-    - com.github.Matoking.protontricks
-    - com.valvesoftware.Steam
+    - com.github.Matoking.protontricks               # Protontricks - run Winetricks for Steam games
+    - com.valvesoftware.Steam                         # Steam - gaming platform
   streamdeck:
-    - me.amankhanna.opendeck
+    - me.amankhanna.opendeck                          # OpenDeck - Stream Deck controller
