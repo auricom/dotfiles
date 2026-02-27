@@ -1,0 +1,10 @@
+[Unit]
+Description=fisher update weekly on Mondays
+ConditionPathExists=%h/.config/fish/functions/fisher.fish
+
+[Timer]
+OnCalendar=Mon *-*-* 00:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

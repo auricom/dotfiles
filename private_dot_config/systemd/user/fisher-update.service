@@ -1,0 +1,13 @@
+[Unit]
+Description=fisher update
+After=network-online.target
+ConditionPathExists=%h/.config/fish/functions/fisher.fish
+OnFailure=desktop-notify@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/linuxbrew/.linuxbrew/bin/fish -c "fisher update"
+Environment="PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+[Install]
+WantedBy=default.target

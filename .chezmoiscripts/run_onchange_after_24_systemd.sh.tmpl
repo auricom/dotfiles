@@ -10,9 +10,23 @@ set -euo pipefail
 source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
 
 # Hash dependencies for change detection
-# doftiles_update_custom service: {{ include "private_dot_config/systemd/user/dotfiles-update-custom.service.tmpl" | sha256sum }}
-# dotfiles_update_custom timer: {{ include "private_dot_config/systemd/user/dotfiles-update-custom.timer.tmpl" | sha256sum }}
+# dotfiles-update service: {{ include "private_dot_config/systemd/user/dotfiles-update.service" | sha256sum }}
+# dotfiles-update timer: {{ include "private_dot_config/systemd/user/dotfiles-update.timer" | sha256sum }}
+# fisher-update service: {{ include "private_dot_config/systemd/user/fisher-update.service" | sha256sum }}
+# fisher-update timer: {{ include "private_dot_config/systemd/user/fisher-update.timer" | sha256sum }}
+# notify-failure hash: {{ include "private_dot_config/systemd/user/notify-failure@.service" | sha256sum }}
 # resilio-sync hash: {{ include "private_dot_config/containers/systemd/resilio-sync.container.tmpl" | sha256sum }}
+
+# Services to enable and start
+SERVICES=(
+    "dotfiles-update.timer"
+    "fisher-update.timer"
+)
+
+# Container services to enable and start (only if unit exists)
+CONTAINER_SERVICES=(
+    "resilio-sync.service"
+)
 
 main() {
     log_section "Managing systemd services and quadlets"
@@ -21,21 +35,20 @@ main() {
     log_info "Reloading systemd user daemon"
     systemctl --user daemon-reload
 
-    # Enable and start dotfiles-update-custom timer
-    systemd_enable_start "dotfiles-update-custom.timer"
-
-    # Enable container services if they exist
+    enable_system_services
     enable_container_services
 
     log_info "Systemd configuration completed"
 }
 
-enable_container_services() {
-    local services=(
-        "resilio-sync.service"
-    )
+enable_system_services() {
+    for service in "${SERVICES[@]}"; do
+        systemd_enable_start "$service"
+    done
+}
 
-    for service in "${services[@]}"; do
+enable_container_services() {
+    for service in "${CONTAINER_SERVICES[@]}"; do
         if systemctl --user list-unit-files | grep -q "$service"; then
             log_info "Found container service: $service"
             systemd_enable_start "$service"

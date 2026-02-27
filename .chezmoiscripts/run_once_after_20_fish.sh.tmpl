@@ -13,8 +13,13 @@ main() {
     log_info "Chaging default shell to Fish"
     sudo usermod -s $(which fish) "${USER}"
 
-    log_info "Executing fish completion script"
-    fish -c "{{ .chezmoi.homeDir }}/scripts/fish_plugins_completion.fish"
+    # Install Fisher if not present
+    if [[ ! -f "${HOME}/.config/fish/functions/fisher.fish" ]]; then
+        log_info "Installing Fisher package manager"
+        fish -c "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
+    else
+        log_info "Fisher already installed"
+    fi
 
     log_info "Sudo configuration completed"
 }

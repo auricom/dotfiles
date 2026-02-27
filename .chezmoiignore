@@ -4,6 +4,7 @@ install.sh
 LICENSE
 README.md
 .local/share/icons/**
+mise.toml
 
 {{- if (not .desktop) }}
 # Desktop-only: GUI application autostart

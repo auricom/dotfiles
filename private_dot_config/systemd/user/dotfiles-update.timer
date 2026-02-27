@@ -1,5 +1,5 @@
 [Unit]
-Description=dotfiles auto update custom
+Description=dotfiles update
 Wants=network-online.target
 
 [Timer]

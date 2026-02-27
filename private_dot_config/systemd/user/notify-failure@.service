@@ -1,0 +1,9 @@
+[Unit]
+Description=Failure notification for %i
+
+[Service]
+Type=oneshot
+Environment="UNIT=%i"
+ExecStart=/bin/sh -c '/bin/journalctl --user -u "$UNIT" -n 3 --no-pager -o /bin/cat | tr "\n" " " | /bin/sed "s/  */ /g" | /bin/cut -c1-250 > /tmp/notify-logs-$UNIT'
+ExecStart=/bin/sh -c '/bin/notify-send "$UNIT failed" "$(/bin/cat /tmp/notify-logs-$UNIT)"'
+ExecStart=/bin/rm -f /tmp/notify-logs-%i

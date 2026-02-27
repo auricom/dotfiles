@@ -1,0 +1,27 @@
+{{- if .desktop -}}
+#!/usr/bin/env bash
+
+# bat cache rebuild script
+# Rebuilds bat theme cache when Catppuccin themes change
+
+set -euo pipefail
+
+# Source utility functions
+source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
+
+# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.config/bat/themes/Catppuccin_Mocha.tmTheme" | sha256sum }}
+# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.config/bat/themes/Catppuccin_Macchiato.tmTheme" | sha256sum }}
+# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.config/bat/themes/Catppuccin_Frappe.tmTheme" | sha256sum }}
+# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.config/bat/themes/Catppuccin_Latte.tmTheme" | sha256sum }}
+
+main() {
+    log_section "Rebuilding bat theme cache"
+
+    log_info "Running bat cache --build"
+    bat cache --build
+
+    log_info "bat cache rebuild completed"
+}
+
+main "$@"
+{{- end -}}

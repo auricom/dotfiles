@@ -1,12 +1,13 @@
 [Unit]
-Description=dotfiles auto update custom
+Description=dotfiles update
 After=local-fs.target
 After=network-online.target
-ConditionPathExists=%h/scripts/dotfiles_update_custom.sh
+ConditionPathExists=%h/scripts/dotfiles_update.sh
+OnFailure=desktop-notify@%n.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -c "%h/scripts/dotfiles_update_custom.sh"
+ExecStart=/usr/bin/bash -c "%h/scripts/dotfiles_update.sh"
 Environment="PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 [Install]

@@ -96,31 +96,6 @@ chezmoi_warn_skipped() {
     send_pushover_message "${HOSTNAME}: chezmoi update skipped ${skipped_count} file(s) with local changes: ${skipped_list}"
 }
 
-bat_cache_build() {
-    if require_cmd bat; then
-        bat cache --build
-        return 0
-    fi
-    warn "bat not found; skipping cache build."
-}
-
-fish_completion() {
-    if require_cmd fish; then
-        log "Fish completion..."
-        fish -c "${HOME}/scripts/fish_plugins_completion.fish"
-        return 0
-    fi
-    warn "fish not found; skipping completions."
-}
-
-fisher_update() {
-    if require_cmd fish; then
-        fish -c "source ~/.config/fish/functions/fisher.fish; fisher update"
-        return 0
-    fi
-    warn "fish not found; skipping fisher update."
-}
-
 build_steps() {
     local raw_steps raw_skip
     local -a parsed_steps parsed_skip
@@ -135,9 +110,6 @@ build_steps() {
             chezmoi_pull
             chezmoi_apply_clean
             chezmoi_warn_skipped
-            bat_cache_build
-            fish_completion
-            fisher_update
         )
     fi
 
