@@ -43,16 +43,10 @@ homebrew:
   - talhelper           # Tool to help creating Talos configuration files declaratively
 cask:
   # Nerd Fonts (patched with icons for terminal use)
-  - font-fira-code-nerd-font         # Fira Code with Nerd Font icons
-  - font-jetbrains-mono-nerd-font    # JetBrains Mono with Nerd Font icons
-  - font-meslo-lg-nerd-font          # Meslo LG with Nerd Font icons
-  - font-hack-nerd-font              # Hack with Nerd Font icons
-  - font-ubuntu-nerd-font            # Ubuntu with Nerd Font icons
+  - font-adwaita-mono-nerd-font      # Adwaita Mono with Nerd Font icons
   - font-caskaydia-cove-nerd-font    # Cascadia Code with Nerd Font icons
-  # Standard fonts
-  - font-source-code-pro             # Adobe Source Code Pro monospace font
-  - font-ibm-plex-mono               # IBM Plex Mono monospace font
-  - font-jetbrains-mono              # JetBrains Mono monospace font (unpatched)
+  - font-jetbrains-mono-nerd-font    # JetBrains Mono with Nerd Font icons
+  - font-geist-mono-nerd-font        # Geist Mono with ligatures and Nerd Font icons
   # Applications
-  - ublue-os/tap/goose-linux         # Goose AI agent desktop app (Linux)
-  - ublue-os/tap/vscodium-linux      # VSCodium (VS Code without telemetry, Linux)
+  - ublue-os/tap/goose-linux         # Goose AI agent desktop app
+  - ublue-os/tap/vscodium-linux      # VSCodium (VS Code without telemetry)

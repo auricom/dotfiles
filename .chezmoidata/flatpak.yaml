@@ -9,7 +9,6 @@ flatpak:
     - info.portfolio_performance.PortfolioPerformance # Portfolio Performance - investment portfolio tracker
     - io.github.quodlibet.QuodLibet                   # Quod Libet - music player and library manager
     - io.kopia.KopiaUI                                # Kopia UI - backup and restore tool
-    - me.timschneeberger.GalaxyBudsClient             # Galaxy Buds Client - manage Samsung Galaxy Buds
     - org.bunkus.mkvtoolnix-gui                       # MKVToolNix - create and edit MKV files
     - org.chromium.Chromium                           # Chromium - open-source web browser
     - org.musicbrainz.Picard                          # MusicBrainz Picard - music file tagger
@@ -20,9 +19,11 @@ flatpak:
     - it.mijorus.gearlever                            # Gear Lever - manage AppImage files
     - io.kinvolk.Headlamp                             # Headlamp - Kubernetes dashboard
     - com.github.tchx84.Flatseal                      # Flatseal - manage Flatpak permissions
+    - org.gnome.baobab                                # GNOME Disk usage analyzer
     - org.gnome.Calculator                            # GNOME Calculator
-    - org.gnome.Loupe                                 # Loupe - GNOME image viewer
-    - org.gnome.Showtime                              # Showtime - GNOME video player
+    - org.gnome.font-viewer                           # GNOME Font viewer
+    - org.gnome.Loupe                                 # GNOME Image viewer
+    - org.gnome.Showtime                              # GNOME Video player
     # games
     - com.github.Matoking.protontricks               # Protontricks - run Winetricks for Steam games
     - com.valvesoftware.Steam                         # Steam - gaming platform
