@@ -1,0 +1,46 @@
+#!/bin/sh
+# relative-time-commit — relative time of last git commit (no "ago")
+# Requires: git, date (GNU coreutils)
+
+commit_date=$(git log --pretty=format:'%ci' -1 2>/dev/null) || {
+  echo "error: not a git repo or no commits" >&2
+  exit 1
+}
+
+# Parse into epoch seconds (GNU date handles ISO 8601 with tz offset natively)
+commit_ts=$(date -d "$commit_date" +%s) || exit 1
+now_ts=$(date +%s)
+
+delta=$((now_ts - commit_ts))
+abs=$((delta < 0 ? -delta : delta))
+
+if [ "$abs" -lt 1 ]; then
+  echo "just now"
+elif [ "$abs" -lt 45 ]; then
+  echo "${abs} second$([ "$abs" -eq 1 ] || echo s)"
+elif [ "$abs" -lt 90 ]; then
+  echo "a minute"
+elif [ "$abs" -lt 3600 ]; then
+  m=$(((abs + 30) / 60))
+  echo "${m} minute$([ "$m" -eq 1 ] || echo s)"
+elif [ "$abs" -lt 5400 ]; then
+  echo "an hour"
+elif [ "$abs" -lt 86400 ]; then
+  h=$(((abs + 1800) / 3600))
+  echo "${h} hour$([ "$h" -eq 1 ] || echo s)"
+elif [ "$abs" -lt 129600 ]; then
+  echo "yesterday"
+elif [ "$abs" -lt 604800 ]; then
+  d=$(((abs + 43200) / 86400))
+  echo "${d} day$([ "$d" -eq 1 ] || echo s)"
+elif [ "$abs" -lt 1209600 ]; then
+  echo "last week"
+elif [ "$abs" -lt 31556952 ]; then
+  w=$(((abs + 302400) / 604800))
+  echo "${w} week$([ "$w" -eq 1 ] || echo s)"
+elif [ "$abs" -lt 47335428 ]; then
+  echo "last year"
+else
+  y=$(((abs + 15778476) / 31556952))
+  echo "${y} year$([ "$y" -eq 1 ] || echo s)"
+fi

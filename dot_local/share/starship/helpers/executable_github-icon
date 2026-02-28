@@ -1,0 +1,39 @@
+#!/bin/sh
+# github-icon — print icon + repo name from git remote URL
+# Requires: git
+
+url=$(git ls-remote --get-url 2>/dev/null) || {
+  echo "error: not a git repo" >&2
+  exit 1
+}
+
+# Normalize: strip protocol prefix to get "host:path" form
+case "$url" in
+git@*) url="${url#git@}" ;;         # git@github.com:user/repo.git
+https://*) url="${url#https://}" ;; # https://github.com/user/repo.git
+http://*) url="${url#http://}" ;;
+esac
+
+# Split on first ":" or "/" to isolate the host
+host="${url%%[:/]*}"
+path="${url#*[:/]}"
+
+# Extract the base domain name (e.g. "github" from "github.com")
+domain="${host%%.*}"
+domain=$(printf '%s' "$domain" | tr '[:upper:]' '[:lower:]')
+
+case "$domain" in
+github) icon="" ;;
+gitlab) icon="" ;;
+bitbucket) icon="" ;;
+kernel) icon="" ;;
+archlinux) icon="󰣇" ;;
+gnu) icon="" ;;
+git) icon="󰊢" ;;
+*) icon="󰊠" ;;
+esac
+
+# Clean up repo path: strip trailing .git
+repo="${path%.git}"
+
+printf '%s %s\r\n' "$icon" "$repo"
