@@ -1,9 +1,8 @@
-{{- if .desktop -}}
 #!/usr/bin/env bash
 
 # Package installation script
 # This script installs packages via Homebrew
-# Hash dependencies: {{ include ".chezmoidata/homebrew.yaml" | sha256sum }}
+# Hash dependencies: {{ include "Brewfile.tmpl" | sha256sum }}
 
 set -euo pipefail
 
@@ -23,21 +22,12 @@ main() {
     log_info "Updating Homebrew"
     brew update
 
-    # Install casks via Homebrew
-    log_info "Installing Homebrew casks"
-{{- range .cask }}
-brew install --cask {{ . | quote }}
-{{- end }}
-
-    # Install packages via Homebrew
-    log_info "Installing Homebrew packages"
-    brew bundle --file=/dev/stdin <<EOF
-{{- range .homebrew }}
-brew {{ . | quote }}
-{{- end }}
-EOF
+    # Install all packages via brew bundle
+    log_info "Installing packages via brew bundle"
+    brew bundle --file="{{ .chezmoi.homeDir }}/Brewfile"
 
     log_info "Homebrew packages installation completed"
+    log_info "To remove unlisted packages, run: brew bundle cleanup --file={{ .chezmoi.workingTree }}/Brewfile"
 }
 
 # Only run if conditions are met
@@ -46,4 +36,3 @@ if should_run; then
 else
     log_debug "Skipping package installation"
 fi
-{{- end -}}

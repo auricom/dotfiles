@@ -1,0 +1,148 @@
+# Taps
+tap "fluxcd/tap"
+tap "ublue-os/tap"
+tap "valkyrie00/bbrew"
+
+# System
+brew "autoenv"                         # Automatically source .env files when entering directories
+brew "fish"                            # Friendly interactive shell
+brew "wget"                            # Internet file retriever
+
+# Modern CLI tools
+brew "bat"                             # cat with syntax highlighting
+brew "duf"                             # Disk Usage/Free Utility
+brew "dysk"                            # Like df but better
+brew "eza"                             # Modern replacement for ls
+brew "fd"                              # Simple, fast alternative to find
+brew "fzf"                             # A command-line fuzzy finder
+brew "ripgrep"                         # ripgrep - faster grep
+
+# Development tools
+brew "age"                             # A simple, modern and secure encryption tool
+brew "ansible"                         # Configuration management
+brew "ansible-lint"                    # Best practices checker for Ansible
+brew "block-goose-cli"                 # AI Agent
+brew "direnv"                          # Load and unload environment variables depending on the current directory
+brew "docker"                          # Containerization platform
+brew "docker-compose"                  # Multi-container Docker application management
+brew "gh"                              # GitHub CLI
+brew "git"                             # Git version control
+brew "lima"                            # Linux VMs
+brew "mise"                            # Dev tools, env vars, task runner
+brew "ramalama"                        # Local serving of AI models
+brew "sops"                            # Simple and flexible tool for managing secrets
+brew "yq"                              # Portable command-line YAML, JSON, XML, CSV, TOML and HCL processor
+
+# Shell enhancements
+brew "atuin"                           # Magical shell history
+brew "starship"                        # Cross-shell prompt
+brew "zellij"                          # Terminal workspace and multiplexer
+brew "zoxide"                          # Smarter cd command
+
+# Utilities
+brew "bbrew"                           # Homebrew TUI
+brew "btop"                            # Interactive process viewer
+brew "chezmoi"                         # Dotfiles management
+brew "nmap"                            # Network scanning
+brew "yt-dlp"                          # Music and video downloader
+
+{{ if .desktop }}
+# Kubernetes
+brew "flux"                            # Flux CLI
+brew "helm"                            # Kubernetes package manager
+brew "helmfile"                        # Declarative spec for deploying Helm charts
+brew "k9s"                             # Kubernetes TUI
+brew "kubeconform"                     # FAST Kubernetes manifests validator, with support for Custom Resources!
+brew "kubernetes-cli"                  # Kubernetes CLI
+brew "talhelper"                       # Tool to help creating Talos configuration files declaratively
+brew "talosctl"                        # Talos CLI
+
+# Cask applications
+cask "claude-code"                     # Claude AI coding assistant
+cask "codex"                           # OpenAI Codex CLI
+cask "goose-linux"                     # Goose AI agent desktop app
+cask "vscodium-linux"                  # VSCodium (VS Code without telemetry)
+
+# Fonts
+cask "font-adwaita-mono-nerd-font"     # Adwaita Mono with Nerd Font icons
+cask "font-caskaydia-cove-nerd-font"   # Cascadia Code with Nerd Font icons
+cask "font-geist-mono-nerd-font"       # Geist Mono with ligatures and Nerd Font icons
+cask "font-ibm-plex-mono"              # IBM Plex Mono
+cask "font-jetbrains-mono"             # JetBrains Mono
+cask "font-jetbrains-mono-nerd-font"   # JetBrains Mono with Nerd Font icons
+cask "font-source-code-pro"            # Adobe Source Code Pro
+
+# VSCode extensions
+vscode "bierner.markdown-mermaid"      # Markdown Mermaid diagram support
+vscode "catppuccin.catppuccin-vsc"     # Catppuccin color theme
+vscode "catppuccin.catppuccin-vsc-icons" # Catppuccin icon theme
+vscode "eamodio.gitlens"               # Supercharge Git in VS Code
+vscode "editorconfig.editorconfig"     # EditorConfig support
+vscode "ms-python.debugpy"             # Python debugger
+vscode "ms-python.python"              # Python language support
+vscode "ms-python.vscode-python-envs"  # Python environment manager
+vscode "nonoroazoro.syncing"           # Sync VS Code settings via gist
+vscode "oderwat.indent-rainbow"        # Colorize indentation levels
+vscode "opentofu.vscode-opentofu"      # OpenTofu/Terraform support
+vscode "redhat.ansible"                # Ansible language support
+vscode "redhat.vscode-yaml"            # YAML language support
+vscode "saoudrizwan.claude-dev"        # Claude AI in VS Code
+vscode "shardulm94.trailing-spaces"    # Highlight trailing spaces
+vscode "signageos.signageos-vscode-sops" # SOPS secrets management
+vscode "skellock.just"                 # Justfile support
+vscode "tailscale.vscode-tailscale"    # Tailscale integration
+vscode "tamasfe.even-better-toml"      # TOML language support
+vscode "trunk.io"                      # Code quality and security
+
+# Flatpak - browsers
+flatpak "app.zen_browser.zen"                              # Zen Browser - privacy-focused Firefox-based browser
+flatpak "org.chromium.Chromium"                            # Chromium - open-source web browser
+
+# Flatpak - communication
+flatpak "com.rtosta.zapzap"                                # ZapZap - WhatsApp desktop client
+flatpak "com.slack.Slack"                                  # Slack - team messaging and collaboration
+flatpak "dev.vencord.Vesktop"                              # Vesktop - Discord client with Vencord mods
+flatpak "org.telegram.desktop"                             # Telegram - messaging app
+
+# Flatpak - development
+flatpak "dev.zed.Zed"                                      # Zed - high-performance code editor
+flatpak "io.kinvolk.Headlamp"                              # Headlamp - Kubernetes dashboard
+
+# Flatpak - media
+flatpak "fr.handbrake.ghb"                                 # HandBrake - video transcoder
+flatpak "io.github.quodlibet.QuodLibet"                    # Quod Libet - music player and library manager
+flatpak "org.bunkus.mkvtoolnix-gui"                        # MKVToolNix - create and edit MKV files
+flatpak "org.gnome.Showtime"                               # GNOME Video player
+flatpak "org.musicbrainz.Picard"                           # MusicBrainz Picard - music file tagger
+
+# Flatpak - productivity
+flatpak "com.logseq.Logseq"                                # Logseq - privacy-first knowledge management
+flatpak "com.onepassword.OnePassword"                      # 1Password - password manager
+flatpak "info.portfolio_performance.PortfolioPerformance"  # Portfolio Performance - investment portfolio tracker
+flatpak "io.kopia.KopiaUI"                                 # Kopia UI - backup and restore tool
+flatpak "net.cozic.joplin_desktop"                         # Joplin - note-taking and to-do app
+
+# Flatpak - utilities
+flatpak "com.github.Matoking.protontricks"                 # Protontricks - run Winetricks for Steam games
+flatpak "com.github.PintaProject.Pinta"                    # Pinta - simple drawing and image editing
+flatpak "com.github.tchx84.Flatseal"                       # Flatseal - manage Flatpak permissions
+flatpak "com.makemkv.MakeMKV"                              # MakeMKV - Blu-ray/DVD to MKV
+flatpak "io.github.dvlv.boxbuddyrs"                        # BoxBuddy - Distrobox GUI
+flatpak "io.github.flattool.Ignition"                      # Ignition - Flatpak startup manager
+flatpak "io.github.kolunmi.Bazaar"                         # Bazaar - Flatpak storefront
+flatpak "io.github.totoshko88.RustConn"                    # RustConn
+flatpak "it.mijorus.gearlever"                             # Gear Lever - manage AppImage files
+flatpak "it.mijorus.smile"                                 # Smile - emoji picker
+flatpak "me.timschneeberger.GalaxyBudsClient"              # Galaxy Buds Client - manage Samsung Galaxy Buds
+flatpak "org.gnome.baobab"                                 # GNOME Disk usage analyzer
+flatpak "org.gnome.Calculator"                             # GNOME Calculator
+flatpak "org.gnome.font-viewer"                            # GNOME Font viewer
+flatpak "org.gnome.Loupe"                                  # GNOME Image viewer
+flatpak "org.gnome.TextEditor"                             # GNOME Text Editor
+
+# Flatpak - games
+flatpak "com.valvesoftware.Steam"                          # Steam - gaming platform
+
+# Flatpak - stream deck
+flatpak "me.amankhanna.opendeck"                           # OpenDeck - Stream Deck controller
+{{ end }}
