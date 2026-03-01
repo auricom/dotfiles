@@ -11,7 +11,7 @@
 set -euo pipefail
 
 # Source utility functions
-source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 main() {
     log_section "Configuring DankMaterialShell"

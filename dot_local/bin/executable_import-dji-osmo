@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-source "${HOME}/scripts/lib/common_utils.sh"
+source "${HOME}/.local/lib/common_utils.sh"
 
 # Trap errors and call error_handler
 script_name="dji_photo_sorter.sh"

@@ -159,7 +159,7 @@ disabled = false
 show_always = false
 
 [custom.since_last_commit]
-command = """$HOME/.local/share/starship/helpers/relative-time-commit"""
+command = """$HOME/.local/bin/relative-time-commit"""
 description = "Show time since last commit"
 directories = [".git"]
 format = "[󰚰 $output]($style) "
@@ -168,7 +168,7 @@ style = "mauve"
 when = 'git rev-parse --is-inside-work-tree 2> /dev/null'
 
 [custom.git_host]
-command = """$HOME/.local/share/starship/helpers/github-icon"""
+command = """$HOME/.local/bin/github-icon"""
 description = "Show icon of git host platform"
 directories = [".git"]
 format = "[$output]($style) "
@@ -177,7 +177,7 @@ style = "white"
 when = 'git rev-parse --is-inside-work-tree 2> /dev/null'
 
 [custom.dir]
-command = """$HOME/.local/share/starship/helpers/fishfy-path"""
+command = """$HOME/.local/bin/fishfy-path"""
 description = "Custom directory"
 format = "[$output]($style) "
 shell = ["bash", "--norc", "--noprofile"]

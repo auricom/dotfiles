@@ -7,7 +7,7 @@
 set -euo pipefail
 
 # Source utility functions
-source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 main() {
     log_section "Installing hardware udev rules"
@@ -37,7 +37,7 @@ install_streamdeck_rules() {
 
     log_info "Installing StreamDeck udev rules"
 
-    if ! sudo wgecurl --silent --output "$rules_file" "$rules_url"; then
+    if ! sudo curl --silent --output "$rules_file" "$rules_url"; then
         log_error "Failed to download StreamDeck udev rules"
         return 1
     fi

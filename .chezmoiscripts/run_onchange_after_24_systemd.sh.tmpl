@@ -7,7 +7,7 @@
 set -euo pipefail
 
 # Source utility functions
-source "{{ .chezmoi.homeDir }}/scripts/lib/chezmoi_utils.sh"
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 # Hash dependencies for change detection
 # dotfiles-update service: {{ include "private_dot_config/systemd/user/dotfiles-update.service" | sha256sum }}

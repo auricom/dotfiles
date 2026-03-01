@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "${HOME}/scripts/lib/pushover.sh"
+source "${HOME}/.local/lib/pushover.sh"
 
 # Function to handle errors
 error_handler() {

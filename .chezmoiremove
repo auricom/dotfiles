@@ -5,6 +5,6 @@
 .config/bat/themes/Catppuccin Mocha.tmTheme
 .config/systemd/user/dotfiles-update-custom.service
 .config/systemd/user/dotfiles-update-custom.timer
-script/dotfiles_update_custom.sh
-scripts/fish_plugins_completion.fish
+.local/share/starship
+scripts
 mise.toml
