@@ -18,12 +18,9 @@ symlinks:
   dotfiles:
     source: .local/share/chezmoi
     target: repositories/auricom/dotfiles
-  agents-config:
-    source: repositories/auricom/agents
-    target: .config/agents
   agents-dot:
     source: repositories/auricom/agents
-    target: .agent
+    target: .agents
   claude-md:
     source: repositories/auricom/agents/AGENTS.md
     target: .claude/CLAUDE.md

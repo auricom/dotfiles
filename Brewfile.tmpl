@@ -17,22 +17,6 @@ brew "fd"                              # Simple, fast alternative to find
 brew "fzf"                             # A command-line fuzzy finder
 brew "ripgrep"                         # ripgrep - faster grep
 
-# Development tools
-brew "age"                             # A simple, modern and secure encryption tool
-brew "ansible"                         # Configuration management
-brew "ansible-lint"                    # Best practices checker for Ansible
-brew "block-goose-cli"                 # AI Agent
-brew "direnv"                          # Load and unload environment variables depending on the current directory
-brew "docker"                          # Containerization platform
-brew "docker-compose"                  # Multi-container Docker application management
-brew "gh"                              # GitHub CLI
-brew "git"                             # Git version control
-brew "lima"                            # Linux VMs
-brew "mise"                            # Dev tools, env vars, task runner
-brew "ramalama"                        # Local serving of AI models
-brew "sops"                            # Simple and flexible tool for managing secrets
-brew "yq"                              # Portable command-line YAML, JSON, XML, CSV, TOML and HCL processor
-
 # Shell enhancements
 brew "atuin"                           # Magical shell history
 brew "starship"                        # Cross-shell prompt
@@ -40,13 +24,28 @@ brew "zellij"                          # Terminal workspace and multiplexer
 brew "zoxide"                          # Smarter cd command
 
 # Utilities
+brew "age"                             # A simple, modern and secure encryption tool
 brew "bbrew"                           # Homebrew TUI
 brew "btop"                            # Interactive process viewer
 brew "chezmoi"                         # Dotfiles management
+brew "direnv"                          # Load and unload environment variables depending on the current directory
+brew "git"                             # Git version control
+brew "mise"                            # Dev tools, env vars, task runner
 brew "nmap"                            # Network scanning
+brew "sops"                            # Simple and flexible tool for managing secrets
 brew "yt-dlp"                          # Music and video downloader
 
 {{ if .desktop }}
+# Development tools
+brew "ansible"                         # Configuration management
+brew "ansible-lint"                    # Best practices checker for Ansible
+brew "block-goose-cli"                 # AI Agent
+brew "docker"                          # Containerization platform
+brew "docker-compose"                  # Multi-container Docker application management
+brew "gh"                              # GitHub CLI
+brew "lima"                            # Linux VMs
+brew "ramalama"                        # Local serving of AI models
+
 # Kubernetes
 brew "flux"                            # Flux CLI
 brew "helm"                            # Kubernetes package manager
