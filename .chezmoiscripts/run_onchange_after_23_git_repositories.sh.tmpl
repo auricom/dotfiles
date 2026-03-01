@@ -17,9 +17,7 @@ main() {
     clone_repositories
 
     # Set up symlinks
-    setup_dotfiles_symlink
-    setup_agents_symlink
-    setup_claude_symlinks
+    setup_symlinks
 
     log_info "Git repositories setup completed"
 }
@@ -27,37 +25,23 @@ main() {
 clone_repositories() {
     log_info "Cloning git repositories"
 
-    {{- range .repositories }}
+    {{- range $user, $repos := .repositories }}
+    {{- range $repos }}
     git_clone_if_missing \
-        "git@github.com:{{ .user }}/{{ .repo }}.git" \
-        "{{ $.chezmoi.homeDir }}/repositories/{{ .user }}/{{ .repo }}"
+        "git@github.com:{{ $user }}/{{ . }}.git" \
+        "{{ $.chezmoi.homeDir }}/repositories/{{ $user }}/{{ . }}"
+    {{- end }}
     {{- end }}
 }
 
-setup_dotfiles_symlink() {
-    local source="{{ .chezmoi.homeDir }}/.local/share/chezmoi"
-    local target="{{ .chezmoi.homeDir }}/repositories/auricom/dotfiles"
+setup_symlinks() {
+    log_info "Setting up symlinks"
 
-    create_symlink_if_missing "$source" "$target"
-}
-
-setup_agents_symlink() {
-    local source="{{ .chezmoi.homeDir }}/repositories/auricom/agents"
-    local config_target="{{ .chezmoi.homeDir }}/.config/agents"
-    local agent_target="{{ .chezmoi.homeDir }}/.agent"
-
-    create_symlink_if_missing "$source" "$config_target"
-    create_symlink_if_missing "$source" "$agent_target"
-}
-
-setup_claude_symlinks() {
-    local agents_source="{{ .chezmoi.homeDir }}/repositories/auricom/agents/AGENTS.md"
-    local agents_target="{{ .chezmoi.homeDir }}/.claude/CLAUDE.md"
-    local skills_source="{{ .chezmoi.homeDir }}/repositories/auricom/agents/skills"
-    local skills_target="{{ .chezmoi.homeDir }}/.claude/skills"
-
-    create_symlink_if_missing "$agents_source" "$agents_target"
-    create_symlink_if_missing "$skills_source" "$skills_target"
+    {{- range $name, $symlink := .symlinks }}
+    create_symlink_if_missing \
+        "{{ $.chezmoi.homeDir }}/{{ $symlink.source }}" \
+        "{{ $.chezmoi.homeDir }}/{{ $symlink.target }}"
+    {{- end }}
 }
 
 # Run main function

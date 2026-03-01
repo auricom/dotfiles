@@ -1,21 +1,32 @@
 repositories:
-  - user: auricom
-    repo: agents
-  - user: auricom
-    repo: home-ops
-  - user: auricom
-    repo: containers
-  - user: auricom
-    repo: renovate-config
-  - user: 01builders
-    repo: infra
-  - user: evstack
-    repo: ev-toolbox
-  - user: evstack
-    repo: ev-metrics
-  - user: evstack
-    repo: ev-node
-  - user: evstack
-    repo: ev-reth
-  - user: Collect-Labs
-    repo: collect-blockchain
+  auricom:
+    - agents
+    - home-ops
+    - containers
+    - renovate-config
+  01builders:
+    - infra
+  evstack:
+    - ev-toolbox
+    - ev-metrics
+    - ev-node
+    - ev-reth
+  Collect-Labs:
+    - collect-blockchain
+
+symlinks:
+  dotfiles:
+    source: .local/share/chezmoi
+    target: repositories/auricom/dotfiles
+  agents-config:
+    source: repositories/auricom/agents
+    target: .config/agents
+  agents-dot:
+    source: repositories/auricom/agents
+    target: .agent
+  claude-md:
+    source: repositories/auricom/agents/AGENTS.md
+    target: .claude/CLAUDE.md
+  claude-skills:
+    source: repositories/auricom/agents/skills
+    target: .claude/skills
