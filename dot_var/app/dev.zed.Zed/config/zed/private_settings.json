@@ -7,17 +7,38 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "auto_install_extensions": {
+    "ansible": true,
+    "basher": true,
+    "catppuccin": true,
+    "catppuccin-icons": true,
+    "docker-compose": true,
+    "dockerfile": true,
+    "env": true,
+    "fish": true,
+    "git-firefly": true,
+    "html": false
+    "ini": false
+    "justfile": false
+    "mermaid": false
+    "opentofu": false
+    "toml": false
+  },
+  "inlay_hints": {
+    "enabled": true
+  },
+  "indent_guides": {
+    "coloring": "indent_aware",
+    "background_coloring": "disabled"
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
   "ui_font_family": "Adwaita Sans",
   "buffer_font_family": "GeistMono Nerd Font Mono",
   "git_panel": {
     "tree_view": true
-  },
-  "languages": {
-    "Ansible": {
-      "prettier": {
-        "allowed": true
-      }
-    }
   },
   "icon_theme": "Catppuccin Latte",
   "ui_font_size": 16,
@@ -25,6 +46,75 @@
   "theme": {
     "mode": "system",
     "light": "Catppuccin Latte",
-    "dark": "Catppuccin Mocha",
+    "dark": "Catppuccin Mocha"
   },
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+    // above is default from Zed
+    "**/out",
+    "**/dist",
+    "**/.husky",
+    "**/.turbo",
+    "**/.vscode-test",
+    "**/.vscode",
+    "**/.next",
+    "**/.storybook",
+    "**/.tap",
+    "**/.nyc_output",
+    "**/report",
+    "**/node_modules"
+  ],
+  "languages": {
+    "Python": {
+      "language_servers": ["ruff", "basedpyright", "!pyright"],
+      "formatter": [
+        { "code_action": "source.organizeImports.ruff" },
+        { "code_action": "source.fixAll.ruff" },
+        {
+          "language_server": {
+            "name": "ruff"
+          }
+        }
+      ]
+    }
+  },
+  },
+  "lsp": {
+    "basedpyright": {
+      "settings": {
+        "basedpyright.analysis": {
+          "diagnosticMode": "workspace",
+          "inlayHints": {
+            "callArgumentNames": false
+          }
+        }
+      }
+    },
+    "gopls": {
+      "initialization_options": {
+        "gofumpt": true
+      }
+    },
+    "yaml-language-server": {
+      "settings": {
+        "yaml": {
+          // "keyOrdering": true,
+          "completion": true,
+          "format": {
+            "enabled": true,
+            "singleQuote": true
+          },
+          "schemaStore": { "enable": true },
+          "editor": { "tabSize": 4 }
+        }
+      }
+    }
+  }
 }
