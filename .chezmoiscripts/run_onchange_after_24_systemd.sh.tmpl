@@ -17,17 +17,6 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 # notify-failure hash: {{ include "private_dot_config/systemd/user/notify-failure@.service" | sha256sum }}
 # resilio-sync hash: {{ include "private_dot_config/containers/systemd/resilio-sync.container.tmpl" | sha256sum }}
 
-# Services to enable and start
-SERVICES=(
-    "dotfiles-update.timer"
-    "fisher-update.timer"
-)
-
-# Container services to enable and start (only if unit exists)
-CONTAINER_SERVICES=(
-    "resilio-sync.service"
-)
-
 main() {
     log_section "Managing systemd services and quadlets"
 
@@ -42,14 +31,42 @@ main() {
 }
 
 enable_system_services() {
-    for service in "${SERVICES[@]}"; do
-        systemd_enable_start "$service"
+    local unit_dir="$HOME/.config/systemd/user"
+    local -A has_timer=()
+
+    # Collect timer units (skip templates containing @)
+    for f in "$unit_dir"/*.timer; do
+        [[ -f "$f" ]] || continue
+        local name
+        name=$(basename "$f" .timer)
+        [[ "$name" == *"@"* ]] && continue
+        has_timer["$name"]=1
+        log_info "Found timer: ${name}.timer"
+        systemd_enable_start "${name}.timer"
+    done
+
+    # Enable services that have no corresponding timer (skip templates)
+    for f in "$unit_dir"/*.service; do
+        [[ -f "$f" ]] || continue
+        local name
+        name=$(basename "$f" .service)
+        [[ "$name" == *"@"* ]] && continue
+        [[ -v has_timer["$name"] ]] && continue
+        log_info "Found service: ${name}.service"
+        systemd_enable_start "${name}.service"
     done
 }
 
 enable_container_services() {
-    for service in "${CONTAINER_SERVICES[@]}"; do
-        if systemctl --user list-unit-files | grep -q "$service"; then
+    local container_dir="$HOME/.config/containers/systemd"
+    [[ -d "$container_dir" ]] || return 0
+
+    for f in "$container_dir"/*.container "$container_dir"/*.network "$container_dir"/*.volume; do
+        [[ -f "$f" ]] || continue
+        local base service
+        base=$(basename "$f")
+        service="${base%%.*}.service"
+        if systemctl --user list-unit-files | grep -q "^${service}"; then
             log_info "Found container service: $service"
             systemd_enable_start "$service"
         else

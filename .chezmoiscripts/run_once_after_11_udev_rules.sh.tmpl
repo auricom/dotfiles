@@ -35,9 +35,7 @@ install_streamdeck_rules() {
         return
     fi
 
-    log_info "Installing StreamDeck udev rules"
-
-    if ! sudo curl --silent --output "$rules_file" "$rules_url"; then
+    if ! run_spin "Downloading StreamDeck udev rules..." sudo curl --silent --output "$rules_file" "$rules_url"; then
         log_error "Failed to download StreamDeck udev rules"
         return 1
     fi
@@ -54,9 +52,7 @@ install_ledger_rules() {
         return
     fi
 
-    log_info "Installing Ledger udev rules"
-
-    if ! sudo curl --silent --output "$rules_file" "$rules_url"; then
+    if ! run_spin "Downloading Ledger udev rules..." sudo curl --silent --output "$rules_file" "$rules_url"; then
         log_error "Failed to download Ledger udev rules"
         return 1
     fi

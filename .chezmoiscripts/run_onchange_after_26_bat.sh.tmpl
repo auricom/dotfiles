@@ -17,9 +17,7 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 main() {
     log_section "Rebuilding bat theme cache"
 
-    log_info "Running bat cache --build"
-    bat cache --build
-
+    run_spin "Building bat theme cache..." bat cache --build
     log_info "bat cache rebuild completed"
 }
 

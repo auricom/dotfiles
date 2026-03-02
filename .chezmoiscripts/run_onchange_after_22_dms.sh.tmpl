@@ -47,8 +47,8 @@ application_theme_zen() {
 }
 
 greeter() {
-    log_info "Greeter configuration"
-    dms greeter sync
+    run_spin "Syncing greeter configuration..." dms greeter sync
+    log_info "Greeter configured"
 }
 
 # Run main function

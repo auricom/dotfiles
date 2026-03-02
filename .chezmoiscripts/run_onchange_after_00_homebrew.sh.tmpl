@@ -12,20 +12,15 @@ source "{{ .chezmoi.workingTree }}/dot_local/lib/chezmoi_utils.sh"
 main() {
     log_section "Installing Homebrew packages"
 
-    # Validate Homebrew is available
     if ! command_exists brew; then
         log_error "Homebrew is not installed"
         exit 1
     fi
 
-    # Update Homebrew
-    log_info "Updating Homebrew"
-    brew update
+    run_spin "Updating Homebrew..." brew update
+    log_info "Homebrew updated"
 
-    # Install all packages via brew bundle
-    log_info "Installing packages via brew bundle"
-    brew bundle --file="{{ .chezmoi.homeDir }}/Brewfile"
-
+    run_spin "Installing packages..." brew bundle --file="{{ .chezmoi.homeDir }}/Brewfile"
     log_info "Homebrew packages installation completed"
     log_info "To remove unlisted packages, run: brew bundle cleanup --file={{ .chezmoi.workingTree }}/Brewfile"
 }

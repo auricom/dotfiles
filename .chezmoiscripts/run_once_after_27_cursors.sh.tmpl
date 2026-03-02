@@ -1,0 +1,52 @@
+{{- if .desktop -}}
+#!/usr/bin/env bash
+
+# Bibata cursor installation script
+# Downloads and installs Bibata-Modern-Classic cursor theme
+
+set -euo pipefail
+
+# Source utility functions
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Installing Bibata Cursor Theme"
+
+    # renovate: datasource=github-releases depName=stanio/Bibata_Cursor
+    CURSOR_VERSION="v2.0.7-stanio-12"
+    CURSOR_THEME="Bibata-Modern-Classic"
+    ARCHIVE_NAME="Bibata-Linux-Classic-${CURSOR_VERSION}.tar.xz"
+    CURSOR_URL="https://github.com/stanio/Bibata_Cursor/releases/download/${CURSOR_VERSION}/${ARCHIVE_NAME}"
+    ICONS_DIR="{{ .chezmoi.homeDir }}/.local/share/icons"
+
+    mkdir -p "${ICONS_DIR}"
+
+    if [[ -d "${ICONS_DIR}/${CURSOR_THEME}" ]]; then
+        log_info "Delete ${CURSOR_THEME} current installation"
+        rm -rf "${ICONS_DIR}/${CURSOR_THEME}"
+    fi
+
+    TMP_DIR=$(mktemp -d)
+    trap 'rm -rf "${TMP_DIR}"' EXIT
+
+    log_info "Downloading ${ARCHIVE_NAME}..."
+    curl -L --fail --progress-bar "${CURSOR_URL}" -o "${TMP_DIR}/${ARCHIVE_NAME}"
+
+    log_info "Extracting archive..."
+    tar -xJf "${TMP_DIR}/${ARCHIVE_NAME}" -C "${TMP_DIR}"
+
+    log_info "Installing ${CURSOR_THEME}..."
+    THEME_SRC=$(find "${TMP_DIR}" -type d -name "${CURSOR_THEME}" | head -1)
+    if [[ -z "${THEME_SRC}" ]]; then
+        log_warn "Could not find ${CURSOR_THEME} in extracted archive. Contents:"
+        find "${TMP_DIR}" -maxdepth 3 | sed 's|'"${TMP_DIR}"'/||'
+        return 1
+    fi
+    cp -r "${THEME_SRC}" "${ICONS_DIR}/"
+
+    log_info "${CURSOR_THEME} installed successfully"
+}
+
+# Run main function
+main "$@"
+{{- end -}}
