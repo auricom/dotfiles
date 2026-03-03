@@ -1,0 +1,12 @@
+#!/bin/sh
+# fishfy-path — print CWD with all path segments abbreviated to first char except the last
+
+path=$(pwd | sed "s|^$HOME|~|")
+
+printf '%s\n' "$path" | awk -F'/' 'BEGIN{OFS="/"} {
+    for (i=1; i<NF; i++) {
+        $i = substr($i, 1, 1)
+    }
+    print
+}'
+s
