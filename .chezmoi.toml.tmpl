@@ -1,21 +1,16 @@
 {{- /* Checks if running interactively */ -}}
 {{- $interactive := stdinIsATTY -}}
 
-{{- /* Template file for chezmoi config file */ -}}
-{{- $desktop := false -}}{{/* true if this machine is a desktop */}}
-{{- $streamdeck := false -}}{{/* true if this machine is connected to a streamdeck */}}
-
-{{- if hasKey . "desktop" -}}
-{{-   $desktop = .desktop -}}
+{{- /* Auto-detect form factor: laptops via DMI chassis type, workstation/server via prompt */ -}}
+{{- /* Laptop/portable types: 8=Portable 9=Laptop 10=Notebook 11=Handheld 14=SubNotebook 30=Tablet 31=Convertible 32=Detachable */ -}}
+{{- $chassisType := output "sh" "-c" "cat /sys/class/dmi/id/chassis_type 2>/dev/null || echo 3" | trim -}}
+{{- $laptopTypes := list "8" "9" "10" "11" "14" "30" "31" "32" -}}
+{{- $formFactor := "workstation" -}}
+{{- if has $chassisType $laptopTypes -}}
+{{-   $formFactor = "laptop" -}}
 {{- else if $interactive -}}
-{{-   $desktop = promptBool "desktop" -}}
+{{-   $formFactor = promptStringOnce . "formFactor" "formFactor (workstation/server)" -}}
 {{- end -}}
-{{- if hasKey . "streamdeck" -}}
-{{-   $streamdeck = .streamdeck -}}
-{{- else if $interactive -}}
-{{-   $streamdeck = promptBool "streamdeck" -}}
-{{- end -}}
-
 
 {{- if $interactive -}}
 {{-   writeToStdout "💡 Tip: you can re-enter your data with `chezmoi init --data=false`.\n" -}}
@@ -26,5 +21,4 @@ encryption = "age"
   recipient = "age19kk2hhldesux98t50r9wmdhdvj7xw29205gy58tj70m53p5dweksv70uh9"
 
 [data]
-  desktop = {{ $desktop }}
-  streamdeck = {{ $streamdeck }}
+  formFactor = "{{ $formFactor }}"

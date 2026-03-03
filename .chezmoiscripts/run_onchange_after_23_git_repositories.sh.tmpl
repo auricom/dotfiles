@@ -1,4 +1,4 @@
-{{- if .desktop -}}
+{{- if ne .formFactor "server" -}}
 #!/usr/bin/env bash
 
 # Git repositories management script

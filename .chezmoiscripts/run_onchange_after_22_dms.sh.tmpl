@@ -1,4 +1,4 @@
-{{- if .desktop -}}
+{{- if ne .formFactor "server" -}}
 #!/usr/bin/env bash
 
 # DankMaterialShell configuration script
@@ -47,7 +47,8 @@ application_theme_zen() {
 }
 
 greeter() {
-    run_spin "Syncing greeter configuration..." dms greeter sync
+    log_info "Syncing greeter configuration..."
+    dms greeter sync
     log_info "Greeter configured"
 }
 

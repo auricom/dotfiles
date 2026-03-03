@@ -25,9 +25,4 @@ main() {
     log_info "To remove unlisted packages, run: brew bundle cleanup --file={{ .chezmoi.workingTree }}/Brewfile"
 }
 
-# Only run if conditions are met
-if should_run; then
-    main "$@"
-else
-    log_debug "Skipping package installation"
-fi
+main "$@"

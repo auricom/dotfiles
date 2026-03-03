@@ -36,7 +36,7 @@ brew "sops"                            # Simple and flexible tool for managing s
 brew "Valkyrie00/homebrew-bbrew/bbrew" # Homebrew TUI
 brew "yt-dlp"                          # Music and video downloader
 
-{{ if .desktop }}
+{{ if ne .formFactor "server" }}
 # Development tools
 brew "ansible"                         # Configuration management
 brew "ansible-lint"                    # Best practices checker for Ansible
@@ -72,28 +72,6 @@ cask "font-jetbrains-mono"             # JetBrains Mono
 cask "font-jetbrains-mono-nerd-font"   # JetBrains Mono with Nerd Font icons
 cask "font-source-code-pro"            # Adobe Source Code Pro
 
-# VSCode extensions
-vscode "bierner.markdown-mermaid"      # Markdown Mermaid diagram support
-vscode "catppuccin.catppuccin-vsc"     # Catppuccin color theme
-vscode "catppuccin.catppuccin-vsc-icons" # Catppuccin icon theme
-vscode "eamodio.gitlens"               # Supercharge Git in VS Code
-vscode "editorconfig.editorconfig"     # EditorConfig support
-vscode "ms-python.debugpy"             # Python debugger
-vscode "ms-python.python"              # Python language support
-vscode "ms-python.vscode-python-envs"  # Python environment manager
-vscode "nonoroazoro.syncing"           # Sync VS Code settings via gist
-vscode "oderwat.indent-rainbow"        # Colorize indentation levels
-vscode "opentofu.vscode-opentofu"      # OpenTofu/Terraform support
-vscode "redhat.ansible"                # Ansible language support
-vscode "redhat.vscode-yaml"            # YAML language support
-vscode "saoudrizwan.claude-dev"        # Claude AI in VS Code
-vscode "shardulm94.trailing-spaces"    # Highlight trailing spaces
-vscode "signageos.signageos-vscode-sops" # SOPS secrets management
-vscode "skellock.just"                 # Justfile support
-vscode "tailscale.vscode-tailscale"    # Tailscale integration
-vscode "tamasfe.even-better-toml"      # TOML language support
-vscode "trunk.io"                      # Code quality and security
-
 # Flatpak - browsers
 flatpak "app.zen_browser.zen"                              # Zen Browser - privacy-focused Firefox-based browser
 flatpak "org.chromium.Chromium"                            # Chromium - open-source web browser
@@ -117,11 +95,9 @@ flatpak "org.musicbrainz.Picard"                           # MusicBrainz Picard 
 
 # Flatpak - productivity
 flatpak "org.gnome.Evince"                                # GNOME document viewer
-flatpak "com.logseq.Logseq"                                # Logseq - privacy-first knowledge management
 flatpak "com.onepassword.OnePassword"                      # 1Password - password manager
 flatpak "info.portfolio_performance.PortfolioPerformance"  # Portfolio Performance - investment portfolio tracker
 flatpak "io.kopia.KopiaUI"                                 # Kopia UI - backup and restore tool
-flatpak "net.cozic.joplin_desktop"                         # Joplin - note-taking and to-do app
 
 # Flatpak - utilities
 flatpak "com.github.Matoking.protontricks"                 # Protontricks - run Winetricks for Steam games

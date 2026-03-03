@@ -1,8 +1,8 @@
-{{- if .desktop -}}
+{{- if ne .formFactor "server" -}}
 #!/usr/bin/env bash
 
-# Desktop environment configuration script
-# Configures GNOME settings and desktop preferences
+# System configuration script
+# Configures system settings
 
 set -euo pipefail
 
@@ -10,12 +10,12 @@ set -euo pipefail
 source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 main() {
-    log_section "Configuring desktop environment"
+    log_section "Configuring system settings"
 
     deactivate_swap
     activate_brew_timers
 
-    log_info "Desktop configuration completed"
+    log_info "System configuration completed"
 }
 
 

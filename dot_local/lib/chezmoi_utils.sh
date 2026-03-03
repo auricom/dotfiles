@@ -161,16 +161,6 @@ append_to_file_if_missing() {
     fi
 }
 
-# Check if running in a desktop environment
-is_desktop() {
-    [[ "${DESKTOP:-}" == "true" ]] || [[ -n "${DISPLAY:-}" ]] || [[ -n "${WAYLAND_DISPLAY:-}" ]]
-}
-
-# Check if running on a personal machine
-is_personal() {
-    [[ "${PERSONAL:-}" == "true" ]]
-}
-
 # Retry a command with exponential backoff
 # Usage: retry_with_backoff <max_attempts> <initial_delay_seconds> <cmd> [args...]
 retry_with_backoff() {
@@ -201,26 +191,4 @@ validate_env_vars() {
         log_error "Missing required environment variables: ${missing[*]}"
         return 1
     fi
-}
-
-# Check if script should run based on named conditions
-# Conditions: desktop, personal, command:<name>
-should_run() {
-    local condition
-    for condition in "$@"; do
-        case "$condition" in
-            desktop)
-                is_desktop || { log_debug "Skipping: not a desktop environment"; return 1; }
-                ;;
-            personal)
-                is_personal || { log_debug "Skipping: not a personal machine"; return 1; }
-                ;;
-            command:*)
-                command_exists "${condition#command:}" || { log_debug "Skipping: command not found: ${condition#command:}"; return 1; }
-                ;;
-            *)
-                log_warn "Unknown condition: $condition"
-                ;;
-        esac
-    done
 }

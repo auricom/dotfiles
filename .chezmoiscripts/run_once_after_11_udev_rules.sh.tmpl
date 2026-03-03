@@ -1,4 +1,4 @@
-{{- if .desktop -}}
+{{- if ne .formFactor "server" -}}
 #!/usr/bin/env bash
 
 # Hardware udev rules installation script
@@ -12,10 +12,8 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 main() {
     log_section "Installing hardware udev rules"
 
-    {{- if .streamdeck }}
     # Install StreamDeck udev rules
     install_streamdeck_rules
-    {{- end }}
 
     # Install Ledger udev rules
     install_ledger_rules

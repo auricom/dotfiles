@@ -25,7 +25,7 @@
     old = "red"
     whitespace = "red reverse"
 
-{{ if .desktop -}}
+{{ if ne .formFactor "server" -}}
 [commit]
     gpgSign = true
     # Show my changes when writing the message
@@ -71,7 +71,7 @@
     required = true
     smudge = "git-lfs smudge -- %f"
 
-{{ if .desktop -}}
+{{ if ne .formFactor "server" -}}
 [gpg]
     format = "ssh"
 {{ end -}}
@@ -116,7 +116,7 @@
 [tag]
     sort = "version:refname"
 
-{{ if .desktop -}}
+{{ if ne .formFactor "server" -}}
 [url "git@github.com:"]
     insteadOf = "https://github.com/"
 

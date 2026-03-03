@@ -1,8 +1,8 @@
-{{- if .desktop -}}
+{{- if ne .formFactor "server" -}}
 #!/usr/bin/env bash
 
 # Sudo configuration script
-# Configures passwordless sudo for wheel group
+# Configures passwordless sudo for wheel group and root shell environment
 
 set -euo pipefail
 
@@ -11,18 +11,25 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 readonly SUDOERS_FILE="/etc/sudoers.d/sudo-group"
 readonly SUDOERS_CONTENT="%wheel  ALL=(ALL)       NOPASSWD: ALL"
+readonly STARSHIP_CONFIG="{{ .chezmoi.homeDir }}/.config/starship.toml"
+readonly ROOT_STARSHIP_CONFIG="/root/.config/starship.toml"
+readonly ROOT_BASHRC="/root/.bashrc"
+readonly ROOT_BASH_PROFILE="/root/.bash_profile"
+readonly STARSHIP_INIT='eval "$(starship init bash)"'
+readonly BASHRC_SOURCE='[[ -f ~/.bashrc ]] && source ~/.bashrc'
 
 main() {
     log_section "Configuring sudo permissions"
 
     if [[ -f "$SUDOERS_FILE" ]]; then
         log_info "Sudo configuration already exists"
-        return
+    else
+        configure_sudo_permissions
+        log_info "Sudo configuration completed"
     fi
 
-    configure_sudo_permissions
-
-    log_info "Sudo configuration completed"
+    log_section "Configuring starship for root"
+    configure_root_starship
 }
 
 configure_sudo_permissions() {
@@ -41,6 +48,35 @@ configure_sudo_permissions() {
         log_error "Sudo configuration validation failed, removing file"
         sudo rm -f "$SUDOERS_FILE"
         exit 1
+    fi
+}
+
+configure_root_starship() {
+    # Ensure /root/.config exists
+    sudo mkdir -p /root/.config
+
+    # Create symlink to user starship config
+    if [[ ! -L "$ROOT_STARSHIP_CONFIG" ]]; then
+        log_info "Creating starship config symlink for root"
+        sudo ln -sf "$STARSHIP_CONFIG" "$ROOT_STARSHIP_CONFIG"
+    else
+        log_info "Starship config symlink for root already exists"
+    fi
+
+    # Add starship init to root .bashrc if not already present
+    if ! sudo grep -qF "$STARSHIP_INIT" "$ROOT_BASHRC" 2>/dev/null; then
+        log_info "Adding starship init to root .bashrc"
+        echo "$STARSHIP_INIT" | sudo tee -a "$ROOT_BASHRC" >/dev/null
+    else
+        log_info "Starship init already present in root .bashrc"
+    fi
+
+    # Ensure .bash_profile sources .bashrc so login shells pick it up
+    if ! sudo grep -qF "$BASHRC_SOURCE" "$ROOT_BASH_PROFILE" 2>/dev/null; then
+        log_info "Adding .bashrc source to root .bash_profile"
+        echo "$BASHRC_SOURCE" | sudo tee -a "$ROOT_BASH_PROFILE" >/dev/null
+    else
+        log_info ".bashrc source already present in root .bash_profile"
     fi
 }
 

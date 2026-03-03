@@ -23,12 +23,12 @@ domain="${host%%.*}"
 domain=$(printf '%s' "$domain" | tr '[:upper:]' '[:lower:]')
 
 case "$domain" in
-github) icon="" ;;
-gitlab) icon="" ;;
+github) icon="" ;;
+gitlab) icon="" ;;
 bitbucket) icon="" ;;
 kernel) icon="" ;;
 archlinux) icon="󰣇" ;;
-gnu) icon="" ;;
+gnu) icon="" ;;
 git) icon="󰊢" ;;
 *) icon="󰊠" ;;
 esac

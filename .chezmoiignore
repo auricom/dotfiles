@@ -5,17 +5,21 @@ LICENSE
 README.md
 mise.toml
 
-{{- if (not .desktop) }}
+{{- if eq .formFactor "server" }}
 .config/autostart/
 .config/discord/
 .config/containers/
+.config/containers/systemd/resilio-sync*
+.config/DankMaterialShell/
+.config/foot/
 .config/git/
+.config/gtk*/
 .config/k9s/
+.config/niri/
+.config/qt6ct/
 .config/sops/
 .config/systemd/
 .config/xkb/
-.config/niri/
-.config/foot/
 .config/zellij/
 .local/bin/import-dji-osmo
 .kube/config

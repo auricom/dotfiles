@@ -4,6 +4,7 @@ set -Eeuo pipefail
 IFS=$'\n\t'
 
 source "${HOME}/.local/lib/common_utils.sh"
+source "${HOME}/.local/lib/chezmoi_utils.sh"
 
 readonly SCRIPT_PATH="${BASH_SOURCE[0]}"
 HOSTNAME="$(hostname)"
@@ -15,14 +16,6 @@ SKIPPED_FILES=()
 
 # Trap errors and call error_handler
 trap 'error_handler "$HOSTNAME" "$( { $BASH_COMMAND 2>&1 1>&3; } 3>&1 )"' ERR
-
-log() {
-    printf '%s\n' "$*"
-}
-
-warn() {
-    printf 'WARNING: %s\n' "$*" >&2
-}
 
 require_cmd() {
     command -v "$1" > /dev/null 2>&1
@@ -60,7 +53,7 @@ collect_chezmoi_status() {
 }
 
 chezmoi_pull() {
-    log "Chezmoi | ## Pulling latest from GitHub"
+    log_section "Pulling latest from GitHub"
     "$CHEZMOI_BIN" git pull
 }
 
@@ -68,16 +61,14 @@ chezmoi_apply_clean() {
     collect_chezmoi_status
 
     if [ "${#CLEAN_FILES[@]}" -gt 0 ]; then
-        log "Chezmoi | "
-        log "## Updating files without local changes"
+        log_section "Updating files without local changes"
         local f
         for f in "${CLEAN_FILES[@]}"; do
-            log "... ${f}"
+            log_info "$f"
             "$CHEZMOI_BIN" apply "${HOME}/${f}"
         done
     else
-        log "Chezmoi | "
-        log "## No files to update without local changes"
+        log_info "No files to update without local changes"
     fi
 }
 
@@ -91,8 +82,7 @@ chezmoi_warn_skipped() {
     skipped_list="$(printf '%s, ' "${SKIPPED_FILES[@]:0:10}")"
     skipped_list="${skipped_list%, }"
 
-    log "Chezmoi | "
-    log "## WARNING: ${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
+    log_warn "${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
     send_pushover_message "${HOSTNAME}: chezmoi update skipped ${skipped_count} file(s) with local changes: ${skipped_list}"
 }
 
@@ -136,20 +126,20 @@ run_steps() {
     local step
     for step in "${STEPS[@]}"; do
         if should_skip_step "$step"; then
-            log "Skipping step: ${step}"
+            log_info "Skipping step: ${step}"
             continue
         fi
         if declare -F "$step" > /dev/null; then
             "$step"
         else
-            warn "Unknown step '${step}' (skipping)."
+            log_warn "Unknown step '${step}' (skipping)."
         fi
     done
 }
 
 main() {
     if ! require_cmd "$CHEZMOI_BIN"; then
-        warn "chezmoi not found; aborting."
+        log_error "chezmoi not found; aborting."
         return 1
     fi
 

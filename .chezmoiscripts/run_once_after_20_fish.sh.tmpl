@@ -10,9 +10,6 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 main() {
     log_section "Configuring Fish shell"
 
-    run_spin "Changing default shell to Fish..." sudo usermod -s "$(which fish)" "${USER}"
-    log_info "Default shell changed to Fish"
-
     # Install Fisher if not present
     if [[ ! -f "${HOME}/.config/fish/functions/fisher.fish" ]]; then
         run_spin "Installing Fisher package manager..." fish -c "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"

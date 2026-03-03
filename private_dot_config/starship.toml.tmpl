@@ -41,7 +41,7 @@ style = "yellow"
 format = '[$path]($style)[$read_only]($read_only_style) '
 style = "blue"
 truncation_length = 0
-truncate_to_repo = false
+truncate_to_repo = true
 read_only = " "
 fish_style_pwd_dir_length = 1
 home_symbol = "~"
@@ -157,9 +157,11 @@ symbol = " "
 [username]
 disabled = false
 show_always = false
+style_root = "bold red"
+format = "[$user]($style) "
 
 [custom.since_last_commit]
-command = """$HOME/.local/bin/relative-time-commit"""
+command = """{{ .chezmoi.homeDir }}/.local/bin/relative-time-commit"""
 description = "Show time since last commit"
 directories = [".git"]
 format = "[󰚰 $output]($style) "
@@ -168,7 +170,7 @@ style = "mauve"
 when = 'git rev-parse --is-inside-work-tree 2> /dev/null'
 
 [custom.git_host]
-command = """$HOME/.local/bin/github-icon"""
+command = """{{ .chezmoi.homeDir }}/.local/bin/github-icon"""
 description = "Show icon of git host platform"
 directories = [".git"]
 format = "[$output]($style) "
@@ -177,7 +179,7 @@ style = "white"
 when = 'git rev-parse --is-inside-work-tree 2> /dev/null'
 
 [custom.dir]
-command = """$HOME/.local/bin/fishfy-path"""
+command = """{{ .chezmoi.homeDir }}/.local/bin/fishfy-path"""
 description = "Custom directory"
 format = "[$output]($style) "
 shell = ["bash", "--norc", "--noprofile"]

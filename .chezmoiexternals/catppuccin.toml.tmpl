@@ -42,7 +42,7 @@
     url = "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/mocha/catppuccin-mocha-mauve.yml"
     refreshPeriod = "168h"
 
-{{ if .desktop }}
+{{ if ne .formFactor "server" }}
 # k9s Catppuccin themes
 [".config/k9s/skins"]
     type = "archive"
