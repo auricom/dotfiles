@@ -1,0 +1,27 @@
+name: validate-chezmoi-urls
+
+on:
+  pull_request:
+    paths:
+      - ".chezmoiexternals/**"
+
+jobs:
+  validate-urls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate URLs
+        run: |
+          failed=0
+          while IFS= read -r url; do
+            [[ -z "$url" ]] && continue
+            status=$(curl -s -o /dev/null -w "%{http_code}" -L -I --max-time 15 "$url")
+            if [ "$status" = "404" ]; then
+              echo "❌ 404: $url"
+              failed=1
+            else
+              echo "✅ $status: $url"
+            fi
+          done < <(grep -rh 'url = ' .chezmoiexternals/*.toml.tmpl | grep -v '{{' | sed 's/.*url = "\(.*\)".*/\1/')
+          exit $failed
