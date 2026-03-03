@@ -1,11 +1,11 @@
 layout {
-    default-column-width { proportion 0.33333; }
-    gaps 10
+    default-column-width { proportion {{ if eq .formFactor "laptop" }}0.5{{ else }}0.33333{{ end }}; }
+    gaps {{ if eq .formFactor "laptop" }}6{{ else }}10{{ end }}
 }
 
 binds {
     Mod+P hotkey-overlay-title="Print screen" { spawn-sh "dms screenshot"; }
-    Mod+Period hotkey-overlay-title="Print screen" { spawn-sh "flatpak run it.mijorus.smile"; }
+    Mod+Period hotkey-overlay-title="Show emojis" { spawn-sh "flatpak run it.mijorus.smile"; }
     XF86AudioLowerVolume { spawn "dms" "ipc" "call" "audio" "decrement" "5"; }
     XF86AudioMute { spawn "dms" "ipc" "call" "audio" "mute"; }
     XF86AudioNext { spawn "dms" "ipc" "call" "mpris" "next"; }
@@ -22,7 +22,7 @@ input {
     keyboard {
         xkb {
               layout "us_qwerty-fr"
-              file "~/.config/xkb/symbols/us_qwerty-fr"
+              file "{{ .chezmoi.homeDir }}/.config/xkb/symbols/us_qwerty-fr"
         }
     }
 }
