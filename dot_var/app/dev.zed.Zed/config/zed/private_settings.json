@@ -46,7 +46,7 @@
     "tree_view": true
   },
   "icon_theme": {
-    "mode": "system",
+    "mode": "light",
     "light": "Catppuccin Latte",
     "dark": "Catppuccin Mocha"
   },
@@ -54,8 +54,8 @@
   "buffer_font_size": 15,
   "theme": {
     "mode": "system",
-    "light": "Catppuccin Latte",
-    "dark": "Catppuccin Mocha"
+    "light": "Catppuccin Latte (blue)",
+    "dark": "Catppuccin Mocha (blue)"
   },
   "file_scan_exclusions": [
     "**/.git",

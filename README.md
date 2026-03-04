@@ -43,7 +43,7 @@ chezmoi apply
 ├── .chezmoiexternals/          # External assets (Catppuccin themes, cursors, keyboard)
 ├── .chezmoidata/               # Template data (repos, NFS mounts, AppImages)
 ├── .chezmoiscripts/            # Post-apply automation scripts
-├── private_dot_config/         # ~/.config — app configurations
+├── dot_config/         # ~/.config — app configurations
 │   ├── fish/                   # Fish shell (modular conf.d files per tool)
 │   ├── git/                    # Git config with delta, GPG signing
 │   ├── niri/                   # Niri compositor (form-factor-aware layout)

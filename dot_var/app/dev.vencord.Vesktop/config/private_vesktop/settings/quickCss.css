@@ -1,0 +1,4 @@
+@import url("https://catppuccin.github.io/discord/dist/catppuccin-mocha-blue.theme.css")
+(prefers-color-scheme: dark);
+@import url("https://catppuccin.github.io/discord/dist/catppuccin-latte-blue.theme.css")
+(prefers-color-scheme: light);

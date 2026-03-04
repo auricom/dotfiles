@@ -12,12 +12,44 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 main() {
     log_section "Configuring system settings"
 
+    set_hostname
     deactivate_swap
     activate_brew_timers
 
     log_info "System configuration completed"
 }
 
+
+set_hostname() {
+    local flag_file="${HOME}/.local/state/chezmoi/hostname-set"
+
+    if [[ -f "$flag_file" ]]; then
+        log_info "Hostname already configured ($(cat "$flag_file")), skipping"
+        return
+    fi
+
+    local current_hostname
+    current_hostname=$(hostname)
+
+    local new_hostname
+    new_hostname=$(gum input \
+        --placeholder "Enter hostname" \
+        --value "$current_hostname" \
+        --prompt "Hostname: ")
+
+    if [[ -z "$new_hostname" ]]; then
+        log_warn "No hostname entered, skipping"
+        return
+    fi
+
+    if sudo hostnamectl set-hostname "$new_hostname"; then
+        log_info "Hostname set to: $new_hostname"
+        mkdir -p "$(dirname "$flag_file")"
+        echo "$new_hostname" > "$flag_file"
+    else
+        log_warn "Failed to set hostname"
+    fi
+}
 
 deactivate_swap() {
     log_info "Checking system memory for swap configuration"

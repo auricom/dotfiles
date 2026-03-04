@@ -49,6 +49,33 @@ application_theme_zen() {
 greeter() {
     log_info "Syncing greeter configuration..."
     dms greeter sync
+
+    local greetd_config="/etc/greetd/niri/dms.kdl"
+    if [[ -f "$greetd_config" ]]; then
+        log_info "Removing input block from greeter config..."
+        sudo python3 - "$greetd_config" << 'PYEOF'
+import sys
+path = sys.argv[1]
+lines = open(path).readlines()
+result = []
+skip = False
+depth = 0
+for line in lines:
+    if not skip and line.strip() == 'input {':
+        skip = True
+        depth = 1
+        continue
+    if skip:
+        depth += line.count('{') - line.count('}')
+        if depth == 0:
+            skip = False
+        continue
+    result.append(line)
+open(path, 'w').writelines(result)
+PYEOF
+        log_info "Input block removed"
+    fi
+
     log_info "Greeter configured"
 }
 

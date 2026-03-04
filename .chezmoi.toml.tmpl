@@ -11,6 +11,7 @@
 {{- else if $interactive -}}
 {{-   $formFactor = promptStringOnce . "formFactor" "formFactor (workstation/server)" -}}
 {{- end -}}
+{{- $brightnessDeviceName := output "sh" "-c" "command -v ddcutil >/dev/null 2>&1 && ddcutil detect 2>/dev/null | grep 'I2C bus:' | grep -o 'i2c-[0-9]*' | head -1 | sed 's/^/ddc:/' || true" | trim -}}
 
 {{- if $interactive -}}
 {{-   writeToStdout "💡 Tip: you can re-enter your data with `chezmoi init --data=false`.\n" -}}
@@ -22,3 +23,4 @@ encryption = "age"
 
 [data]
   formFactor = "{{ $formFactor }}"
+  brightnessDeviceName = "{{ $brightnessDeviceName }}"
