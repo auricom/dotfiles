@@ -1,6 +1,7 @@
 # Repository files (not dotfiles)
 .editorconfig
-install.sh
+.pi
+justfile
 LICENSE
 README.md
 mise.toml

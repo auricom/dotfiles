@@ -41,7 +41,7 @@ chezmoi apply
 ├── .chezmoi.toml.tmpl          # Config template (profile selection, age key)
 ├── .chezmoiignore              # Excludes paths per formFactor profile
 ├── .chezmoiexternals/          # External assets (Catppuccin themes, cursors, keyboard)
-├── .chezmoidata/               # Template data (repos, NFS mounts, AppImages)
+├── .chezmoidata/               # Template data (packages, repos, NFS mounts, AppImages)
 ├── .chezmoiscripts/            # Post-apply automation scripts
 ├── dot_config/         # ~/.config — app configurations
 │   ├── fish/                   # Fish shell (modular conf.d files per tool)
@@ -62,8 +62,10 @@ chezmoi apply
 │   ├── bin/                    # Custom scripts (dotfiles-update, fishfy-path, …)
 │   └── lib/                    # Shared shell libraries (chezmoi_utils, common_utils)
 ├── private_dot_ssh/            # SSH config (encrypted)
-└── Brewfile.tmpl               # Homebrew packages (conditional by profile)
+└── Brewfile.tmpl               # Homebrew packages rendered from chezmoidata
 ```
+
+Package definitions for Homebrew Bundle live in `.chezmoidata/packages.yaml` and are rendered into `Brewfile.tmpl` by chezmoi.
 
 ## Profiles
 
