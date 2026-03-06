@@ -1,8 +1,3 @@
 # Path Configuration
 fish_add_path "{{ .chezmoi.homeDir }}/.local/bin"
 fish_add_path "{{ .chezmoi.homeDir }}/.krew/bin"
-
-# Source modular configuration files
-for file in ~/.config/fish/conf.d/*.fish
-    source $file
-end
