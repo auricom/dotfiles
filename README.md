@@ -117,4 +117,4 @@ Sensitive files use [age](https://age-encryption.org) encryption managed via [SO
 
 ## License
 
-[Unlicence](https://github.com/auricom/dotfiles/blob/main/LICENSE)
+[Unlicense](https://github.com/auricom/dotfiles/blob/main/LICENSE)

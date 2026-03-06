@@ -17,7 +17,7 @@ main() {
     log_section "Configuring DankMaterialShell"
 
     if command_exists dms; then
-        log_info "Begining DankMaterialShell configuration"
+        log_info "Beginning DankMaterialShell configuration"
 
         application_theme_zen
         greeter
@@ -32,7 +32,7 @@ application_theme_zen() {
     log_info "Zen browser theme installation"
 
     # Find default profile directory
-    log_info "Concatenate catppuccin mocha and catppucin latte in userChrome.css and userContent.css for every found profile"
+    log_info "Concatenate Catppuccin Mocha and Catppuccin Latte in userChrome.css and userContent.css for every found profile"
     find {{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen -maxdepth 1 -type d -name "????????.*" -print0 | while IFS= read -r -d '' profile_dir; do
         log_info "Found profile $profile_dir. Executing..."
         mkdir -p "$profile_dir/chrome"
