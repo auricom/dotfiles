@@ -1,0 +1,59 @@
+flatpak:
+  browsers:
+    packages:
+      - app.zen_browser.zen # Zen Browser - privacy-focused Firefox-based browser
+      - org.chromium.Chromium # Chromium - open-source web browser
+
+  communication:
+    packages:
+      - com.rtosta.zapzap # ZapZap - WhatsApp desktop client
+      - com.slack.Slack # Slack - team messaging and collaboration
+      - dev.vencord.Vesktop # Vesktop - Discord client with Vencord mods
+      - org.telegram.desktop # Telegram - messaging app
+
+  development:
+    packages:
+      - dev.zed.Zed # Zed - high-performance code editor
+      - io.kinvolk.Headlamp # Headlamp - Kubernetes dashboard
+
+  media:
+    packages:
+      - fr.handbrake.ghb # HandBrake - video transcoder
+      - io.github.quodlibet.QuodLibet # Quod Libet - music player and library manager
+      - org.bunkus.mkvtoolnix-gui # MKVToolNix - create and edit MKV files
+      - org.gnome.Showtime # GNOME Video player
+      - org.musicbrainz.Picard # MusicBrainz Picard - music file tagger
+
+  productivity:
+    packages:
+      - org.gnome.Evince # GNOME document viewer
+      - com.onepassword.OnePassword # 1Password - password manager
+      - info.portfolio_performance.PortfolioPerformance # Portfolio Performance - investment portfolio tracker
+      - io.kopia.KopiaUI # Kopia UI - backup and restore tool
+
+  utilities:
+    packages:
+      - com.github.Matoking.protontricks # Protontricks - run Winetricks for Steam games
+      - com.github.PintaProject.Pinta # Pinta - simple drawing and image editing
+      - com.github.tchx84.Flatseal # Flatseal - manage Flatpak permissions
+      - com.makemkv.MakeMKV # MakeMKV - Blu-ray/DVD to MKV
+      - io.github.dvlv.boxbuddyrs # BoxBuddy - Distrobox GUI
+      - io.github.flattool.Ignition # Ignition - Flatpak startup manager
+      - io.github.kolunmi.Bazaar # Bazaar - Flatpak storefront
+      - io.github.totoshko88.RustConn # RustConn
+      - it.mijorus.gearlever # Gear Lever - manage AppImage files
+      - it.mijorus.smile # Smile - emoji picker
+      - me.timschneeberger.GalaxyBudsClient # Galaxy Buds Client - manage Samsung Galaxy Buds
+      - org.gnome.baobab # GNOME Disk usage analyzer
+      - org.gnome.Calculator # GNOME Calculator
+      - org.gnome.font-viewer # GNOME Font viewer
+      - org.gnome.Loupe # GNOME Image viewer
+      - org.gnome.TextEditor # GNOME Text Editor
+
+  games:
+    packages:
+      - com.valvesoftware.Steam # Steam - gaming platform
+
+  stream_deck:
+    packages:
+      - me.amankhanna.opendeck # OpenDeck - Stream Deck controller

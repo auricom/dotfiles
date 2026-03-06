@@ -1,0 +1,69 @@
+taps:
+  - fluxcd/tap
+  - ublue-os/tap
+  - PeonPing/tap
+  - valkyrie00/bbrew
+
+brew:
+  system:
+    server: true
+    packages:
+      - autoenv # Automatically source .env files when entering directories
+      - fish # Friendly interactive shell
+      - wget # Internet file retriever
+
+  modern_cli:
+    server: true
+    packages:
+      - bat # cat with syntax highlighting
+      - duf # Disk Usage/Free Utility
+      - dysk # Like df but better
+      - eza # Modern replacement for ls
+      - fd # Simple, fast alternative to find
+      - fzf # A command-line fuzzy finder
+      - ripgrep # ripgrep - faster grep
+
+  shell_enhancements:
+    server: true
+    packages:
+      - atuin # Magical shell history
+      - starship # Cross-shell prompt
+      - zellij # Terminal workspace and multiplexer
+      - zoxide # Smarter cd command
+
+  utilities:
+    server: true
+    packages:
+      - age # A simple, modern and secure encryption tool
+      - btop # Interactive process viewer
+      - chezmoi # Dotfiles management
+      - direnv # Load and unload environment variables depending on the current directory
+      - dust # Disk analysis
+      - git # Git version control
+      - gum # Tool for glamorous shell script
+      - mise # Dev tools, env vars, task runner
+      - nmap # Network scanning
+      - sops # Simple and flexible tool for managing secrets
+      - Valkyrie00/homebrew-bbrew/bbrew # Homebrew TUI
+      - yt-dlp # Music and video downloader
+
+  development:
+    server: false
+    packages:
+      - ansible # Configuration management
+      - ansible-lint # Best practices checker for Ansible
+      - block-goose-cli # AI Agent
+      - docker # Containerization platform
+      - docker-compose # Multi-container Docker application management
+      - gh # GitHub CLI
+      - lima # Linux VMs
+      - peon-ping # Game character voice lines
+      - pi-coding-agent # AI Agent
+      - pre-commit # Framework for managing and maintaining pre-commit hooks
+      - ramalama # Local serving of AI models
+
+  kubernetes:
+    server: false
+    packages:
+      - k9s # Kubernetes TUI
+      - kubernetes-cli # Kubernetes CLI

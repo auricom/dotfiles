@@ -1,0 +1,17 @@
+cask:
+  applications:
+    packages:
+      - claude-code # Claude AI coding assistant
+      - codex # OpenAI Codex CLI
+      - goose-linux # Goose AI agent desktop app
+      - vscodium-linux # VSCodium (VS Code without telemetry)
+
+  fonts:
+    packages:
+      - font-adwaita-mono-nerd-font # Adwaita Mono with Nerd Font icons
+      - font-caskaydia-cove-nerd-font # Cascadia Code with Nerd Font icons
+      - font-geist-mono-nerd-font # Geist Mono with ligatures and Nerd Font icons
+      - font-ibm-plex-mono # IBM Plex Mono
+      - font-jetbrains-mono # JetBrains Mono
+      - font-jetbrains-mono-nerd-font # JetBrains Mono with Nerd Font icons
+      - font-source-code-pro # Adobe Source Code Pro
