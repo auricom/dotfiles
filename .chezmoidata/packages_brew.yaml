@@ -11,6 +11,7 @@ brew:
       - autoenv # Automatically source .env files when entering directories
       - fish # Friendly interactive shell
       - wget # Internet file retriever
+      - yq # YAML parsing
 
   modern_cli:
     server: true
