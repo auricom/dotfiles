@@ -1,6 +1,5 @@
 # Repository files (not dotfiles)
 .editorconfig
-.pi
 .worktree
 justfile
 LICENSE
