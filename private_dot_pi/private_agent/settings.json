@@ -1,10 +1,11 @@
 {
-  "lastChangelogVersion": "0.57.0",
+  "lastChangelogVersion": "0.57.1",
   "theme": "catppuccin-mocha",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.4",
   "hideThinkingBlock": true,
   "packages": [
-    "npm:@marckrenn/pi-sub-bar"
+    "npm:@marckrenn/pi-sub-bar",
+    "npm:pi-tool-display"
   ]
 }

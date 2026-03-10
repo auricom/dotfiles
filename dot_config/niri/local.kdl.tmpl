@@ -28,6 +28,12 @@ input {
 }
 
 window-rule {
+    match app-id=r#"^app.zen_browser.zen$"# title=r#"^(Picture-in-Picture|Library)$"#
+
+    open-floating true
+}
+
+window-rule {
     match title="Smile"
     open-maximized false
     open-floating true
