@@ -1,0 +1,82 @@
+{{- if ne .formFactor "server" -}}
+#!/usr/bin/env bash
+
+# systemd-timesyncd fix script
+# Fixes ownership and configuration for systemd-timesyncd
+
+set -euo pipefail
+
+# Source utility functions
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Fixing systemd-timesyncd"
+
+    fix_timesync_ownership
+    restart_timesyncd
+    set_hardware_clock_utc
+
+    log_info "systemd-timesyncd configuration completed"
+}
+
+fix_timesync_ownership() {
+    local timesync_dir="/var/lib/systemd/timesync"
+
+    if [[ ! -d "$timesync_dir" ]]; then
+        log_warn "timesync directory not found: $timesync_dir, skipping"
+        return
+    fi
+
+    local current_owner
+    current_owner=$(stat -c '%U' "$timesync_dir")
+
+    if [[ "$current_owner" == "systemd-timesync" ]]; then
+        log_info "timesync directory ownership already correct"
+        return
+    fi
+
+    log_info "Fixing ownership of $timesync_dir (current: $current_owner)"
+    if sudo chown -R systemd-timesync:systemd-timesync "$timesync_dir"; then
+        log_info "Ownership fixed successfully"
+    else
+        log_error "Failed to fix ownership"
+        return 1
+    fi
+}
+
+restart_timesyncd() {
+    if ! systemctl is-enabled systemd-timesyncd.service &>/dev/null; then
+        log_warn "systemd-timesyncd.service is not enabled, skipping restart"
+        return
+    fi
+
+    log_info "Restarting systemd-timesyncd.service"
+    if sudo systemctl restart systemd-timesyncd.service; then
+        log_info "systemd-timesyncd.service restarted successfully"
+    else
+        log_error "Failed to restart systemd-timesyncd.service"
+        return 1
+    fi
+}
+
+set_hardware_clock_utc() {
+    local local_rtc
+    local_rtc=$(timedatectl show --property=LocalRTC --value 2>/dev/null || echo "yes")
+
+    if [[ "$local_rtc" == "no" ]]; then
+        log_info "Hardware clock already set to UTC"
+        return
+    fi
+
+    log_info "Setting hardware clock to UTC"
+    if sudo timedatectl set-local-rtc 0; then
+        log_info "Hardware clock set to UTC successfully"
+    else
+        log_error "Failed to set hardware clock to UTC"
+        return 1
+    fi
+}
+
+# Run main function
+main "$@"
+{{- end -}}
