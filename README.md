@@ -65,7 +65,7 @@ chezmoi apply
 └── Brewfile.tmpl               # Homebrew packages rendered from chezmoidata
 ```
 
-Package definitions for Homebrew Bundle live in `.chezmoidata/packages.yaml` and are rendered into `Brewfile.tmpl` by chezmoi.
+Package definitions live in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, and `.chezmoidata/packages_flatpak.yaml`, and are rendered into `Brewfile.tmpl` by chezmoi.
 
 ## Profiles
 
@@ -82,11 +82,9 @@ Package definitions for Homebrew Bundle live in `.chezmoidata/packages.yaml` and
 | ZFS rebalance script | | | ✓ |
 | Core CLI tools | ✓ | ✓ | ✓ |
 
-## Key Packages
+## Packages
 
-**Core (all profiles):** fish, starship, atuin, zoxide, zellij, bat, eza, fd, fzf, ripgrep, duf, mise, git, gh, age, sops, ansible, docker, yq
-
-**Workstation/Laptop only:** flux, helm, helmfile, k9s, kubernetes-cli, talosctl, talhelper, kubeconform, VSCodium, Claude Code, Codex, Goose, ramalama
+Package inventories are intentionally not duplicated in this README to avoid drift. The source of truth lives in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, and `.chezmoidata/packages_flatpak.yaml`, with `Brewfile.tmpl` rendering the Homebrew Bundle configuration from that data.
 
 ## Post-Apply Scripts
 

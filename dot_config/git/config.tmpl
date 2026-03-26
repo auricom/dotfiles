@@ -25,12 +25,10 @@
     old = "red"
     whitespace = "red reverse"
 
-{{ if ne .formFactor "server" -}}
 [commit]
     gpgSign = true
     # Show my changes when writing the message
     verbose = true
-{{ end -}}
 
 [delta]
     features = "diff-highlight decorations"
@@ -71,10 +69,8 @@
     required = true
     smudge = "git-lfs smudge -- %f"
 
-{{ if ne .formFactor "server" -}}
 [gpg]
     format = "ssh"
-{{ end -}}
 
 # Local configuration, not-versioned
 [include]
@@ -116,7 +112,6 @@
 [tag]
     sort = "version:refname"
 
-{{ if ne .formFactor "server" -}}
 [url "git@github.com:"]
     insteadOf = "https://github.com/"
 
@@ -127,4 +122,3 @@
     email = "27022259+auricom@users.noreply.github.com"
     name = "auricom"
     signingkey = "{{ .chezmoi.homeDir }}/.ssh/id_ed25519"
-{{ end -}}

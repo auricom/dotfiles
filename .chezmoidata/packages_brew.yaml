@@ -58,7 +58,7 @@ brew:
       - docker-compose # Multi-container Docker application management
       - gh # GitHub CLI
       - lima # Linux VMs
-      # - peon-ping # Game character voice lines
+      - PeonPing/tap/peon-ping # Game character voice lines
       - pi-coding-agent # AI Agent
       - pre-commit # Framework for managing and maintaining pre-commit hooks
       - ramalama # Local serving of AI models
