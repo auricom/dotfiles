@@ -2,7 +2,7 @@
 #!/usr/bin/env bash
 
 # NFS mounts configuration script
-# Configures NFS mounts using external script
+# Configures NFS mounts as systemd system mount units
 # Data hash: {{ include ".chezmoidata/nfs.yaml" | sha256sum }}
 
 set -euo pipefail
@@ -13,35 +13,58 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 NFS_SERVER_IP="{{ .nfs.server_ip }}"
 SHARE_PREFIX="{{ .nfs.share_prefix }}"
 MOUNTPOINT_PREFIX="{{ .nfs.mountpoint_prefix }}"
-OPTS="{{ .nfs.options }}"
+NFS_OPTS="{{ .nfs.options | replace ",x-systemd.automount" "" }}"
+UNIT_DIR="/etc/systemd/system"
+_needs_reload=false
 
-should_backup=true
+install_mount_unit() {
+    local share="$1"
+    local mount_point="$2"
 
-# Function to add an entry to /etc/fstab if it does not already exists based on share name
-add_fstab_entry() {
-    local share=$1
-    local mount_point=$2
-    local options=$3
-    local dump_freq=$4
-    local pass_num=$5
+    local unit_name
+    unit_name=$(systemd-escape --path "$mount_point")
 
-    local new_entry="${share} ${mount_point} nfs ${options} ${dump_freq} ${pass_num}"
+    local mount_unit="${UNIT_DIR}/${unit_name}.mount"
 
-    # Check if the entry's share name already exists in the file
-    if grep -qwF "${mount_point}" /etc/fstab; then
-        echo "An fstab entry for the share '${share}' already exists."
+    local mount_content="[Unit]
+Description=NFS Mount ${mount_point}
+Requires=network-online.target
+After=network-online.target
+
+[Mount]
+What=${share}
+Where=${mount_point}
+Type=nfs
+Options=${NFS_OPTS}
+
+[Install]
+WantedBy=multi-user.target"
+
+    sudo mkdir -p "${mount_point}"
+
+    local existing=""
+    [[ -f "$mount_unit" ]] && existing=$(cat "$mount_unit")
+    if [[ "$existing" != "$mount_content" ]]; then
+        log_info "Writing mount unit: ${unit_name}.mount"
+        echo "$mount_content" | sudo tee "$mount_unit" >/dev/null
+        _needs_reload=true
     else
-        if ${should_backup}; then
-            date=$(date +%Y%m%d-%H%M%S)
-            local backup_file="/etc/fstab.${date}"
-            sudo cp -p /etc/fstab "${backup_file}"
-            echo "Backup of fstab created at ${backup_file}."
-            should_backup=false
-        fi
+        log_info "Mount unit already up to date: ${unit_name}.mount"
+    fi
 
-        sudo mkdir -p "${mount_point}"
-        echo "Adding new fstab entry for the share '${share}'.'"
-        echo "${new_entry}" | sudo tee -a /etc/fstab >/dev/null
+    if [[ "$_needs_reload" == true ]]; then
+        log_info "Reloading systemd daemon"
+        sudo systemctl daemon-reload
+        _needs_reload=false
+    fi
+
+    if ! systemctl is-enabled "${unit_name}.mount" &>/dev/null; then
+        log_info "Enabling ${unit_name}.mount"
+        sudo systemctl enable "${unit_name}.mount"
+    fi
+    if ! systemctl is-active "${unit_name}.mount" &>/dev/null; then
+        log_info "Starting ${unit_name}.mount"
+        sudo systemctl start "${unit_name}.mount"
     fi
 }
 
@@ -49,11 +72,10 @@ main() {
     log_section "Configuring NFS mounts"
 
 {{- range .nfs.mounts }}
-    add_fstab_entry "${NFS_SERVER_IP}:${SHARE_PREFIX}/{{ .share }}" "${MOUNTPOINT_PREFIX}/{{ .mountpoint }}" "${OPTS}" 0 0
+    install_mount_unit \
+        "${NFS_SERVER_IP}:${SHARE_PREFIX}/{{ .share }}" \
+        "${MOUNTPOINT_PREFIX}/{{ .mountpoint }}"
 {{- end }}
-
-    systemctl daemon-reload
-    sudo mount -a
 
     log_info "NFS mounts configuration completed"
 }
