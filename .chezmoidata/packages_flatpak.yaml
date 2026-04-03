@@ -26,6 +26,7 @@ flatpak:
 
   productivity:
     packages:
+      - com.orcaslicer.OrcaSlicer # 3D Printer slicer
       - org.gnome.Evince # GNOME document viewer
       - com.onepassword.OnePassword # 1Password - password manager
       - info.portfolio_performance.PortfolioPerformance # Portfolio Performance - investment portfolio tracker
