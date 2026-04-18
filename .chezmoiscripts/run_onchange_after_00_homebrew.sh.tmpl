@@ -2,7 +2,7 @@
 
 # Package installation script
 # This script installs packages via Homebrew
-# Hash dependencies: {{ include "Brewfile.tmpl" | sha256sum }}
+# Hash dependencies: {{ include "Brewfile.tmpl" | sha256sum }} {{ include ".chezmoidata/packages_brew.yaml" | sha256sum }} {{ include ".chezmoidata/packages_cask.yaml" | sha256sum }} {{ include ".chezmoidata/packages_flatpak.yaml" | sha256sum }}
 
 set -euo pipefail
 
