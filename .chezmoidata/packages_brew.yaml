@@ -55,6 +55,7 @@ brew:
       - ansible-lint # Best practices checker for Ansible
       - block-goose-cli # AI Agent
       - docker # Containerization platform
+      - docker-buildx # Executes containers build workloads
       - docker-compose # Multi-container Docker application management
       - gh # GitHub CLI
       - lima # Linux VMs
