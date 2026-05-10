@@ -29,6 +29,7 @@ brew:
     packages:
       - atuin # Magical shell history
       - starship # Cross-shell prompt
+      - tmux # Terminal multiplexer
       - zellij # Terminal workspace and multiplexer
       - zoxide # Smarter cd command
 

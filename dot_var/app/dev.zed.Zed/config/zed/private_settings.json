@@ -7,6 +7,22 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "diff_view_style": "split",
+  "cli_default_open_behavior": "existing_window",
+  "project_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
   "agent_servers": {
     "claude-acp": {
       "type": "registry"
@@ -14,7 +30,7 @@
   },
   "terminal": {
     "shell": {
-      "program": "sh"
+      "program": "/var/home/linuxbrew/.linuxbrew/bin/fish"
     }
   },
   "auto_install_extensions": {
@@ -48,6 +64,7 @@
   "ui_font_family": "Adwaita Sans",
   "buffer_font_family": "GeistMono Nerd Font Mono",
   "git_panel": {
+    "dock": "left",
     "tree_view": true
   },
   "icon_theme": {
