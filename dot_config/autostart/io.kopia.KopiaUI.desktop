@@ -9,4 +9,3 @@ Comment=Fast and secure open source backup.
 Categories=Utility;
 X-Flatpak-RenamedFrom=kopia-ui.desktop;
 X-Flatpak=io.kopia.KopiaUI
-NotShowIn=niri
