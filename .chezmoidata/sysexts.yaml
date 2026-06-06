@@ -1,0 +1,6 @@
+sysexts:
+  flatcar:
+    - docker
+    - docker-buildx
+    - docker-compose
+    - tailscale

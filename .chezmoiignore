@@ -1,6 +1,7 @@
 # Repository files (not dotfiles)
 .editorconfig
 .worktree
+docs
 justfile
 LICENSE
 README.md

@@ -1,0 +1,7 @@
+{{ range .sysexts.flatcar -}}
+[".local/share/sysexts/{{ . }}/{{ . }}.conf"]
+    type = "file"
+    url = "https://github.com/flatcar/sysext-bakery/releases/download/{{ . }}/{{ . }}.conf"
+    refreshPeriod = "168h"
+
+{{ end -}}

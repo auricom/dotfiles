@@ -30,7 +30,6 @@ flatpak:
       - org.gnome.Evince # GNOME document viewer
       - com.onepassword.OnePassword # 1Password - password manager
       - info.portfolio_performance.PortfolioPerformance # Portfolio Performance - investment portfolio tracker
-      - io.kopia.KopiaUI # Kopia UI - backup and restore tool
 
   utilities:
     packages:

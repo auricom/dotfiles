@@ -27,6 +27,9 @@ main() {
     enable_system_services
     enable_container_services
 
+    log_info "Enabling podman auto-update timer"
+    systemd_enable_start "podman-auto-update.timer"
+
     log_info "Systemd configuration completed"
 }
 

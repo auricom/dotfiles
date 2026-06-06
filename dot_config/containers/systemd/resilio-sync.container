@@ -14,7 +14,7 @@ Annotation=run.oci.keep_original_groups=1
 AutoUpdate=registry
 ContainerName=resilio-sync
 Image=ghcr.io/auricom/resilio-sync:rolling
-PublishPort=8888:8888
+PublishPort=127.0.0.1:8888:8888
 PublishPort=55555:55555
 User=root:root
 Volume=/var/home/%u/.local/share/resilio-sync:/config:Z,U

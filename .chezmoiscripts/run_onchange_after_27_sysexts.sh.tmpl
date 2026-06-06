@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Flatcar sysext management script
+# sysexts hash: {{ include ".chezmoidata/sysexts.yaml" | sha256sum }}
+
+set -euo pipefail
+
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
+
+SYSEXTS=({{ range .sysexts.flatcar }}"{{ . }}" {{ end }})
+
+main() {
+    log_section "Managing flatcar sysexts"
+
+    sudo mkdir -p /etc/extensions /opt/extensions
+
+    for name in "${SYSEXTS[@]}"; do
+        local conf_src="{{ .chezmoi.homeDir }}/.local/share/sysexts/${name}/${name}.conf"
+        local conf_dst="/etc/sysupdate.${name}.d/${name}.conf"
+
+        sudo mkdir -p "/etc/sysupdate.${name}.d"
+        sudo cp "${conf_src}" "${conf_dst}"
+        log_info "Installed conf: ${name}"
+
+        sudo /usr/lib/systemd/systemd-sysupdate -C "${name}" update
+        log_info "Updated sysext: ${name}"
+    done
+
+    sudo systemd-sysext refresh
+    log_info "Sysext refresh done"
+}
+
+main "$@"
