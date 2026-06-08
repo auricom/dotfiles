@@ -3,7 +3,6 @@ cask:
     packages:
       - claude-code # Claude AI coding assistant
       - codex # OpenAI Codex CLI
-      - goose-linux # Goose AI agent desktop app
       - vscodium-linux # VSCodium (VS Code without telemetry)
 
   fonts:

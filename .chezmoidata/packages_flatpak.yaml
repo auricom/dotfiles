@@ -42,8 +42,6 @@ flatpak:
       - io.github.kolunmi.Bazaar # Bazaar - Flatpak storefront
       - io.github.totoshko88.RustConn # RustConn
       - it.mijorus.gearlever # Gear Lever - manage AppImage files
-      - it.mijorus.smile # Smile - emoji picker
-      - me.timschneeberger.GalaxyBudsClient # Galaxy Buds Client - manage Samsung Galaxy Buds
       - org.gnome.baobab # GNOME Disk usage analyzer
       - org.gnome.Calculator # GNOME Calculator
       - org.gnome.font-viewer # GNOME Font viewer

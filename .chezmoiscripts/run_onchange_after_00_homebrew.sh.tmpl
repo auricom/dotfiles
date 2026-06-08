@@ -10,7 +10,7 @@ set -euo pipefail
 source "{{ .chezmoi.workingTree }}/dot_local/lib/chezmoi_utils.sh"
 
 main() {
-    log_section "Installing Homebrew packages"
+    log_section "Installing Brewfile (Homebrew and Flatpak packages)"
 
     if ! command_exists brew; then
         log_error "Homebrew is not installed"
@@ -21,7 +21,7 @@ main() {
     log_info "Homebrew updated"
 
     run_spin "Installing packages..." brew bundle --file="{{ .chezmoi.homeDir }}/Brewfile"
-    log_info "Homebrew packages installation completed"
+    log_info "Brewfile installation completed"
     log_info "To remove unlisted packages, run: brew bundle cleanup --file={{ .chezmoi.workingTree }}/Brewfile"
 }
 
