@@ -36,7 +36,7 @@ chezmoi apply
 
 ## Repository Structure
 
-```
+```text
 .
 ├── .chezmoi.toml.tmpl          # Config template (profile selection, age key)
 ├── .chezmoiignore              # Excludes paths per formFactor profile

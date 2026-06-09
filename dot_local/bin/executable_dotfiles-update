@@ -3,10 +3,11 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
+# shellcheck source=.local/lib/common_utils.sh
 source "${HOME}/.local/lib/common_utils.sh"
+# shellcheck source=.local/lib/chezmoi_utils.sh
 source "${HOME}/.local/lib/chezmoi_utils.sh"
 
-readonly SCRIPT_PATH="${BASH_SOURCE[0]}"
 HOSTNAME="$(hostname)"
 readonly HOSTNAME
 readonly CHEZMOI_BIN="${CHEZMOI_BIN:-chezmoi}"
@@ -18,133 +19,143 @@ SKIPPED_FILES=()
 trap 'error_handler "$HOSTNAME" "$( { $BASH_COMMAND 2>&1 1>&3; } 3>&1 )"' ERR
 
 require_cmd() {
-    command -v "$1" > /dev/null 2>&1
+  command -v "$1" >/dev/null 2>&1
 }
 
 get_chezmoi_source_dir() {
-    local source_dir
-    if ! source_dir="$("$CHEZMOI_BIN" source-path 2> /dev/null)"; then
-        return 1
-    fi
-    if [ -d "$source_dir" ]; then
-        printf '%s\n' "$source_dir"
-        return 0
-    fi
+  local source_dir
+  if ! source_dir="$("${CHEZMOI_BIN}" source-path 2>/dev/null)"; then
     return 1
+  fi
+  if [[ -d ${source_dir} ]]; then
+    printf '%s\n' "${source_dir}"
+    return 0
+  fi
+  return 1
 }
 
 collect_chezmoi_status() {
-    CLEAN_FILES=()
-    SKIPPED_FILES=()
+  CLEAN_FILES=()
+  SKIPPED_FILES=()
 
-    mapfile -t CHEZMOI_STATUS_LINES < <("$CHEZMOI_BIN" status)
-    local line status_char path
-    for line in "${CHEZMOI_STATUS_LINES[@]}"; do
-        [ -z "$line" ] && continue
-        status_char="${line:0:1}"
-        path="${line:2}"
-        [ -z "$path" ] && continue
-        if [ "$status_char" = " " ]; then
-            CLEAN_FILES+=("$path")
-        else
-            SKIPPED_FILES+=("$path")
-        fi
-    done
+  local -a CHEZMOI_STATUS_LINES=()
+  local chezmoi_output
+  chezmoi_output="$("${CHEZMOI_BIN}" status)" || chezmoi_output=""
+  if [[ -n ${chezmoi_output} ]]; then
+    mapfile -t CHEZMOI_STATUS_LINES <<<"${chezmoi_output}"
+  fi
+  local line status_char path
+  for line in "${CHEZMOI_STATUS_LINES[@]}"; do
+    [[ -z ${line} ]] && continue
+    status_char="${line:0:1}"
+    path="${line:2}"
+    [[ -z ${path} ]] && continue
+    if [[ ${status_char} == " " ]]; then
+      CLEAN_FILES+=("${path}")
+    else
+      SKIPPED_FILES+=("${path}")
+    fi
+  done
 }
 
 chezmoi_pull() {
-    log_section "Pulling latest from GitHub"
-    "$CHEZMOI_BIN" git pull
+  log_section "Pulling latest from GitHub"
+  "${CHEZMOI_BIN}" git pull
 }
 
 chezmoi_apply_clean() {
-    collect_chezmoi_status
+  collect_chezmoi_status
 
-    if [ "${#CLEAN_FILES[@]}" -gt 0 ]; then
-        log_section "Updating files without local changes"
-        local f
-        for f in "${CLEAN_FILES[@]}"; do
-            log_info "$f"
-            "$CHEZMOI_BIN" apply "${HOME}/${f}"
-        done
-    else
-        log_info "No files to update without local changes"
-    fi
+  if [[ ${#CLEAN_FILES[@]} -gt 0 ]]; then
+    log_section "Updating files without local changes"
+    local f
+    for f in "${CLEAN_FILES[@]}"; do
+      log_info "${f}"
+      "${CHEZMOI_BIN}" apply "${HOME}/${f}"
+    done
+  else
+    log_info "No files to update without local changes"
+  fi
 }
 
 chezmoi_warn_skipped() {
-    if [ "${#SKIPPED_FILES[@]}" -eq 0 ]; then
-        return 0
-    fi
+  if [[ ${#SKIPPED_FILES[@]} -eq 0 ]]; then
+    return 0
+  fi
 
-    local skipped_count skipped_list
-    skipped_count="${#SKIPPED_FILES[@]}"
-    skipped_list="$(printf '%s, ' "${SKIPPED_FILES[@]:0:10}")"
-    skipped_list="${skipped_list%, }"
+  local skipped_count skipped_list
+  skipped_count="${#SKIPPED_FILES[@]}"
+  skipped_list="$(printf '%s, ' "${SKIPPED_FILES[@]:0:10}")"
+  skipped_list="${skipped_list%, }"
 
-    log_warn "${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
-    send_pushover_message "${HOSTNAME}: chezmoi update skipped ${skipped_count} file(s) with local changes: ${skipped_list}"
+  log_warn "${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
+  send_pushover_message "${HOSTNAME}: chezmoi update skipped ${skipped_count} file(s) with local changes: ${skipped_list}"
 }
 
 build_steps() {
-    local raw_steps raw_skip
-    local -a parsed_steps parsed_skip
+  local raw_steps raw_skip
+  local -a parsed_steps parsed_skip
 
-    raw_steps="${UPDATE_CUSTOM_STEPS:-}"
-    raw_skip="${UPDATE_CUSTOM_SKIP:-}"
+  raw_steps="${UPDATE_CUSTOM_STEPS-}"
+  raw_skip="${UPDATE_CUSTOM_SKIP-}"
 
-    if [ -n "$raw_steps" ]; then
-        read -r -a parsed_steps <<< "${raw_steps//,/ }"
-    else
-        parsed_steps=(
-            chezmoi_pull
-            chezmoi_apply_clean
-            chezmoi_warn_skipped
-        )
-    fi
+  if [[ -n ${raw_steps} ]]; then
+    read -r -a parsed_steps <<<"${raw_steps//,/ }"
+  else
+    parsed_steps=(
+      chezmoi_pull
+      chezmoi_apply_clean
+      chezmoi_warn_skipped
+    )
+  fi
 
-    if [ -n "$raw_skip" ]; then
-        read -r -a parsed_skip <<< "${raw_skip//,/ }"
-    fi
+  if [[ -n ${raw_skip} ]]; then
+    read -r -a parsed_skip <<<"${raw_skip//,/ }"
+  fi
 
-    STEPS=("${parsed_steps[@]}")
-    SKIP_STEPS=("${parsed_skip[@]}")
+  STEPS=("${parsed_steps[@]}")
+  SKIP_STEPS=("${parsed_skip[@]}")
 }
 
 should_skip_step() {
-    local step="$1"
-    local skip
-    for skip in "${SKIP_STEPS[@]:-}"; do
-        if [ "$skip" = "$step" ]; then
-            return 0
-        fi
-    done
-    return 1
+  local step="$1"
+  local skip
+  for skip in "${SKIP_STEPS[@]-}"; do
+    if [[ ${skip} == "${step}" ]]; then
+      return 0
+    fi
+  done
+  return 1
 }
 
 run_steps() {
-    local step
-    for step in "${STEPS[@]}"; do
-        if should_skip_step "$step"; then
-            log_info "Skipping step: ${step}"
-            continue
-        fi
-        if declare -F "$step" > /dev/null; then
-            "$step"
-        else
-            log_warn "Unknown step '${step}' (skipping)."
-        fi
-    done
+  local step skip_result
+  for step in "${STEPS[@]}"; do
+    skip_result=0
+    should_skip_step "${step}" || skip_result=$?
+    if [[ ${skip_result} -eq 0 ]]; then
+      log_info "Skipping step: ${step}"
+      continue
+    fi
+    if declare -F "${step}" >/dev/null; then
+      "${step}"
+    else
+      log_warn "Unknown step '${step}' (skipping)."
+    fi
+  done
 }
 
 main() {
-    if ! require_cmd "$CHEZMOI_BIN"; then
-        log_error "chezmoi not found; aborting."
-        return 1
-    fi
+  local cmd_result
+  cmd_result=0
+  require_cmd "${CHEZMOI_BIN}" || cmd_result=$?
+  if [[ ${cmd_result} -ne 0 ]]; then
+    log_error "chezmoi not found; aborting."
+    return 1
+  fi
 
-    build_steps
-    run_steps
+  build_steps
+  run_steps
 }
 
 main "$@"

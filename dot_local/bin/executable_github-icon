@@ -8,7 +8,7 @@ url=$(git ls-remote --get-url 2>/dev/null) || {
 }
 
 # Normalize: strip protocol prefix to get "host:path" form
-case "$url" in
+case "${url}" in
 git@*) url="${url#git@}" ;;         # git@github.com:user/repo.git
 https://*) url="${url#https://}" ;; # https://github.com/user/repo.git
 http://*) url="${url#http://}" ;;
@@ -20,9 +20,9 @@ path="${url#*[:/]}"
 
 # Extract the base domain name (e.g. "github" from "github.com")
 domain="${host%%.*}"
-domain=$(printf '%s' "$domain" | tr '[:upper:]' '[:lower:]')
+domain=$(printf '%s' "${domain}" | tr '[:upper:]' '[:lower:]')
 
-case "$domain" in
+case "${domain}" in
 github) icon="" ;;
 gitlab) icon="" ;;
 bitbucket) icon="" ;;
@@ -36,4 +36,4 @@ esac
 # Clean up repo path: strip trailing .git
 repo="${path%.git}"
 
-printf '%s %s\r\n' "$icon" "$repo"
+printf '%s %s\r\n' "${icon}" "${repo}"

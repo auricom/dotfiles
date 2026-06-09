@@ -16,47 +16,49 @@ _C_TEXT="#cdd6f4"
 
 _GUM="$(command -v gum 2>/dev/null || true)"
 
-if [[ -x "${_GUM}" ]]; then
+if [[ -x ${_GUM} ]]; then
     # LOG_TIME: gum time format for log timestamps (kitchen, ansic, rfc822…). Empty = no timestamp.
-    _LOG_TIME="${LOG_TIME:-}"
+    _LOG_TIME="${LOG_TIME-}"
 
     # Internal: single gum log call with full Catppuccin styling.
     # Usage: _gum_log <level> <level-color> <message> [key=value ...]
     _gum_log() {
-        local level="$1" color="$2"; shift 2
+        local level="$1" color="$2"
+        shift 2
         local -a args=(
-            --level               "$level"
-            --level.foreground    "$color"
-            --message.foreground  "${_C_TEXT}"
-            --key.foreground      "${_C_BLUE}"
-            --value.foreground    "${_C_OVERLAY1}"
+            --level "${level}"
+            --level.foreground "${color}"
+            --message.foreground "${_C_TEXT}"
+            --key.foreground "${_C_BLUE}"
+            --value.foreground "${_C_OVERLAY1}"
             --separator.foreground "${_C_OVERLAY1}"
         )
-        [[ -n "${_LOG_TIME}" ]] && args+=(--time "${_LOG_TIME}" --time.foreground "${_C_OVERLAY1}")
+        [[ -n ${_LOG_TIME} ]] && args+=(--time "${_LOG_TIME}" --time.foreground "${_C_OVERLAY1}")
         "${_GUM}" log "${args[@]}" -- "$@" >&2
     }
 
     log_section() {
         "${_GUM}" style \
             --bold \
-            --foreground        "${_C_YELLOW}" \
+            --foreground "${_C_YELLOW}" \
             --border-foreground "${_C_YELLOW}" \
-            --border  rounded \
+            --border rounded \
             --padding "0 1" \
-            --margin  "1 0" \
+            --margin "1 0" \
             "▶ $*" >&2
     }
-    log_info()  { _gum_log info  "${_C_GREEN}"   "$@"; }
-    log_warn()  { _gum_log warn  "${_C_PEACH}"   "$@"; }
-    log_error() { _gum_log error "${_C_RED}"     "$@"; }
-    log_debug() { [[ "${DEBUG:-}" == "1" ]] && _gum_log debug "${_C_OVERLAY1}" "$@" || true; }
-    run_spin()  {
-        local title="$1"; shift
+    log_info() { _gum_log info "${_C_GREEN}" "$@"; }
+    log_warn() { _gum_log warn "${_C_PEACH}" "$@"; }
+    log_error() { _gum_log error "${_C_RED}" "$@"; }
+    log_debug() { [[ ${DEBUG-} == "1" ]] && _gum_log debug "${_C_OVERLAY1}" "$@" || true; }
+    run_spin() {
+        local title="$1"
+        shift
         "${_GUM}" spin \
-            --spinner           dot \
+            --spinner dot \
             --spinner.foreground "${_C_BLUE}" \
-            --title.foreground  "${_C_TEXT}" \
-            --title             "${title}" \
+            --title.foreground "${_C_TEXT}" \
+            --title "${title}" \
             --show-error \
             -- "$@"
     }
@@ -72,11 +74,14 @@ else
     readonly _A_NC='\033[0m'
 
     log_section() { echo -e "\n${_A_BOLD}${_A_YELLOW}▶ $*${_A_NC}" >&2; }
-    log_info()    { echo -e "  ${_A_GREEN}✓${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2; }
-    log_warn()    { echo -e "  ${_A_PEACH}⚠${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2; }
-    log_error()   { echo -e "  ${_A_RED}✗${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2; }
-    log_debug()   { [[ "${DEBUG:-}" == "1" ]] && echo -e "  ${_A_OVL1}·${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2 || true; }
-    run_spin()    { shift; "$@"; }
+    log_info() { echo -e "  ${_A_GREEN}✓${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2; }
+    log_warn() { echo -e "  ${_A_PEACH}⚠${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2; }
+    log_error() { echo -e "  ${_A_RED}✗${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2; }
+    log_debug() { [[ ${DEBUG-} == "1" ]] && echo -e "  ${_A_OVL1}·${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2 || true; }
+    run_spin() {
+        shift
+        "$@"
+    }
 fi
 
 # Check if command exists
@@ -87,48 +92,52 @@ command_exists() {
 # Create directory if it doesn't exist
 ensure_dir() {
     local dir="$1"
-    if [[ ! -d "$dir" ]]; then
-        log_debug "Creating directory: $dir"
-        mkdir -p "$dir"
+    if [[ ! -d ${dir} ]]; then
+        log_debug "Creating directory: ${dir}"
+        mkdir -p "${dir}"
     fi
 }
 
 # Calculate SHA256 checksum for a file
 file_sha256() {
-    [[ -f "$1" && -r "$1" ]] && sha256sum "$1" | awk '{print $1}' || echo ""
+    [[ -f $1 && -r $1 ]] && sha256sum "$1" | awk '{print $1}' || echo ""
 }
 
 # Calculate SHA256 checksum for a directory (recursive, includes permissions)
 dir_sha256() {
-    [[ -d "$1" ]] || { echo ""; return; }
-    (find "$1/" -type f -print0 | sort -z | xargs -0 sha256sum
-     find "$1/" \( -type f -o -type d \) -print0 | sort -z | xargs -0 stat -c '%n %a'
+    [[ -d $1 ]] || {
+        echo ""
+        return
+    }
+    (
+        find "$1/" -type f -print0 | sort -z | xargs -0 sha256sum
+        find "$1/" \( -type f -o -type d \) -print0 | sort -z | xargs -0 stat -c '%n %a'
     ) | sha256sum | awk '{print $1}'
 }
 
 # Enable and start a systemd user service if not already enabled/active
 systemd_enable_start() {
     local service="$1"
-    systemctl --user is-enabled "$service" >/dev/null 2>&1 || {
-        log_info "Enabling systemd service: $service"
-        systemctl --user enable "$service"
+    systemctl --user is-enabled "${service}" >/dev/null 2>&1 || {
+        log_info "Enabling systemd service: ${service}"
+        systemctl --user enable "${service}"
     }
-    systemctl --user is-active "$service" >/dev/null 2>&1 || {
-        log_info "Starting systemd service: $service"
-        systemctl --user start "$service"
+    systemctl --user is-active "${service}" >/dev/null 2>&1 || {
+        log_info "Starting systemd service: ${service}"
+        systemctl --user start "${service}"
     }
 }
 
 # Enable and start a systemd system service if not already enabled/active
 systemd_system_enable_start() {
     local service="$1"
-    systemctl is-enabled "$service" >/dev/null 2>&1 || {
-        log_info "Enabling systemd service: $service"
-        sudo systemctl enable "$service"
+    systemctl is-enabled "${service}" >/dev/null 2>&1 || {
+        log_info "Enabling systemd service: ${service}"
+        sudo systemctl enable "${service}"
     }
-    systemctl is-active "$service" >/dev/null 2>&1 || {
-        log_info "Starting systemd service: $service"
-        sudo systemctl start "$service"
+    systemctl is-active "${service}" >/dev/null 2>&1 || {
+        log_info "Starting systemd service: ${service}"
+        sudo systemctl start "${service}"
     }
 }
 
@@ -136,12 +145,12 @@ systemd_system_enable_start() {
 git_clone_if_missing() {
     local repo_url="$1"
     local target_dir="$2"
-    if [[ ! -d "$target_dir" ]]; then
-        log_info "Cloning repository: $repo_url -> $target_dir"
-        ensure_dir "$(dirname "$target_dir")"
-        git clone "$repo_url" "$target_dir"
+    if [[ ! -d ${target_dir} ]]; then
+        log_info "Cloning repository: ${repo_url} -> ${target_dir}"
+        ensure_dir "$(dirname "${target_dir}")"
+        git clone "${repo_url}" "${target_dir}"
     else
-        log_debug "Repository already exists: $target_dir"
+        log_debug "Repository already exists: ${target_dir}"
     fi
 }
 
@@ -149,15 +158,15 @@ git_clone_if_missing() {
 create_symlink_if_missing() {
     local source="$1"
     local target="$2"
-    if [[ -L "$target" ]]; then
-        log_debug "Symlink already exists: $target"
-    elif [[ -e "$target" ]]; then
-        log_error "Target exists but is not a symlink: $target"
+    if [[ -L ${target} ]]; then
+        log_debug "Symlink already exists: ${target}"
+    elif [[ -e ${target} ]]; then
+        log_error "Target exists but is not a symlink: ${target}"
         return 1
     else
-        log_info "Creating symlink: $target -> $source"
-        ensure_dir "$(dirname "$target")"
-        ln -s "$source" "$target"
+        log_info "Creating symlink: ${target} -> ${source}"
+        ensure_dir "$(dirname "${target}")"
+        ln -s "${source}" "${target}"
     fi
 }
 
@@ -165,12 +174,12 @@ create_symlink_if_missing() {
 append_to_file_if_missing() {
     local file="$1"
     local line="$2"
-    ensure_dir "$(dirname "$file")"
-    if grep -qxF "$line" "$file" 2>/dev/null; then
-        log_debug "Line already present in file: $file"
+    ensure_dir "$(dirname "${file}")"
+    if grep -qxF "${line}" "${file}" 2>/dev/null; then
+        log_debug "Line already present in file: ${file}"
     else
-        log_info "Appending to file: $file"
-        echo "$line" >> "$file"
+        log_info "Appending to file: ${file}"
+        echo "${line}" >>"${file}"
     fi
 }
 
@@ -183,14 +192,14 @@ retry_with_backoff() {
     local attempt=1
 
     until "${cmd[@]}"; do
-        if (( attempt >= max_attempts )); then
-            log_error "Command failed after $max_attempts attempts: ${cmd[*]}"
+        if ((attempt >= max_attempts)); then
+            log_error "Command failed after ${max_attempts} attempts: ${cmd[*]}"
             return 1
         fi
-        log_warn "Attempt $attempt failed, retrying in ${delay}s..."
-        sleep "$delay"
-        delay=$(( delay * 2 ))
-        (( attempt++ ))
+        log_warn "Attempt ${attempt} failed, retrying in ${delay}s..."
+        sleep "${delay}"
+        delay=$((delay * 2))
+        ((attempt++))
     done
 }
 
@@ -198,9 +207,9 @@ retry_with_backoff() {
 validate_env_vars() {
     local -a missing=()
     for var in "$@"; do
-        [[ -n "${!var:-}" ]] || missing+=("$var")
+        [[ -n ${!var-} ]] || missing+=("${var}")
     done
-    if (( ${#missing[@]} > 0 )); then
+    if ((${#missing[@]} > 0)); then
         log_error "Missing required environment variables: ${missing[*]}"
         return 1
     fi
