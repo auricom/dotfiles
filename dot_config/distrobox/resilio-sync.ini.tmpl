@@ -1,0 +1,11 @@
+[resilio-sync]
+image=debian:bookworm
+pull=true
+entry=false
+additional_packages="ca-certificates curl gnupg procps sudo"
+volume="{{ .chezmoi.homeDir }}/sync:/sync:rw"
+init_hooks="sudo install -d -m 0755 /etc/apt/keyrings"
+init_hooks="curl -fsSL https://linux-packages.resilio.com/resilio-sync/key.asc | sudo tee /etc/apt/keyrings/resilio-sync.asc >/dev/null"
+init_hooks="echo deb [signed-by=/etc/apt/keyrings/resilio-sync.asc] http://linux-packages.resilio.com/resilio-sync/deb resilio-sync non-free | sudo tee /etc/apt/sources.list.d/resilio-sync.list >/dev/null"
+init_hooks="sudo apt-get update"
+init_hooks="sudo apt-get install -y resilio-sync"

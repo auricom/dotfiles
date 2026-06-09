@@ -48,9 +48,11 @@ brew:
     server: false
     packages:
       - gh # GitHub CLI
+      - distrobox # Declarative development and service containers
       - lima # Linux VMs
       - opencode # AI agent
       - pi-coding-agent # AI Agent
+      - podman # Rootless container engine
       - pre-commit # Framework for managing and maintaining pre-commit hooks
 
   kubernetes:

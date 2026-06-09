@@ -8,3 +8,4 @@
 .local/share/starship
 scripts
 mise.toml
+.config/containers/systemd/resilio-sync.container

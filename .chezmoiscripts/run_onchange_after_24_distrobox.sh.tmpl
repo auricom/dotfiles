@@ -1,0 +1,60 @@
+{{- if eq .formFactor "workstation" -}}
+#!/usr/bin/env bash
+
+# Distrobox deployment script
+# Hash dependencies:
+{{- range glob "dot_config/distrobox/*.ini.tmpl" }}
+# {{ . }}: {{ include . | sha256sum }}
+{{- end }}
+{{- range glob "dot_config/systemd/user/*.service" }}
+# {{ . }}: {{ include . | sha256sum }}
+{{- end }}
+
+set -euo pipefail
+
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Configuring Distroboxes"
+
+    require_runtime distrobox
+    require_runtime podman
+
+    local config_dir="{{ .chezmoi.homeDir }}/.config/distrobox"
+
+    for ini_file in "$config_dir"/*.ini; do
+        [[ -f "$ini_file" ]] || continue
+        local name
+        name=$(basename "$ini_file" .ini)
+        deploy_distrobox "$name" "$ini_file"
+    done
+}
+
+deploy_distrobox() {
+    local name="$1"
+    local ini_file="$2"
+
+    log_section "Configuring $name Distrobox"
+
+    if systemctl --user cat "${name}.service" >/dev/null 2>&1; then
+        log_info "Stopping existing $name service before Distrobox update"
+        systemctl --user stop "${name}.service" || true
+    fi
+
+    log_info "Creating/replacing $name Distrobox from manifest"
+    distrobox assemble create --replace --file "$ini_file"
+
+    log_info "$name Distrobox configuration completed"
+}
+
+require_runtime() {
+    local command="$1"
+
+    if ! command_exists "$command"; then
+        log_error "$command is required for Distrobox deployment"
+        exit 1
+    fi
+}
+
+main "$@"
+{{- end -}}

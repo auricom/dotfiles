@@ -12,6 +12,7 @@ mise.toml
 .config/discord/
 .config/containers/
 .config/containers/systemd/resilio-sync*
+.config/distrobox/
 .config/DankMaterialShell/
 .config/foot/
 .config/git/
@@ -27,4 +28,9 @@ mise.toml
 .kube/config
 .talos
 .var
+{{- end }}
+
+{{- if ne .formFactor "workstation" }}
+.config/distrobox/resilio-sync.ini
+.config/systemd/user/resilio-sync.service
 {{- end }}

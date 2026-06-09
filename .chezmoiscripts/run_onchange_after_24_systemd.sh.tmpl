@@ -15,7 +15,7 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 # fisher-update service: {{ include "dot_config/systemd/user/fisher-update.service" | sha256sum }}
 # fisher-update timer: {{ include "dot_config/systemd/user/fisher-update.timer" | sha256sum }}
 # notify-failure hash: {{ include "dot_config/systemd/user/notify-failure@.service" | sha256sum }}
-# resilio-sync hash: {{ include "dot_config/containers/systemd/resilio-sync.container" | sha256sum }}
+# resilio-sync service hash: {{ include "dot_config/systemd/user/resilio-sync.service" | sha256sum }}
 
 main() {
     log_section "Managing systemd services and quadlets"

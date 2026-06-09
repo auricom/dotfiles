@@ -7,7 +7,7 @@ Personal dotfiles managed with [chezmoi](https://chezmoi.io), supporting worksta
 - **Three form factors** — `workstation`/`laptop` (GUI, Kubernetes tools, fonts) and `server` (minimal CLI); laptops auto-detected via DMI chassis type, workstation/server prompted once at init
 - **Encrypted secrets** — age-based encryption with SOPS for SSH keys, API tokens, and sensitive configs
 - **Catppuccin Mocha** theme across all supported applications
-- **Automated setup** — post-apply scripts handle Homebrew bundles, systemd services, NFS mounts, and git repo cloning
+- **Automated setup** — post-apply scripts handle Homebrew bundles, Distrobox services, systemd services, NFS mounts, and git repo cloning
 - **External assets** — Catppuccin themes, Bibata cursors, and keyboard layouts fetched via `.chezmoiexternals`
 
 ## Prerequisites
@@ -51,7 +51,7 @@ chezmoi apply
 │   ├── foot/                   # Terminal emulator
 │   ├── k9s/                    # Kubernetes dashboard (workstation/laptop)
 │   ├── atuin/                  # Shell history
-│   ├── containers/             # Podman/Quadlet services (workstation/laptop)
+│   ├── distrobox/              # Declarative Distrobox containers (workstation)
 │   ├── systemd/                # User systemd services (workstation/laptop)
 │   ├── DankMaterialShell/      # GNOME shell theme (workstation/laptop)
 │   ├── gtk-3.0/                # GTK3 theme (workstation/laptop)
@@ -103,6 +103,7 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_onchange_after_12_nfs_mounts.sh` | nfs.yaml change | Configure NFS mounts |
 | `run_onchange_after_22_dms.sh` | theme change | DankMaterialShell theme setup |
 | `run_onchange_after_23_git_repositories.sh` | repos.yaml change | Clone repos & symlinks |
+| `run_onchange_after_24_resilio_sync.sh` | Distrobox/service change | Create/update Resilio Sync Distrobox |
 | `run_onchange_after_24_systemd.sh` | systemd change | Enable/reload services |
 | `run_onchange_after_25_rclone.sh` | rclone change | Cloud storage mounts |
 | `run_onchange_after_26_bat.sh` | bat change | Install syntax themes |

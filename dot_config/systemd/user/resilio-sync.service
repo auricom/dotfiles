@@ -1,0 +1,21 @@
+[Unit]
+Description=Resilio Sync in Distrobox
+After=network-online.target
+Wants=network-online.target
+OnFailure=notify-failure@%n.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+TimeoutStartSec=900
+Environment="PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStartPre=/usr/bin/mkdir -p %h/.local/share/resilio-sync %h/sync
+ExecStartPre=/usr/bin/env distrobox assemble create --file %h/.config/distrobox/resilio-sync.ini
+ExecStartPre=/usr/bin/env distrobox enter --no-tty resilio-sync -- sudo mkdir -p /var/run/resilio-sync
+ExecStartPre=/usr/bin/env distrobox enter --no-tty resilio-sync -- sudo chown -R rslsync:rslsync /var/run/resilio-sync
+ExecStart=/usr/bin/env distrobox enter --no-tty resilio-sync -- /usr/bin/rslsync --nodaemon --storage %h/.local/share/resilio-sync --webui.listen 127.0.0.1:8888
+ExecStop=/usr/bin/env distrobox enter --no-tty resilio-sync -- /usr/bin/pkill -TERM rslsync
+
+[Install]
+WantedBy=default.target
