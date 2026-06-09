@@ -31,15 +31,25 @@ main() {
 application_theme_zen() {
     log_info "Zen browser theme installation"
 
+    local theme_dir="{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen"
+    local chrome_latte="${theme_dir}/latte_sky_userChrome.css"
+    local chrome_mocha="${theme_dir}/mocha_sky_userChrome.css"
+    local content_latte="${theme_dir}/latte_sky_userContent.css"
+    local content_mocha="${theme_dir}/mocha_sky_userContent.css"
+
     # Find default profile directory
     log_info "Concatenate Catppuccin Mocha and Catppuccin Latte in userChrome.css and userContent.css for every found profile"
     find {{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen -maxdepth 1 -type d -name "????????.*" -print0 | while IFS= read -r -d '' profile_dir; do
         log_info "Found profile $profile_dir. Executing..."
         mkdir -p "$profile_dir/chrome"
-        cat {{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/latte_sky_userChrome.css > "$profile_dir/chrome/userChrome.css"
-        cat {{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/mocha_sky_userChrome.css >> "$profile_dir/chrome/userChrome.css"
-        cat {{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/latte_sky_userContent.css > "$profile_dir/chrome/userContent.css"
-        cat {{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/mocha_sky_userContent.css >> "$profile_dir/chrome/userContent.css"
+        {
+            cat "$chrome_latte"
+            cat "$chrome_mocha"
+        } > "$profile_dir/chrome/userChrome.css"
+        {
+            cat "$content_latte"
+            cat "$content_mocha"
+        } > "$profile_dir/chrome/userContent.css"
     done
 
     log_info "Profiles configured."

@@ -12,11 +12,15 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 main() {
     log_section "Installing hardware udev rules"
 
-    # Install StreamDeck udev rules
-    install_streamdeck_rules
+    install_udev_rule \
+        "StreamDeck" \
+        "/etc/udev/rules.d/60-streamdeck.rules" \
+        "https://raw.githubusercontent.com/streamdeck-linux-gui/streamdeck-linux-gui/main/udev/60-streamdeck.rules"
 
-    # Install Ledger udev rules
-    install_ledger_rules
+    install_udev_rule \
+        "Ledger" \
+        "/etc/udev/rules.d/20-hw1.rules" \
+        "https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/20-hw1.rules"
 
     # Reload udev rules
     reload_udev_rules
@@ -24,38 +28,22 @@ main() {
     log_info "Hardware udev rules installation completed"
 }
 
-install_streamdeck_rules() {
-    local rules_file="/etc/udev/rules.d/60-streamdeck.rules"
-    local rules_url="https://raw.githubusercontent.com/streamdeck-linux-gui/streamdeck-linux-gui/main/udev/60-streamdeck.rules"
+install_udev_rule() {
+    local name="$1"
+    local rules_file="$2"
+    local rules_url="$3"
 
     if [[ -f "$rules_file" ]]; then
-        log_info "StreamDeck udev rules already installed"
+        log_info "$name udev rules already installed"
         return
     fi
 
-    if ! run_spin "Downloading StreamDeck udev rules..." sudo curl --silent --output "$rules_file" "$rules_url"; then
-        log_error "Failed to download StreamDeck udev rules"
+    if ! run_spin "Downloading $name udev rules..." sudo curl --silent --output "$rules_file" "$rules_url"; then
+        log_error "Failed to download $name udev rules"
         return 1
     fi
 
-    log_info "StreamDeck udev rules installed successfully"
-}
-
-install_ledger_rules() {
-    local rules_file="/etc/udev/rules.d/20-hw1.rules"
-    local rules_url="https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/20-hw1.rules"
-
-    if [[ -f "$rules_file" ]]; then
-        log_info "Ledger udev rules already installed"
-        return
-    fi
-
-    if ! run_spin "Downloading Ledger udev rules..." sudo curl --silent --output "$rules_file" "$rules_url"; then
-        log_error "Failed to download Ledger udev rules"
-        return 1
-    fi
-
-    log_info "Ledger udev rules installed successfully"
+    log_info "$name udev rules installed successfully"
 }
 
 reload_udev_rules() {

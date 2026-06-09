@@ -89,6 +89,17 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Require a command to exist, exiting with an error if it is missing
+require_command() {
+    local command="$1"
+    local context="${2:-required command}"
+
+    if ! command_exists "${command}"; then
+        log_error "${command} is required for ${context}"
+        exit 1
+    fi
+}
+
 # Create directory if it doesn't exist
 ensure_dir() {
     local dir="$1"

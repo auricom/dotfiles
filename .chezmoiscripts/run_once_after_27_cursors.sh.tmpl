@@ -21,11 +21,6 @@ main() {
 
     mkdir -p "${ICONS_DIR}"
 
-    if [[ -d "${ICONS_DIR}/${CURSOR_THEME}" ]]; then
-        log_info "Delete ${CURSOR_THEME} current installation"
-        rm -rf "${ICONS_DIR}/${CURSOR_THEME}"
-    fi
-
     TMP_DIR=$(mktemp -d)
     trap 'rm -rf "${TMP_DIR}"' EXIT
 
@@ -42,6 +37,12 @@ main() {
         find "${TMP_DIR}" -maxdepth 3 | sed 's|'"${TMP_DIR}"'/||'
         return 1
     fi
+
+    if [[ -d "${ICONS_DIR}/${CURSOR_THEME}" ]]; then
+        log_info "Deleting ${CURSOR_THEME} current installation"
+        rm -rf "${ICONS_DIR}/${CURSOR_THEME}"
+    fi
+
     cp -r "${THEME_SRC}" "${ICONS_DIR}/"
 
     log_info "${CURSOR_THEME} installed successfully"

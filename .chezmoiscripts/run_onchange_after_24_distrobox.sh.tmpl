@@ -17,8 +17,8 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 main() {
     log_section "Configuring Distroboxes"
 
-    require_runtime distrobox
-    require_runtime podman
+    require_command distrobox "Distrobox deployment"
+    require_command podman "Distrobox deployment"
 
     local config_dir="{{ .chezmoi.homeDir }}/.config/distrobox"
 
@@ -45,15 +45,6 @@ deploy_distrobox() {
     distrobox assemble create --replace --file "$ini_file"
 
     log_info "$name Distrobox configuration completed"
-}
-
-require_runtime() {
-    local command="$1"
-
-    if ! command_exists "$command"; then
-        log_error "$command is required for Distrobox deployment"
-        exit 1
-    fi
 }
 
 main "$@"
