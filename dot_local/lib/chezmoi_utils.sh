@@ -119,6 +119,19 @@ systemd_enable_start() {
     }
 }
 
+# Enable and start a systemd system service if not already enabled/active
+systemd_system_enable_start() {
+    local service="$1"
+    systemctl is-enabled "$service" >/dev/null 2>&1 || {
+        log_info "Enabling systemd service: $service"
+        sudo systemctl enable "$service"
+    }
+    systemctl is-active "$service" >/dev/null 2>&1 || {
+        log_info "Starting systemd service: $service"
+        sudo systemctl start "$service"
+    }
+}
+
 # Clone git repository if it doesn't exist
 git_clone_if_missing() {
     local repo_url="$1"
