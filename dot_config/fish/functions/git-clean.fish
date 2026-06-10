@@ -1,6 +1,7 @@
 function git-clean
     git fetch --prune
-    for branch in (git branch -vv | grep ': gone]' | awk '{print $1}')
-        git branch -D $branch
+    set -l gone_branches (git branch -vv | grep ': gone]' | awk '{print $1}')
+    for branch in $gone_branches
+        git branch -D "$branch"
     end
 end

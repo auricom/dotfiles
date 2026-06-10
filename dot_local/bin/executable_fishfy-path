@@ -9,4 +9,3 @@ printf '%s\n' "${path}" | awk -F'/' 'BEGIN{OFS="/"} {
     }
     print
 }'
-s

@@ -7,11 +7,12 @@ function limactl-docker
         limactl start docker
     end
 
-    if not docker context ls --format '{{.Name}}' 2>/dev/null | grep -q '^lima-docker$'
+    if not docker context inspect lima-docker >/dev/null 2>&1
         docker context create lima-docker --docker "host=unix:///var/home/auricom/.lima/docker/sock/docker.sock"
     end
 
-    if not docker context ls --format '{{.Name}} {{.Current}}' 2>/dev/null | grep -q '^lima-docker true$'
+    set -l current_context (docker context show 2>/dev/null)
+    if test "$current_context" != lima-docker
         docker context use lima-docker
     end
 end
