@@ -2,7 +2,7 @@
 Description=fisher update
 After=network-online.target
 ConditionPathExists=%h/.config/fish/functions/fisher.fish
-OnFailure=desktop-notify@%n.service
+OnFailure=notify-failure@%p.service
 
 [Service]
 Type=oneshot

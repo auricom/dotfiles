@@ -2,12 +2,12 @@
 Description=dotfiles update
 After=local-fs.target
 After=network-online.target
-ConditionPathExists=%h/scripts/dotfiles_update.sh
-OnFailure=desktop-notify@%n.service
+ConditionPathExists=%h/.local/bin/dotfiles-update
+OnFailure=notify-failure@%p.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -c "%h/scripts/dotfiles_update.sh"
+ExecStart=/usr/bin/bash -c "%h/.local/bin/dotfiles-update"
 Environment="PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 [Install]
