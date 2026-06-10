@@ -7,6 +7,6 @@
 
 [".var/app/dev.zed.Zed/config/zed/themes/catppuccin-blue.json"]
     type = "file"
-    url = "https://github.com/catppuccin/zed/releases/download/v0.2.25/catppuccin-blue.json"
+    url = "https://github.com/catppuccin/zed/releases/download/{{ (gitHubLatestRelease "catppuccin/zed").TagName }}/catppuccin-blue.json"
     refreshPeriod = "0"
 {{ end }}

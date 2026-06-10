@@ -12,10 +12,9 @@ source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 main() {
     log_section "Installing Bibata Cursor Theme"
 
-    # renovate: datasource=github-releases depName=stanio/Bibata_Cursor
-    CURSOR_VERSION="v2.0.7-stanio-12"
-    CURSOR_THEME="Bibata-Modern-Classic"
-    ARCHIVE_NAME="Bibata-Linux-Classic-${CURSOR_VERSION}.tar.xz"
+    CURSOR_THEME="Bibata-Modern-CatMocha"
+    CURSOR_VERSION="{{ (gitHubLatestRelease "stanio/Bibata_Cursor").TagName }}"
+    ARCHIVE_NAME="Bibata-Xcursors-Catppuccin-${CURSOR_VERSION}.tar.xz"
     CURSOR_URL="https://github.com/stanio/Bibata_Cursor/releases/download/${CURSOR_VERSION}/${ARCHIVE_NAME}"
     ICONS_DIR="{{ .chezmoi.homeDir }}/.local/share/icons"
 
