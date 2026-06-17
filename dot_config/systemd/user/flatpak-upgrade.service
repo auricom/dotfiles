@@ -1,0 +1,13 @@
+[Unit]
+Description=flatpak upgrade
+After=local-fs.target
+After=network-online.target
+ConditionPathExists=/usr/bin/flatpak
+OnFailure=notify-failure@%p.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flatpak upgrade --assumeyes
+
+[Install]
+WantedBy=default.target

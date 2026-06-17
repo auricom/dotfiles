@@ -1,0 +1,11 @@
+[Unit]
+Description=flatpak update
+Wants=network-online.target
+
+[Timer]
+OnBootSec=10min
+OnUnitInactiveSec=6h
+Persistent=true
+
+[Install]
+WantedBy=timers.target
