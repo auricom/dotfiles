@@ -1,0 +1,32 @@
+#!/usr/bin/bash
+
+set -Eeuo pipefail
+IFS=$'\n\t'
+
+# shellcheck source=.local/lib/chezmoi_utils.sh
+source "${HOME}/.local/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Starting storage mount units"
+
+    local -a units
+    mapfile -t units < <(systemctl list-unit-files --type=mount --no-legend 2>/dev/null \
+        | awk '$1 ~ /^var-mnt-storage/ {print $1}' | sort)
+
+    if [[ ${#units[@]} -eq 0 ]]; then
+        log_warn "No var-mnt-storage* mount units found"
+        return 0
+    fi
+
+    local unit
+    for unit in "${units[@]}"; do
+        if systemctl is-active --quiet "${unit}"; then
+            log_info "Already mounted: ${unit}"
+        else
+            log_info "Starting: ${unit}"
+            sudo systemctl start "${unit}"
+        fi
+    done
+}
+
+main "$@"
