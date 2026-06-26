@@ -9,7 +9,7 @@ Type=simple
 Restart=always
 RestartSec=10
 TimeoutStartSec=900
-Environment="PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/linuxbrew/.linuxbrew/bin"
 ExecStartPre=/usr/bin/mkdir -p %h/.local/share/resilio-sync %h/sync
 ExecStartPre=/usr/bin/env distrobox assemble create --file %h/.config/distrobox/resilio-sync.ini
 ExecStartPre=/usr/bin/env distrobox enter --no-tty resilio-sync -- sudo mkdir -p /var/run/resilio-sync

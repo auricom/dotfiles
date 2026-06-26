@@ -10,9 +10,7 @@ set -euo pipefail
 source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 # Hash dependencies for change detection
-{{ range glob "dot_config/systemd/user/*" -}}
-# {{ . }}: {{ include . | sha256sum }}
-{{ end -}}
+# {{ output "bash" "-c" (printf "find '%s/dot_config/systemd/user' -maxdepth 1 -type f | sort | xargs sha256sum | sha256sum" .chezmoi.sourceDir) | trim }}
 
 main() {
     log_section "Managing systemd services and quadlets"
