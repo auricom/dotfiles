@@ -50,6 +50,7 @@ brew:
       - gh # GitHub CLI
       - distrobox # Declarative development and service containers
       - lima # Linux VMs
+      - minijinja-cli # Render Jinja2 templates directly from the command line to stdout
       - opencode # AI agent
       - pi-coding-agent # AI Agent
       - podman # Rootless container engine
