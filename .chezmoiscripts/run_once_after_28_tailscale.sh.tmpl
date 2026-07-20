@@ -1,0 +1,23 @@
+{{- if ne .formFactor "server" -}}
+#!/usr/bin/env bash
+
+# Enable and start tailscaled on workstations and laptops
+
+set -euo pipefail
+
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
+
+main() {
+    log_section "Activating tailscaled"
+
+    if ! command_exists tailscaled; then
+        log_warn "tailscaled not found, skipping"
+        return 0
+    fi
+
+    systemd_system_enable_start tailscaled
+    log_info "tailscaled activation completed"
+}
+
+main "$@"
+{{- end -}}
