@@ -34,3 +34,7 @@ mise.toml
 .config/distrobox/resilio-sync.ini
 .config/systemd/user/resilio-sync.service
 {{- end }}
+
+{{- if not (contains "claude-thinkpad" .chezmoi.hostname) }}
+.config/wireguard/
+{{- end }}
