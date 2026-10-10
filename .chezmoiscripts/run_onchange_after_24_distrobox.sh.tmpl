@@ -14,6 +14,9 @@ set -euo pipefail
 
 source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
+# Prefer the host's rootless Podman over Homebrew's client.
+export PATH="/usr/bin:${PATH}"
+
 main() {
     log_section "Configuring Distroboxes"
 

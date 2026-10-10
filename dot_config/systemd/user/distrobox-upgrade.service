@@ -1,0 +1,13 @@
+[Unit]
+Description=distrobox upgrade
+After=network-online.target
+Wants=network-online.target
+OnFailure=notify-failure@%p.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env distrobox-upgrade --all
+Environment="PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+[Install]
+WantedBy=default.target

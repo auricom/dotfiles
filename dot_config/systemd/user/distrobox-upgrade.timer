@@ -1,0 +1,9 @@
+[Unit]
+Description=distrobox upgrade daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
