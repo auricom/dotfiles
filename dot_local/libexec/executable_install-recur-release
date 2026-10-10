@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+readonly REPOSITORY="celestiaorg/recur"
+readonly RELEASE_API="repos/${REPOSITORY}/releases/latest"
+readonly ARCH="$(dpkg --print-architecture)"
+readonly ASSET_SUFFIX="linux-${ARCH}.tar.gz"
+readonly GH_USER="$(stat -c %U "${BASH_SOURCE[0]}")"
+readonly GH_UID="$(id -u "${GH_USER}")"
+
+gh_command=(gh)
+if [[ ${EUID} -eq 0 && ${GH_USER} != root ]]; then
+    gh_command=(
+        sudo -H -u "${GH_USER}"
+        env
+        "XDG_RUNTIME_DIR=/run/user/${GH_UID}"
+        "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/${GH_UID}/bus"
+        gh
+    )
+fi
+readonly gh_command
+
+work_dir="$(mktemp -d)"
+readonly work_dir
+trap 'rm -rf "${work_dir}"' EXIT
+chmod 0711 "${work_dir}"
+download_dir="${work_dir}/download"
+readonly download_dir
+install -d -m 0700 -o "${GH_USER}" -g "$(id -g "${GH_USER}")" "${download_dir}"
+
+"${gh_command[@]}" api "${RELEASE_API}" >"${work_dir}/release.json"
+
+release_tag="$(jq -er '.tag_name' "${work_dir}/release.json")"
+readonly release_tag
+asset_name="$(
+    jq -er --arg suffix "${ASSET_SUFFIX}" \
+        '[.assets[] | select(.name | endswith($suffix)) | .name][0]' \
+        "${work_dir}/release.json"
+)"
+readonly asset_name
+
+"${gh_command[@]}" release download "${release_tag}" --repo "${REPOSITORY}" \
+    --pattern "${asset_name}" --dir "${download_dir}"
+mkdir "${work_dir}/release"
+tar -xzf "${download_dir}/${asset_name}" --strip-components=1 \
+    -C "${work_dir}/release"
+
+for binary in recur recur-cli; do
+    if [[ ! -x ${work_dir}/release/${binary} ]]; then
+        printf 'The %s release does not contain an executable %s.\n' \
+            "${release_tag}" "${binary}" >&2
+        exit 1
+    fi
+    install -m 0755 "${work_dir}/release/${binary}" "/usr/local/bin/${binary}"
+done
+
+printf 'Installed Recur %s for %s.\n' "${release_tag}" "${ARCH}"

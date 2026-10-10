@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+readonly RECUR_BIN="/usr/local/bin/recur"
+
+# Distrobox must use the host's rootless Podman, not Homebrew's client.
+export PATH="/usr/bin:${PATH}"
+
+exec distrobox enter --no-tty recur -- "${RECUR_BIN}" "$@"
