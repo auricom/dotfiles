@@ -103,7 +103,7 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_onchange_after_12_nfs_mounts.sh` | nfs.yaml change | Configure NFS mounts |
 | `run_onchange_after_22_dms.sh` | theme change | DankMaterialShell theme setup |
 | `run_onchange_after_23_git_repositories.sh` | repos.yaml change | Clone repos & symlinks |
-| `run_onchange_after_24_resilio_sync.sh` | Distrobox/service change | Create/update Resilio Sync Distrobox |
+| `run_onchange_after_24_distrobox.sh` | Distrobox/service change | Create/update declarative Distroboxes |
 | `run_onchange_after_24_systemd.sh` | systemd change | Enable/reload services |
 | `run_onchange_after_25_rclone.sh` | rclone change | Cloud storage mounts |
 | `run_onchange_after_26_bat.sh` | bat change | Install syntax themes |
