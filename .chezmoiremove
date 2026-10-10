@@ -9,3 +9,4 @@
 scripts
 mise.toml
 .config/containers/systemd/resilio-sync.container
+.config/fish/conf.d/interactive_direnv.fish
