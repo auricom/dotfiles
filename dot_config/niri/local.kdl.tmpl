@@ -1,6 +1,6 @@
 layout {
-    default-column-width { proportion {{ if eq .formFactor "laptop" }}0.5{{ else }}0.33333{{ end }}; }
-    gaps {{ if eq .formFactor "laptop" }}6{{ else }}10{{ end }}
+    default-column-width { proportion {{ .niri.column_width }}; }
+    gaps {{ .niri.gaps }}
 }
 
 binds {
@@ -22,7 +22,7 @@ input {
     keyboard {
         xkb {
               layout "us_qwerty-fr"
-              file "{{ .chezmoi.homeDir }}/.config/xkb/symbols/us_qwerty-fr"
+              file "{{ joinPath .chezmoi.homeDir ".config/xkb/symbols/us_qwerty-fr" }}"
         }
     }
 }

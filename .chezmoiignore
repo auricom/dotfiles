@@ -7,7 +7,7 @@ LICENSE
 README.md
 mise.toml
 
-{{- if eq .formFactor "server" }}
+{{- if .isServer }}
 .config/autostart/
 .config/discord/
 .config/containers/
@@ -30,11 +30,11 @@ mise.toml
 .var
 {{- end }}
 
-{{- if ne .formFactor "workstation" }}
+{{- if not .isWorkstation }}
 .config/distrobox/resilio-sync.ini
 .config/systemd/user/resilio-sync.service
 {{- end }}
 
-{{- if not (contains "claude-thinkpad" .chezmoi.hostname) }}
+{{- if not (has .chezmoi.hostname .wireguardHosts) }}
 .config/wireguard/
 {{- end }}

@@ -1,13 +1,8 @@
-{{- if ne .formFactor "server" -}}
-#!/usr/bin/env bash
+{{- if .isDesktop }}
+{{- includeTemplate "script-header" . }}
 
 # systemd-timesyncd fix script
 # Fixes ownership and configuration for systemd-timesyncd
-
-set -euo pipefail
-
-# Source utility functions
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 main() {
     log_section "Fixing systemd-timesyncd"

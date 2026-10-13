@@ -1,13 +1,8 @@
-#!/usr/bin/env bash
+{{- includeTemplate "script-header" . }}
 
 # Package installation script
 # This script installs packages via Homebrew
 # Hash dependencies: {{ include "Brewfile.tmpl" | sha256sum }} {{ include ".chezmoidata/packages_brew.yaml" | sha256sum }} {{ include ".chezmoidata/packages_cask.yaml" | sha256sum }} {{ include ".chezmoidata/packages_flatpak.yaml" | sha256sum }}
-
-set -euo pipefail
-
-# Source utility functions
-source "{{ .chezmoi.workingTree }}/dot_local/lib/chezmoi_utils.sh"
 
 main() {
     log_section "Installing Brewfile (Homebrew and Flatpak packages)"
@@ -19,7 +14,7 @@ main() {
 
     run_spin "Installing packages..." brew bundle --file="{{ .chezmoi.homeDir }}/Brewfile"
     log_info "Brewfile installation completed"
-    log_info "To remove unlisted packages, run: brew bundle cleanup --file={{ .chezmoi.workingTree }}/Brewfile"
+    log_info "To remove unlisted packages, run: brew bundle cleanup --file={{ .chezmoi.homeDir }}/Brewfile"
 }
 
 main "$@"

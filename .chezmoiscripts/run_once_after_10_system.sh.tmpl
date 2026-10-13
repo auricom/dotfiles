@@ -1,13 +1,8 @@
-{{- if ne .formFactor "server" -}}
-#!/usr/bin/env bash
+{{- if .isDesktop }}
+{{- includeTemplate "script-header" . }}
 
 # System configuration script
 # Configures system settings
-
-set -euo pipefail
-
-# Source utility functions
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 main() {
     log_section "Configuring system settings"
@@ -18,7 +13,6 @@ main() {
 
     log_info "System configuration completed"
 }
-
 
 set_hostname() {
     local flag_file="${HOME}/.local/state/chezmoi/hostname-set"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Source utility functions.
+# shellcheck source=/dev/null
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"

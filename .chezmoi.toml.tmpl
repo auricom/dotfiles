@@ -11,7 +11,6 @@
 {{- else if $interactive -}}
 {{-   $formFactor = promptStringOnce . "formFactor" "formFactor (workstation/server)" -}}
 {{- end -}}
-{{- $brightnessDeviceName := output "sh" "-c" "command -v ddcutil >/dev/null 2>&1 && ddcutil detect 2>/dev/null | grep 'I2C bus:' | grep -o 'i2c-[0-9]*' | head -1 | sed 's/^/ddc:/' || true" | trim -}}
 
 {{- if $interactive -}}
 {{-   writeToStdout "💡 Tip: you can re-enter your data with `chezmoi init --data=false`.\n" -}}
@@ -23,4 +22,13 @@ encryption = "age"
 
 [data]
   formFactor = "{{ $formFactor }}"
-  brightnessDeviceName = "{{ $brightnessDeviceName }}"
+  # Derived profile flags — keeps templates free of repeated formFactor comparisons.
+  isServer = {{ eq $formFactor "server" }}
+  isDesktop = {{ ne $formFactor "server" }}
+  isLaptop = {{ eq $formFactor "laptop" }}
+  isWorkstation = {{ eq $formFactor "workstation" }}
+
+[data.niri]
+  # Niri layout, tighter on laptops.
+  column_width = {{ if eq $formFactor "laptop" }}0.5{{ else }}0.33333{{ end }}
+  gaps = {{ if eq $formFactor "laptop" }}6{{ else }}10{{ end }}

@@ -6,8 +6,8 @@ OnFailure=notify-failure@%p.service
 
 [Service]
 Type=oneshot
-ExecStart=/home/linuxbrew/.linuxbrew/bin/fish -c "fisher update"
-Environment="PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart={{ .brewPrefix }}/bin/fish -c "fisher update"
+Environment="PATH={{ .brewPrefix }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 [Install]
 WantedBy=default.target

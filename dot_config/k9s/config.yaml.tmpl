@@ -1,6 +1,6 @@
 k9s:
   liveViewAutoRefresh: true
-  screenDumpDir: /var/home/claude/.local/state/k9s/screen-dumps
+  screenDumpDir: {{ joinPath .chezmoi.homeDir ".local/state/k9s/screen-dumps" }}
   refreshRate: 2
   maxConnRetry: 5
   readOnly: false

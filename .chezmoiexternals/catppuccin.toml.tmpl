@@ -1,40 +1,20 @@
 # Catppuccin themes for various applications
 
 # bat
-[".config/bat/themes/Catppuccin_Latte.tmTheme"]
+{{- range .catppuccin.flavors }}
+[".config/bat/themes/Catppuccin_{{ .title }}.tmTheme"]
     type = "file"
-    url = "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Latte.tmTheme"
+    url = "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20{{ .title }}.tmTheme"
     refreshPeriod = "168h"
-[".config/bat/themes/Catppuccin_Frappe.tmTheme"]
-    type = "file"
-    url = "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Frappe.tmTheme"
-    refreshPeriod = "168h"
-[".config/bat/themes/Catppuccin_Macchiato.tmTheme"]
-    type = "file"
-    url = "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Macchiato.tmTheme"
-    refreshPeriod = "168h"
-[".config/bat/themes/Catppuccin_Mocha.tmTheme"]
-    type = "file"
-    url = "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20Mocha.tmTheme"
-    refreshPeriod = "168h"
+{{- end }}
 
 # btop
-[".config/btop/themes/catppuccin_latte.theme"]
+{{- range .catppuccin.flavors }}
+[".config/btop/themes/catppuccin_{{ .id }}.theme"]
     type = "file"
-    url = "https://github.com/catppuccin/btop/raw/main/themes/catppuccin_latte.theme"
+    url = "https://github.com/catppuccin/btop/raw/main/themes/catppuccin_{{ .id }}.theme"
     refreshPeriod = "168h"
-[".config/btop/themes/catppuccin_frappe.theme"]
-    type = "file"
-    url = "https://github.com/catppuccin/btop/raw/main/themes/catppuccin_frappe.theme"
-    refreshPeriod = "168h"
-[".config/btop/themes/catppuccin_macchiato.theme"]
-    type = "file"
-    url = "https://github.com/catppuccin/btop/raw/main/themes/catppuccin_macchiato.theme"
-    refreshPeriod = "168h"
-[".config/btop/themes/catppuccin_mocha.theme"]
-    type = "file"
-    url = "https://github.com/catppuccin/btop/raw/main/themes/catppuccin_mocha.theme"
-    refreshPeriod = "168h"
+{{- end }}
 
 # eza
 [".config/eza/theme.yml"]
@@ -42,7 +22,7 @@
     url = "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/mocha/catppuccin-mocha-mauve.yml"
     refreshPeriod = "168h"
 
-{{ if ne .formFactor "server" }}
+{{ if .isDesktop }}
 # k9s
 [".config/k9s/skins"]
     type = "archive"

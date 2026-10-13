@@ -1,11 +1,7 @@
-{{- if ne .formFactor "server" -}}
-#!/usr/bin/env bash
+{{- if .isDesktop }}
+{{- includeTemplate "script-header" . }}
 
 # Enable and start tailscaled on workstations and laptops
-
-set -euo pipefail
-
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 main() {
     log_section "Activating tailscaled"

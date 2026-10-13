@@ -1,13 +1,8 @@
-{{- if ne .formFactor "server" -}}
-#!/usr/bin/env bash
+{{- if .isDesktop }}
+{{- includeTemplate "script-header" . }}
 
 # Bibata cursor installation script
 # Downloads and installs Bibata-Modern-Classic cursor theme
-
-set -euo pipefail
-
-# Source utility functions
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 main() {
     log_section "Installing Bibata Cursor Theme"

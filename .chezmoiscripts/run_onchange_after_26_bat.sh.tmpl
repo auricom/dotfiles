@@ -1,18 +1,10 @@
-{{- if ne .formFactor "server" -}}
-#!/usr/bin/env bash
+{{- if .isDesktop }}
+{{- includeTemplate "script-header" . }}
 
 # bat cache rebuild script
 # Rebuilds bat theme cache when Catppuccin themes change
 
-set -euo pipefail
-
-# Source utility functions
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
-
-# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.config/bat/themes/Catppuccin_Mocha.tmTheme" | sha256sum }}
-# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.config/bat/themes/Catppuccin_Macchiato.tmTheme" | sha256sum }}
-# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.config/bat/themes/Catppuccin_Frappe.tmTheme" | sha256sum }}
-# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.config/bat/themes/Catppuccin_Latte.tmTheme" | sha256sum }}
+# Hash dependencies: {{ include ".chezmoiexternals/catppuccin.toml.tmpl" | sha256sum }}
 
 main() {
     log_section "Rebuilding bat theme cache"

@@ -1,0 +1,4 @@
+# Git identity, rendered into ~/.config/git/config.
+gitUser:
+  name: auricom
+  email: 27022259+auricom@users.noreply.github.com

@@ -6,7 +6,7 @@ source "${HOME}/.local/lib/chezmoi_utils.sh"
 
 # Source and destination directories
 DJI_SOURCE_DIR="/run/media/{{ .chezmoi.username }}/SD_Card/DCIM"
-SORT_DEST_DIR="/var/mnt/storage.feisar.ovh/photo"
+SORT_DEST_DIR="{{ .nfs.mountpoint_prefix }}/photo"
 
 # Validate required directories
 [[ -d "${DJI_SOURCE_DIR}" ]] || { log_error "Source not mounted" path="${DJI_SOURCE_DIR}"; exit 1; }

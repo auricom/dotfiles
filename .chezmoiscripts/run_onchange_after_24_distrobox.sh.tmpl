@@ -1,5 +1,5 @@
-{{- if eq .formFactor "workstation" -}}
-#!/usr/bin/env bash
+{{- if .isWorkstation }}
+{{- includeTemplate "script-header" . }}
 
 # Distrobox deployment script
 # Hash dependencies:
@@ -9,10 +9,6 @@
 {{- range glob "dot_config/systemd/user/*.service" }}
 # {{ . }}: {{ include . | sha256sum }}
 {{- end }}
-
-set -euo pipefail
-
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 # Prefer the host's rootless Podman over Homebrew's client.
 export PATH="/usr/bin:${PATH}"

@@ -1,14 +1,9 @@
-{{- if ne .formFactor "server" -}}
-#!/usr/bin/env bash
+{{- if .isDesktop }}
+{{- includeTemplate "script-header" . }}
 
 # Git repositories management script
 # Clones and configures git repositories
 # Hash dependencies: {{ include ".chezmoidata/repositories.yaml" | sha256sum }}
-
-set -euo pipefail
-
-# Source utility functions
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 main() {
     log_section "Managing git repositories"

@@ -3,7 +3,7 @@ tap "{{ . }}"
 {{- end }}
 
 {{- range $category, $config := .brew }}
-{{- if or (ne $.formFactor "server") (ne $config.server false) }}
+{{- if or $.isDesktop $config.server }}
 # {{ $category | replace "_" " " | title }}
 {{- range $config.packages }}
 brew "{{ . }}"
@@ -11,7 +11,7 @@ brew "{{ . }}"
 
 {{- end }}
 {{- end }}
-{{- if ne .formFactor "server" }}
+{{- if .isDesktop }}
 {{- range $category, $config := .cask }}
 # {{ $category | replace "_" " " | title }}
 {{- range $config.packages }}

@@ -1,4 +1,4 @@
-{{ if eq .formFactor "server" }}
+{{ if .isServer }}
 [".local/bin/zfs-inplace-rebalancing"]
     type = "file"
     executable = true

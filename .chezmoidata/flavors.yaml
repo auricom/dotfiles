@@ -1,0 +1,12 @@
+# Catppuccin flavours in canonical order. `id` is the lowercase slug used by
+# most upstream theme repos; `title` is the capitalised form used by bat.
+catppuccin:
+  flavors:
+    - id: latte
+      title: Latte
+    - id: frappe
+      title: Frappe
+    - id: macchiato
+      title: Macchiato
+    - id: mocha
+      title: Mocha

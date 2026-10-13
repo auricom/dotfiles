@@ -1,0 +1,8 @@
+# Static system constants shared across templates.
+
+# Homebrew / Linuxbrew prefix, referenced by shell config and systemd units.
+brewPrefix: /home/linuxbrew/.linuxbrew
+
+# Hosts that should receive the WireGuard configuration.
+wireguardHosts:
+  - claude-thinkpad

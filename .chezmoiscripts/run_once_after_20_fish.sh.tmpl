@@ -1,11 +1,6 @@
-#!/usr/bin/env bash
+{{- includeTemplate "script-header" . }}
 
 # Fish configuration script
-
-set -euo pipefail
-
-# Source utility functions
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 main() {
     log_section "Configuring Fish shell"

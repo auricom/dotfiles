@@ -1,17 +1,9 @@
-{{- if ne .formFactor "server" -}}
-#!/usr/bin/env bash
+{{- if .isDesktop }}
+{{- includeTemplate "script-header" . }}
 
 # DankMaterialShell configuration script
 
-# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/mocha_sky_userChrome.css" | sha256sum }}
-# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/mocha_sky_userContent.css" | sha256sum }}
-# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/latte_sky_userChrome.css" | sha256sum }}
-# Hash dependencies: {{ "{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen/latte_sky_userContent.css" | sha256sum }}
-
-set -euo pipefail
-
-# Source utility functions
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
+# Hash dependencies: {{ include ".chezmoiexternals/catppuccin.toml.tmpl" | sha256sum }}
 
 main() {
     log_section "Configuring DankMaterialShell"

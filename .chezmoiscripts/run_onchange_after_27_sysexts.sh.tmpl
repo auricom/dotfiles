@@ -1,11 +1,7 @@
-#!/usr/bin/env bash
+{{- includeTemplate "script-header" . }}
 
 # Flatcar sysext management script
 # sysexts hash: {{ include ".chezmoidata/sysexts.yaml" | sha256sum }}
-
-set -euo pipefail
-
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 SYSEXTS=({{ range .sysexts.flatcar }}"{{ . }}" {{ end }})
 

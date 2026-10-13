@@ -119,6 +119,6 @@
     insteadOf = "https://gitlab.com/"
 
 [user]
-    email = "27022259+auricom@users.noreply.github.com"
-    name = "auricom"
-    signingkey = "{{ .chezmoi.homeDir }}/.ssh/id_ed25519"
+    email = "{{ .gitUser.email }}"
+    name = "{{ .gitUser.name }}"
+    signingkey = "{{ joinPath .chezmoi.homeDir ".ssh/id_ed25519" }}"

@@ -1,12 +1,12 @@
 if test (id -u) -gt 0
-    fish_add_path --global /home/linuxbrew/.linuxbrew/bin
+    fish_add_path --global {{ .brewPrefix }}/bin
 end
 
 if type -q brew
     if test (id -u) -gt 0
-        set -gx HOMEBREW_PREFIX /home/linuxbrew/.linuxbrew
-        set -gx HOMEBREW_CELLAR /home/linuxbrew/.linuxbrew/Cellar
-        set -gx HOMEBREW_REPOSITORY /home/linuxbrew/.linuxbrew
+        set -gx HOMEBREW_PREFIX {{ .brewPrefix }}
+        set -gx HOMEBREW_CELLAR {{ .brewPrefix }}/Cellar
+        set -gx HOMEBREW_REPOSITORY {{ .brewPrefix }}
     end
 
     if status is-interactive

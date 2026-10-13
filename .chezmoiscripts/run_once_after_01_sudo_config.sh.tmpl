@@ -1,13 +1,8 @@
-{{- if ne .formFactor "server" -}}
-#!/usr/bin/env bash
+{{- if .isDesktop }}
+{{- includeTemplate "script-header" . }}
 
 # Sudo configuration script
 # Configures passwordless sudo for wheel group and root shell environment
-
-set -euo pipefail
-
-# Source utility functions
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 readonly SUDOERS_FILE="/etc/sudoers.d/sudo-group"
 readonly SUDOERS_CONTENT="%wheel  ALL=(ALL)       NOPASSWD: ALL"

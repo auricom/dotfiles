@@ -8,7 +8,7 @@ function limactl-docker
     end
 
     if not docker context inspect lima-docker >/dev/null 2>&1
-        docker context create lima-docker --docker "host=unix:///var/home/auricom/.lima/docker/sock/docker.sock"
+        docker context create lima-docker --docker "host=unix://$HOME/.lima/docker/sock/docker.sock"
     end
 
     set -l current_context (docker context show 2>/dev/null)
