@@ -5,6 +5,8 @@
 .config/bat/themes/Catppuccin Mocha.tmTheme
 .config/systemd/user/dotfiles-update-custom.service
 .config/systemd/user/dotfiles-update-custom.timer
+.local/share/applications/recur.desktop
+.local/share/icons/recur.png
 .local/share/starship
 scripts
 mise.toml
