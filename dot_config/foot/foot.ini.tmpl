@@ -17,72 +17,75 @@ style=block
 color-theme-switch-dark=Control+p
 color-theme-switch-light=Control+o
 
+{{- $mocha := .catppuccin.palette.mocha }}
+{{- $latte := .catppuccin.palette.latte }}
+
 [colors-dark]
-cursor=11111b f5e0dc
-foreground=cdd6f4
-background=1e1e2e
+cursor={{ $mocha.crust }} {{ $mocha.rosewater }}
+foreground={{ $mocha.text }}
+background={{ $mocha.base }}
 
-regular0=45475a
-regular1=f38ba8
-regular2=a6e3a1
-regular3=f9e2af
-regular4=89b4fa
-regular5=f5c2e7
-regular6=94e2d5
-regular7=bac2de
+regular0={{ $mocha.surface1 }}
+regular1={{ $mocha.red }}
+regular2={{ $mocha.green }}
+regular3={{ $mocha.yellow }}
+regular4={{ $mocha.blue }}
+regular5={{ $mocha.pink }}
+regular6={{ $mocha.teal }}
+regular7={{ $mocha.subtext1 }}
 
-bright0=585b70
-bright1=f38ba8
-bright2=a6e3a1
-bright3=f9e2af
-bright4=89b4fa
-bright5=f5c2e7
-bright6=94e2d5
-bright7=a6adc8
+bright0={{ $mocha.surface2 }}
+bright1={{ $mocha.red }}
+bright2={{ $mocha.green }}
+bright3={{ $mocha.yellow }}
+bright4={{ $mocha.blue }}
+bright5={{ $mocha.pink }}
+bright6={{ $mocha.teal }}
+bright7={{ $mocha.subtext0 }}
 
-16=fab387
-17=f5e0dc
+16={{ $mocha.peach }}
+17={{ $mocha.rosewater }}
 
-selection-foreground=cdd6f4
+selection-foreground={{ $mocha.text }}
 selection-background=414356
 
-search-box-no-match=11111b f38ba8
-search-box-match=cdd6f4 313244
+search-box-no-match={{ $mocha.crust }} {{ $mocha.red }}
+search-box-match={{ $mocha.text }} {{ $mocha.surface0 }}
 
-jump-labels=11111b fab387
-urls=89b4fa
+jump-labels={{ $mocha.crust }} {{ $mocha.peach }}
+urls={{ $mocha.blue }}
 
 [colors-light]
-cursor=eff1f5 dc8a78
-foreground=4c4f69
-background=eff1f5
+cursor={{ $latte.base }} {{ $latte.rosewater }}
+foreground={{ $latte.text }}
+background={{ $latte.base }}
 
-regular0=5c5f77
-regular1=d20f39
-regular2=40a02b
-regular3=df8e1d
-regular4=1e66f5
-regular5=ea76cb
-regular6=179299
-regular7=acb0be
+regular0={{ $latte.subtext1 }}
+regular1={{ $latte.red }}
+regular2={{ $latte.green }}
+regular3={{ $latte.yellow }}
+regular4={{ $latte.blue }}
+regular5={{ $latte.pink }}
+regular6={{ $latte.teal }}
+regular7={{ $latte.surface2 }}
 
-bright0=6c6f85
-bright1=d20f39
-bright2=40a02b
-bright3=df8e1d
-bright4=1e66f5
-bright5=ea76cb
-bright6=179299
-bright7=bcc0cc
+bright0={{ $latte.subtext0 }}
+bright1={{ $latte.red }}
+bright2={{ $latte.green }}
+bright3={{ $latte.yellow }}
+bright4={{ $latte.blue }}
+bright5={{ $latte.pink }}
+bright6={{ $latte.teal }}
+bright7={{ $latte.surface1 }}
 
-16=fe640b
-17=dc8a78
+16={{ $latte.peach }}
+17={{ $latte.rosewater }}
 
-selection-foreground=4c4f69
+selection-foreground={{ $latte.text }}
 selection-background=ccced7
 
-search-box-no-match=dce0e8 d20f39
-search-box-match=4c4f69 ccd0da
+search-box-no-match={{ $latte.crust }} {{ $latte.red }}
+search-box-match={{ $latte.text }} {{ $latte.surface0 }}
 
-jump-labels=dce0e8 fe640b
-urls=1e66f5
+jump-labels={{ $latte.crust }} {{ $latte.peach }}
+urls={{ $latte.blue }}

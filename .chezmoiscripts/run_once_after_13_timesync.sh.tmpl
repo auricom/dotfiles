@@ -72,6 +72,5 @@ set_hardware_clock_utc() {
     fi
 }
 
-# Run main function
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

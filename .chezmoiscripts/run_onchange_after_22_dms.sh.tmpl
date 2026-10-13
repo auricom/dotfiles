@@ -55,6 +55,5 @@ greeter() {
     log_info "Greeter configured"
 }
 
-# Run main function
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

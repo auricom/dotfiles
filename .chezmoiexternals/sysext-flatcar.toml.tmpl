@@ -1,7 +1,3 @@
 {{ range .sysexts.flatcar -}}
-[".local/share/sysexts/{{ . }}/{{ . }}.conf"]
-    type = "file"
-    url = "https://github.com/flatcar/sysext-bakery/releases/download/{{ . }}/{{ . }}.conf"
-    refreshPeriod = "168h"
-
+{{ includeTemplate "external-file" (dict "path" (printf ".local/share/sysexts/%s/%s.conf" . .) "url" (printf "https://github.com/flatcar/sysext-bakery/releases/download/%s/%s.conf" . .)) }}
 {{ end -}}

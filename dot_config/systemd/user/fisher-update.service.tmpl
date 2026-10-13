@@ -1,13 +1,7 @@
-[Unit]
-Description=fisher update
-After=network-online.target
-ConditionPathExists=%h/.config/fish/functions/fisher.fish
-OnFailure=notify-failure@%p.service
-
-[Service]
-Type=oneshot
-ExecStart={{ .brewPrefix }}/bin/fish -c "fisher update"
-Environment="PATH={{ .brewPrefix }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-[Install]
-WantedBy=default.target
+{{ includeTemplate "systemd-oneshot" (dict
+    "description" "fisher update"
+    "after" (list "network-online.target")
+    "condition" "%h/.config/fish/functions/fisher.fish"
+    "exec" (printf "%s/bin/fish -c \"fisher update\"" .brewPrefix)
+    "path" (includeTemplate "brew-path" . | trim)
+) -}}

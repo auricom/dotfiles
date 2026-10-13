@@ -2,14 +2,14 @@
 Description=Resilio Sync in Distrobox
 After=network-online.target
 Wants=network-online.target
-OnFailure=notify-failure@%n.service
+OnFailure=notify-failure@%p.service
 
 [Service]
 Type=simple
 Restart=always
 RestartSec=10
 TimeoutStartSec=900
-Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:{{ .brewPrefix }}/bin"
+Environment="PATH=/usr/bin:{{ includeTemplate "brew-path" . | trim }}"
 ExecStartPre=/usr/bin/mkdir -p %h/.local/share/resilio-sync %h/sync
 ExecStartPre=/usr/bin/env distrobox assemble create --file %h/.config/distrobox/resilio-sync.ini
 ExecStartPre=/usr/bin/env distrobox enter --no-tty resilio-sync -- sudo mkdir -p /var/run/resilio-sync

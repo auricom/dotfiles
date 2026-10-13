@@ -13,5 +13,5 @@ main() {
     log_info "bat cache rebuild completed"
 }
 
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

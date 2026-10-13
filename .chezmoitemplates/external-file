@@ -1,0 +1,5 @@
+{{- /* Single-file external asset stanza. Args: path (exact target, e.g. ".config/eza/theme.yml"), url, refresh (optional). */ -}}
+["{{ .path }}"]
+    type = "file"
+    url = "{{ .url }}"
+    refreshPeriod = "{{ index . "refresh" | default "168h" }}"

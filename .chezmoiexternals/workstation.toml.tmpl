@@ -1,12 +1,6 @@
 {{ if .isDesktop }}
 # qwerty-fr
-[".config/xkb/symbols/us_qwerty-fr"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/qwerty-fr/qwerty-fr/master/linux/us_qwerty-fr"
-    refreshPeriod = "168h"
+{{ includeTemplate "external-file" (dict "path" ".config/xkb/symbols/us_qwerty-fr" "url" "https://raw.githubusercontent.com/qwerty-fr/qwerty-fr/master/linux/us_qwerty-fr") }}
 
-[".var/app/dev.zed.Zed/config/zed/themes/catppuccin-blue.json"]
-    type = "file"
-    url = "https://github.com/catppuccin/zed/releases/download/{{ (gitHubLatestRelease "catppuccin/zed").TagName }}/catppuccin-blue.json"
-    refreshPeriod = "0"
+{{ includeTemplate "external-file" (dict "path" ".var/app/dev.zed.Zed/config/zed/themes/catppuccin-blue.json" "url" (printf "https://github.com/catppuccin/zed/releases/download/%s/catppuccin-blue.json" (toString (gitHubLatestRelease "catppuccin/zed").TagName)) "refresh" "0") }}
 {{ end }}

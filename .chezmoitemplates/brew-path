@@ -1,0 +1,2 @@
+{{- /* Canonical PATH for systemd units, with Homebrew/linuxbrew first. */ -}}
+{{ .brewPrefix }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

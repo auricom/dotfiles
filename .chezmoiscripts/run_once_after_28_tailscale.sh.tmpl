@@ -15,5 +15,5 @@ main() {
     log_info "tailscaled activation completed"
 }
 
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

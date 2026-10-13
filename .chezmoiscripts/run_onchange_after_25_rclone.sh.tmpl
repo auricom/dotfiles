@@ -97,5 +97,4 @@ generate_rclone_config() {
     log_info "Rclone configuration generated successfully"
 }
 
-# Run main function
-main "$@"
+{{ includeTemplate "script-footer" . -}}

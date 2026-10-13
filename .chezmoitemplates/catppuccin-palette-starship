@@ -1,0 +1,5 @@
+{{- /* Starship palette table. Args: name, colors (hex map without leading #). */ -}}
+[palettes.{{ .name }}]
+{{- range $k, $v := .colors }}
+{{ $k }} = "#{{ $v }}"
+{{- end -}}

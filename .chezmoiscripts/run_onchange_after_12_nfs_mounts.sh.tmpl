@@ -86,6 +86,5 @@ main() {
     log_info "NFS mounts configuration completed"
 }
 
-# Run main function
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

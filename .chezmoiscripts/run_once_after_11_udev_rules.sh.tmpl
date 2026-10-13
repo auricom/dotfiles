@@ -51,6 +51,5 @@ reload_udev_rules() {
     fi
 }
 
-# Run main function
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

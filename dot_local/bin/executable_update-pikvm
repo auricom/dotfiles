@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# shellcheck source=.local/lib/chezmoi_utils.sh
+source "${HOME}/.local/lib/chezmoi_utils.sh"
+
+main() {
+    local status
+
+    require_command ssh "PiKVM updates"
+
+    log_section "Updating PiKVM"
+    if ssh -t root@pikvm 'rw && pikvm-update'; then
+        log_info "PiKVM update completed"
+    else
+        status=$?
+        log_error "PiKVM update failed"
+        return "${status}"
+    fi
+}
+
+main "$@"

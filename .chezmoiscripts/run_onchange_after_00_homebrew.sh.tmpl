@@ -17,4 +17,4 @@ main() {
     log_info "To remove unlisted packages, run: brew bundle cleanup --file={{ .chezmoi.homeDir }}/Brewfile"
 }
 
-main "$@"
+{{ includeTemplate "script-footer" . -}}

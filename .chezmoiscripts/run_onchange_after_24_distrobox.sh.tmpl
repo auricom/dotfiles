@@ -46,5 +46,5 @@ deploy_distrobox() {
     log_info "$name Distrobox configuration completed"
 }
 
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

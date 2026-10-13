@@ -15,8 +15,8 @@ export PATH
 # export SYSTEMD_PAGER=
 
 # Homebrew (linuxbrew)
-if [ -d /home/linuxbrew/.linuxbrew ]; then
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+if [ -d {{ .brewPrefix }} ]; then
+    eval "$({{ .brewPrefix }}/bin/brew shellenv)"
 fi
 
 # User specific aliases and functions

@@ -1,14 +1,7 @@
-[Unit]
-Description=dotfiles update
-After=local-fs.target
-After=network-online.target
-ConditionPathExists=%h/.local/bin/dotfiles-update
-OnFailure=notify-failure@%p.service
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/bash -c "%h/.local/bin/dotfiles-update"
-Environment="PATH={{ .brewPrefix }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-[Install]
-WantedBy=default.target
+{{ includeTemplate "systemd-oneshot" (dict
+    "description" "dotfiles update"
+    "after" (list "local-fs.target" "network-online.target")
+    "condition" "%h/.local/bin/dotfiles-update"
+    "exec" "/usr/bin/bash -c \"%h/.local/bin/dotfiles-update\""
+    "path" (includeTemplate "brew-path" . | trim)
+) -}}

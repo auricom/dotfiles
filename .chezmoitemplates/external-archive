@@ -1,0 +1,7 @@
+{{- /* Archive external asset stanza. Args: path (exact target dir), url, strip (stripComponents), refresh (optional). */ -}}
+["{{ .path }}"]
+    type = "archive"
+    url = "{{ .url }}"
+    exact = true
+    stripComponents = {{ .strip }}
+    refreshPeriod = "{{ index . "refresh" | default "168h" }}"

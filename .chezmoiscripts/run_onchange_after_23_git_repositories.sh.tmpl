@@ -39,6 +39,5 @@ setup_symlinks() {
     {{- end }}
 }
 
-# Run main function
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# shellcheck source=.local/lib/chezmoi_utils.sh
+source "${HOME}/.local/lib/chezmoi_utils.sh"
+
+update_host() {
+    local host="$1"
+    local status
+
+    log_section "Updating DietPi on ${host}"
+    if ssh -t "dietpi@${host}" 'bash -lic dietpi-update'; then
+        log_info "DietPi update completed" "host=${host}"
+    else
+        status=$?
+        log_error "DietPi update failed" "host=${host}"
+        return "${status}"
+    fi
+}
+
+main() {
+    require_command ssh "DietPi updates"
+
+    update_host dns-1
+    update_host dns-2
+}
+
+main "$@"

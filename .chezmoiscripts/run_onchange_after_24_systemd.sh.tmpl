@@ -70,6 +70,5 @@ enable_container_services() {
     done
 }
 
-# Run main function
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

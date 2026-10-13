@@ -1,0 +1,23 @@
+{{- /* One-shot user systemd unit scaffold.
+Args: description, after (list), wants (optional), condition (optional),
+      exec, path (PATH value, typically includeTemplate "brew-path" | trim). */ -}}
+[Unit]
+Description={{ .description }}
+{{- range .after }}
+After={{ . }}
+{{- end }}
+{{- with index . "wants" }}
+Wants={{ . }}
+{{- end }}
+{{- with index . "condition" }}
+ConditionPathExists={{ . }}
+{{- end }}
+OnFailure=notify-failure@%p.service
+
+[Service]
+Type=oneshot
+ExecStart={{ .exec }}
+Environment="PATH={{ .path }}"
+
+[Install]
+WantedBy=default.target

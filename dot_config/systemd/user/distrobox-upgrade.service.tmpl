@@ -1,13 +1,7 @@
-[Unit]
-Description=distrobox upgrade
-After=network-online.target
-Wants=network-online.target
-OnFailure=notify-failure@%p.service
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/env distrobox-upgrade --all
-Environment="PATH={{ .brewPrefix }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-[Install]
-WantedBy=default.target
+{{ includeTemplate "systemd-oneshot" (dict
+    "description" "distrobox upgrade"
+    "after" (list "network-online.target")
+    "wants" "network-online.target"
+    "exec" "/usr/bin/env distrobox-upgrade --all"
+    "path" (printf "/usr/bin:%s" (includeTemplate "brew-path" . | trim))
+) -}}

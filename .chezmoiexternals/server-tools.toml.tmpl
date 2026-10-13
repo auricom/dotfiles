@@ -1,7 +1,3 @@
 {{ if .isServer }}
-[".local/bin/zfs-inplace-rebalancing"]
-    type = "file"
-    executable = true
-    url = "https://raw.githubusercontent.com/markusressel/zfs-inplace-rebalancing/master/zfs-inplace-rebalancing.sh"
-    refreshPeriod = "168h"
+{{ includeTemplate "external-file" (dict "path" ".local/bin/zfs-inplace-rebalancing" "url" "https://raw.githubusercontent.com/markusressel/zfs-inplace-rebalancing/master/zfs-inplace-rebalancing.sh") }}
 {{ end }}

@@ -2,86 +2,39 @@
 
 # bat
 {{- range .catppuccin.flavors }}
-[".config/bat/themes/Catppuccin_{{ .title }}.tmTheme"]
-    type = "file"
-    url = "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%20{{ .title }}.tmTheme"
-    refreshPeriod = "168h"
+{{ includeTemplate "external-file" (dict "path" (printf ".config/bat/themes/Catppuccin_%s.tmTheme" .title) "url" (printf "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%%20%s.tmTheme" .title)) }}
 {{- end }}
 
 # btop
 {{- range .catppuccin.flavors }}
-[".config/btop/themes/catppuccin_{{ .id }}.theme"]
-    type = "file"
-    url = "https://github.com/catppuccin/btop/raw/main/themes/catppuccin_{{ .id }}.theme"
-    refreshPeriod = "168h"
+{{ includeTemplate "external-file" (dict "path" (printf ".config/btop/themes/catppuccin_%s.theme" .id) "url" (printf "https://github.com/catppuccin/btop/raw/main/themes/catppuccin_%s.theme" .id)) }}
 {{- end }}
 
 # eza
-[".config/eza/theme.yml"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/mocha/catppuccin-mocha-mauve.yml"
-    refreshPeriod = "168h"
+{{ includeTemplate "external-file" (dict "path" ".config/eza/theme.yml" "url" "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/mocha/catppuccin-mocha-mauve.yml") }}
 
 {{ if .isDesktop }}
 # k9s
-[".config/k9s/skins"]
-    type = "archive"
-    url = "https://github.com/catppuccin/k9s/archive/main.tar.gz"
-    exact = true
-    stripComponents = 2
-    refreshPeriod = "168h"
+{{ includeTemplate "external-archive" (dict "path" ".config/k9s/skins" "url" "https://github.com/catppuccin/k9s/archive/main.tar.gz" "strip" 2) }}
 
 # foot
-[".config/foot/catppuccin_frappe.ini"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-frappe.ini"
-    refreshPeriod = "168h"
-[".config/foot/catppuccin_mocha.ini"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-mocha.ini"
-    refreshPeriod = "168h"
+{{ includeTemplate "external-file" (dict "path" ".config/foot/catppuccin_frappe.ini" "url" "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-frappe.ini") }}
+{{ includeTemplate "external-file" (dict "path" ".config/foot/catppuccin_mocha.ini" "url" "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-mocha.ini") }}
 
 # opencode
-[".config/opencode/themes/catppuccin-mocha-blue.json"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/opencode/refs/heads/main/themes/mocha/catppuccin-mocha-blue.json"
-    refreshPeriod = "168h"
+{{ includeTemplate "external-file" (dict "path" ".config/opencode/themes/catppuccin-mocha-blue.json" "url" "https://raw.githubusercontent.com/catppuccin/opencode/refs/heads/main/themes/mocha/catppuccin-mocha-blue.json") }}
 
 # pi-coding-agent
-[".pi/agent/themes/catppuccin-mocha.json"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/otahontas/pi-coding-agent-catppuccin/refs/heads/main/catppuccin-mocha.json"
-    refreshPeriod = "168h"
+{{ includeTemplate "external-file" (dict "path" ".pi/agent/themes/catppuccin-mocha.json" "url" "https://raw.githubusercontent.com/otahontas/pi-coding-agent-catppuccin/refs/heads/main/catppuccin-mocha.json") }}
 
-# zen
-[".local/share/catppuccin/zen/mocha_sky_userChrome.css"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Mocha/Sky/userChrome.css"
-    refreshPeriod = "168h"
-[".local/share/catppuccin/zen/mocha_sky_userContent.css"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Mocha/Sky/userContent.css"
-    refreshPeriod = "168h"
-[".local/share/catppuccin/zen/mocha_sky_zen-logo.svg"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Mocha/Sky/zen-logo-mocha.svg"
-    refreshPeriod = "168h"
-[".local/share/catppuccin/zen/latte_sky_userChrome.css"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Latte/Sky/userChrome.css"
-    refreshPeriod = "168h"
-[".local/share/catppuccin/zen/latte_sky_userContent.css"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Latte/Sky/userContent.css"
-    refreshPeriod = "168h"
-[".local/share/catppuccin/zen/latte_sky_zen-logo.svg"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/Latte/Sky/zen-logo-latte.svg"
-    refreshPeriod = "168h"
+# zen (Mocha + Latte, Sky accent)
+{{- range $title := list "Mocha" "Latte" }}
+{{- $id := lower $title }}
+{{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_sky_userChrome.css" $id) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/Sky/userChrome.css" $title)) }}
+{{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_sky_userContent.css" $id) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/Sky/userContent.css" $title)) }}
+{{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_sky_zen-logo.svg" $id) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/Sky/zen-logo-%s.svg" $title $id)) }}
+{{- end }}
 
 # zellij catppuccin theme
-[".config/zellij/catppuccin.kdl"]
-    type = "file"
-    url = "https://raw.githubusercontent.com/catppuccin/zellij/refs/heads/main/catppuccin.kdl"
-    refreshPeriod = "168h"
+{{ includeTemplate "external-file" (dict "path" ".config/zellij/catppuccin.kdl" "url" "https://raw.githubusercontent.com/catppuccin/zellij/refs/heads/main/catppuccin.kdl") }}
 {{ end }}

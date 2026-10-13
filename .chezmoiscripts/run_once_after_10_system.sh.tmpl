@@ -82,6 +82,5 @@ activate_brew_timers() {
     done
 }
 
-# Run main function
-main "$@"
+{{ includeTemplate "script-footer" . -}}
 {{- end -}}

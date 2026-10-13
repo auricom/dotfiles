@@ -1,0 +1,7 @@
+{{- /* Shared Distrobox init_hooks installing Claude Code + Codex from the official apt repo. */ -}}
+init_hooks="install -d -m 0755 /etc/apt/keyrings"
+init_hooks="curl -fsSL https://downloads.claude.ai/keys/claude-code.asc -o /etc/apt/keyrings/claude-code.asc"
+init_hooks="gpg --show-keys --with-colons /etc/apt/keyrings/claude-code.asc | grep -Fq 'fpr:::::::::31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE:'"
+init_hooks="echo deb [signed-by=/etc/apt/keyrings/claude-code.asc] https://downloads.claude.ai/claude-code/apt/stable stable main > /etc/apt/sources.list.d/claude-code.list"
+init_hooks="apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends claude-code"
+init_hooks="npm install --global @openai/codex@latest"
