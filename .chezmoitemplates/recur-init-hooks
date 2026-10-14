@@ -1,7 +1,9 @@
-{{- /* Shared Distrobox init_hooks installing Claude Code + Codex from the official apt repo. */ -}}
+{{- /* Shared Distrobox init_hooks installing Claude Code + Codex from the official apt repo, and the latest Recur release deb (private repo, so downloaded with the host user's gh auth). */ -}}
 init_hooks="install -d -m 0755 /etc/apt/keyrings"
 init_hooks="curl -fsSL https://downloads.claude.ai/keys/claude-code.asc -o /etc/apt/keyrings/claude-code.asc"
 init_hooks="gpg --show-keys --with-colons /etc/apt/keyrings/claude-code.asc | grep -Fq 'fpr:::::::::31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE:'"
 init_hooks="echo deb [signed-by=/etc/apt/keyrings/claude-code.asc] https://downloads.claude.ai/claude-code/apt/stable stable main > /etc/apt/sources.list.d/claude-code.list"
 init_hooks="apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends claude-code"
 init_hooks="npm install --global @openai/codex@latest"
+init_hooks="runuser -u {{ .chezmoi.username }} -- env XDG_RUNTIME_DIR=/run/user/{{ .chezmoi.uid }} DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/{{ .chezmoi.uid }}/bus gh release download --repo celestiaorg/recur --pattern Recur-linux-amd64.deb --dir /tmp --clobber"
+init_hooks="DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/Recur-linux-amd64.deb"

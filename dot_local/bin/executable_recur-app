@@ -2,9 +2,16 @@
 
 set -Eeuo pipefail
 
-readonly RECUR_BIN="/usr/local/bin/recur"
+readonly RECUR_BIN="/usr/bin/recur"
+RECUR_BOX="recur"
+
+if [[ "${1-}" == "--dev" ]]; then
+  shift
+  RECUR_BOX="recur-dev"
+fi
+readonly RECUR_BOX
 
 # Distrobox must use the host's rootless Podman, not Homebrew's client.
 export PATH="/usr/bin:${PATH}"
 
-exec distrobox enter --no-tty recur -- "${RECUR_BIN}" "$@"
+exec distrobox enter --no-tty "${RECUR_BOX}" -- "${RECUR_BIN}" "$@"

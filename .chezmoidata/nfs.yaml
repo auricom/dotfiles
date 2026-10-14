@@ -22,3 +22,7 @@ nfs:
       mountpoint: music
     - share: piracy
       mountpoint: piracy
+    - share: apps/booklore
+      mountpoint: apps-booklore
+    - share: apps/bookorbit
+      mountpoint: apps-bookorbit
