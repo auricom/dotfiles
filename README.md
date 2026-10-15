@@ -7,7 +7,7 @@ Personal dotfiles managed with [chezmoi](https://chezmoi.io), supporting worksta
 - **Three form factors** — `workstation`/`laptop` (GUI, Kubernetes tools, fonts) and `server` (minimal CLI); laptops auto-detected via DMI chassis type, workstation/server prompted once at init
 - **Encrypted secrets** — age-based encryption with SOPS for API tokens, keys, and sensitive configs
 - **Catppuccin Mocha** theme across all supported applications
-- **Automated setup** — post-apply scripts handle Homebrew bundles, Distrobox services, systemd services, NFS mounts, and git repo cloning
+- **Automated setup** — post-apply scripts handle Homebrew bundles, AppImages, Distrobox services, systemd services, NFS mounts, and git repo cloning
 - **External assets** — Catppuccin themes, Bibata cursors, and keyboard layouts fetched via `.chezmoiexternals`
 
 ## Prerequisites
@@ -70,7 +70,7 @@ chezmoi apply
 └── Brewfile.tmpl               # Homebrew packages rendered from chezmoidata
 ```
 
-Package definitions live in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, and `.chezmoidata/packages_flatpak.yaml`, and are rendered into `Brewfile.tmpl` by chezmoi.
+Package definitions live in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, `.chezmoidata/packages_flatpak.yaml`, and `.chezmoidata/packages_appimage.yaml`. Homebrew and Flatpak packages are rendered into `Brewfile.tmpl`; AppImages are reconciled through Gear Lever.
 
 ## Profiles
 
@@ -89,7 +89,7 @@ Package definitions live in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/pac
 
 ## Packages
 
-Package inventories are intentionally not duplicated in this README to avoid drift. The source of truth lives in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, and `.chezmoidata/packages_flatpak.yaml`, with `Brewfile.tmpl` rendering the Homebrew Bundle configuration from that data.
+Package inventories are intentionally not duplicated in this README to avoid drift. The source of truth lives in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, `.chezmoidata/packages_flatpak.yaml`, and `.chezmoidata/packages_appimage.yaml`.
 
 ## Post-Apply Scripts
 
@@ -106,6 +106,7 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_once_after_27_cursors.sh` | once | Bibata cursor installation |
 | `run_once_after_28_tailscale.sh` | once | Enable/start `tailscaled` |
 | `run_onchange_after_00_homebrew.sh` | Brewfile change | `brew bundle install` |
+| `run_onchange_after_01_appimages.sh` | AppImage data change | Reconcile Gear Lever AppImages |
 | `run_onchange_after_12_nfs_mounts.sh` | nfs.yaml change | Configure NFS mounts |
 | `run_onchange_after_22_dms.sh` | theme change | DankMaterialShell theme setup |
 | `run_onchange_after_23_git_repositories.sh` | repos.yaml change | Clone repos & symlinks |

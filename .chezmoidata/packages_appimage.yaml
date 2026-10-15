@@ -1,0 +1,8 @@
+appimages:
+  comictagger:
+    name: ComicTagger
+    update:
+      source: github
+      repo: comictagger/comictagger
+      filename: ComicTagger-x86_64.AppImage
+      allow_prereleases: true

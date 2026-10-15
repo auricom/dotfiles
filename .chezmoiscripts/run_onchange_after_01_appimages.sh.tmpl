@@ -1,0 +1,265 @@
+{{- if .isDesktop }}
+{{- includeTemplate "script-header" . }}
+
+# Declarative Gear Lever AppImage lifecycle management.
+# Data hash: {{ include ".chezmoidata/packages_appimage.yaml" | sha256sum }}
+
+readonly GEARLEVER_ID="it.mijorus.gearlever"
+readonly APPIMAGE_DIR="{{ .chezmoi.homeDir }}/AppImages"
+readonly STATE_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/chezmoi"
+readonly STATE_FILE="${STATE_DIR}/gearlever-appimages.json"
+DESIRED_JSON=$(cat <<'JSON'
+{{ .appimages | toJson }}
+JSON
+)
+readonly DESIRED_JSON
+
+gearlever() {
+    flatpak run "${GEARLEVER_ID}" "$@"
+}
+
+configure_destination() {
+    mkdir -p "${APPIMAGE_DIR}"
+    flatpak run --command=gsettings "${GEARLEVER_ID}" set \
+        "${GEARLEVER_ID}" appimages-default-folder "${APPIMAGE_DIR}"
+}
+
+refresh_installed() {
+    INSTALLED_JSON=$(gearlever --list-installed --json)
+    if ! jq -e '.schema_version == 1 and (.installed | type == "array")' <<<"${INSTALLED_JSON}" >/dev/null; then
+        log_error "Gear Lever returned an unsupported installed-apps document"
+        return 1
+    fi
+}
+
+resolve_installed_path() {
+    local name="$1"
+    local preferred_path="${2:-}"
+
+    if [[ -n ${preferred_path} ]] && jq -e --arg path "${preferred_path}" \
+        '.installed[] | select(.path == $path)' <<<"${INSTALLED_JSON}" >/dev/null; then
+        printf '%s\n' "${preferred_path}"
+        return 0
+    fi
+
+    local count
+    count=$(jq --arg name "${name}" \
+        '[.installed[] | select(.name == $name or (.name | startswith($name + " (")))] | length' \
+        <<<"${INSTALLED_JSON}")
+    case "${count}" in
+        0) return 1 ;;
+        1)
+            jq -r --arg name "${name}" \
+                '.installed[] | select(.name == $name or (.name | startswith($name + " ("))) | .path' \
+                <<<"${INSTALLED_JSON}"
+            ;;
+        *)
+            log_error "Multiple Gear Lever applications are named ${name}; refusing to choose one"
+            return 2
+            ;;
+    esac
+}
+
+github_download_url() {
+    local repo="$1"
+    local filename="$2"
+    local allow_prereleases="$3"
+    local release_json
+
+    if [[ ${allow_prereleases} == true ]]; then
+        release_json=$(curl --fail --silent --show-error --location \
+            "https://api.github.com/repos/${repo}/releases?per_page=100")
+        jq -er --arg filename "${filename}" \
+            '[.[] | select(.draft == false) | .assets[] | select(.name == $filename) | .browser_download_url][0]' \
+            <<<"${release_json}"
+    else
+        release_json=$(curl --fail --silent --show-error --location \
+            "https://api.github.com/repos/${repo}/releases/latest")
+        jq -er --arg filename "${filename}" \
+            '[.assets[] | select(.name == $filename) | .browser_download_url][0]' \
+            <<<"${release_json}"
+    fi
+}
+
+download_url_for() {
+    local entry="$1"
+    local direct_url
+    direct_url=$(jq -r '.url // empty' <<<"${entry}")
+    if [[ -n ${direct_url} ]]; then
+        printf '%s\n' "${direct_url}"
+        return
+    fi
+
+    local source_type repo filename allow_prereleases
+    source_type=$(jq -r '.update.source // empty' <<<"${entry}")
+    repo=$(jq -r '.update.repo // empty' <<<"${entry}")
+    filename=$(jq -r '.update.filename // empty' <<<"${entry}")
+    allow_prereleases=$(jq -r '.update.allow_prereleases // false' <<<"${entry}")
+
+    if [[ ${source_type} != github || -z ${repo} || -z ${filename} ]]; then
+        log_error "An AppImage needs either a direct URL or a supported update source"
+        return 1
+    fi
+    github_download_url "${repo}" "${filename}" "${allow_prereleases}"
+}
+
+install_appimage() {
+    local entry="$1"
+    local filename url tmp_dir download_path
+    filename=$(jq -r '.update.filename // (.url | split("/")[-1])' <<<"${entry}")
+    if ! url=$(download_url_for "${entry}"); then
+        log_error "Could not resolve a download URL for ${filename}"
+        return 1
+    fi
+    tmp_dir=$(mktemp -d)
+    download_path="${tmp_dir}/${filename}"
+
+    log_info "Downloading ${filename}"
+    if ! curl --fail --show-error --location --output "${download_path}" "${url}"; then
+        rm -rf -- "${tmp_dir}"
+        return 1
+    fi
+
+    log_info "Integrating ${filename} with Gear Lever"
+    if ! gearlever --integrate "${download_path}" --yes; then
+        rm -rf -- "${tmp_dir}"
+        return 1
+    fi
+    rm -rf -- "${tmp_dir}"
+}
+
+configure_update_source() {
+    local path="$1"
+    local update="$2"
+    local source_type repo filename allow_prereleases
+    source_type=$(jq -r '.source' <<<"${update}")
+    repo=$(jq -r '.repo' <<<"${update}")
+    filename=$(jq -r '.filename' <<<"${update}")
+    allow_prereleases=$(jq -r '.allow_prereleases // false' <<<"${update}")
+
+    if [[ ${source_type} != github || -z ${repo} || ${repo} == null || -z ${filename} || ${filename} == null ]]; then
+        log_error "Invalid AppImage update configuration"
+        return 1
+    fi
+
+    gearlever --set-update-source "${path}" \
+        --manager GithubUpdater \
+        "repo=${repo}" \
+        "repo_filename=${filename}" \
+        "allow_prereleases=${allow_prereleases}"
+}
+
+load_state() {
+    if [[ ! -f ${STATE_FILE} ]]; then
+        OLD_STATE='{"version":1,"managed":{}}'
+        return
+    fi
+
+    OLD_STATE=$(<"${STATE_FILE}")
+    if ! jq -e '.version == 1 and (.managed | type == "object")' <<<"${OLD_STATE}" >/dev/null; then
+        log_error "Invalid Gear Lever state file: ${STATE_FILE}"
+        return 1
+    fi
+}
+
+remove_stale_apps() {
+    local key old_entry name preferred_path path status
+    while IFS= read -r key; do
+        jq -e --arg key "${key}" 'has($key)' <<<"${DESIRED_JSON}" >/dev/null && continue
+
+        old_entry=$(jq -c --arg key "${key}" '.managed[$key]' <<<"${OLD_STATE}")
+        name=$(jq -r '.name' <<<"${old_entry}")
+        preferred_path=$(jq -r '.path // empty' <<<"${old_entry}")
+        path=$(resolve_installed_path "${name}" "${preferred_path}") && status=0 || status=$?
+        if ((status == 2)); then
+            return 1
+        elif ((status == 1)); then
+            log_info "Managed AppImage ${name} is already absent"
+            continue
+        fi
+
+        log_info "Moving removed AppImage ${name} to trash"
+        gearlever --remove "${path}" --yes
+        refresh_installed
+    done < <(jq -r '.managed | keys[]' <<<"${OLD_STATE}")
+}
+
+reconcile_desired_apps() {
+    local key entry name old_entry preferred_path path status update has_update was_update_managed
+    NEW_STATE='{"version":1,"managed":{}}'
+
+    while IFS= read -r key; do
+        entry=$(jq -c --arg key "${key}" '.[$key]' <<<"${DESIRED_JSON}")
+        name=$(jq -r '.name' <<<"${entry}")
+        if [[ -z ${name} || ${name} == null ]]; then
+            log_error "AppImage ${key} has no name"
+            return 1
+        fi
+
+        old_entry=$(jq -c --arg key "${key}" '.managed[$key] // {}' <<<"${OLD_STATE}")
+        preferred_path=$(jq -r '.path // empty' <<<"${old_entry}")
+        path=$(resolve_installed_path "${name}" "${preferred_path}") && status=0 || status=$?
+        if ((status == 2)); then
+            return 1
+        elif ((status == 1)); then
+            install_appimage "${entry}"
+            refresh_installed
+            path=$(resolve_installed_path "${name}") || {
+                log_error "Gear Lever did not report ${name} after integration"
+                return 1
+            }
+        else
+            log_info "AppImage ${name} is already integrated"
+        fi
+
+        has_update=$(jq 'has("update") and .update != null' <<<"${entry}")
+        was_update_managed=$(jq -r '.update_managed // false' <<<"${old_entry}")
+        if [[ ${has_update} == true ]]; then
+            update=$(jq -c '.update' <<<"${entry}")
+            log_info "Configuring updates for ${name}"
+            configure_update_source "${path}" "${update}"
+        elif [[ ${was_update_managed} == true ]]; then
+            log_info "Removing the managed update source for ${name}"
+            gearlever --set-update-source "${path}" --manager GithubUpdater --unset
+        fi
+
+        NEW_STATE=$(jq \
+            --arg key "${key}" \
+            --arg name "${name}" \
+            --arg path "${path}" \
+            --argjson update_managed "${has_update}" \
+            '.managed[$key] = {name: $name, path: $path, update_managed: $update_managed}' \
+            <<<"${NEW_STATE}")
+    done < <(jq -r 'keys[]' <<<"${DESIRED_JSON}")
+}
+
+write_state() {
+    local state_tmp
+    mkdir -p "${STATE_DIR}"
+    state_tmp=$(mktemp "${STATE_DIR}/.gearlever-appimages.XXXXXX")
+    printf '%s\n' "${NEW_STATE}" >"${state_tmp}"
+    mv "${state_tmp}" "${STATE_FILE}"
+}
+
+main() {
+    log_section "Managing AppImages with Gear Lever"
+    require_command flatpak "AppImage management"
+    require_command curl "AppImage downloads"
+    require_command jq "Gear Lever JSON processing"
+
+    if ! flatpak info "${GEARLEVER_ID}" >/dev/null 2>&1; then
+        log_error "Gear Lever is not installed"
+        return 1
+    fi
+
+    configure_destination
+    load_state
+    refresh_installed
+    remove_stale_apps
+    reconcile_desired_apps
+    write_state
+    log_info "AppImage reconciliation completed"
+}
+
+{{ includeTemplate "script-footer" . -}}
+{{- end -}}
