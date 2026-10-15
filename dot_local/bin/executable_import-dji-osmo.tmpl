@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-source "${HOME}/.local/lib/chezmoi_utils.sh"
+source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
 
 # Source and destination directories
 DJI_SOURCE_DIR="/run/media/{{ .chezmoi.username }}/SD_Card/DCIM"

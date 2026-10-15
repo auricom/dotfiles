@@ -15,7 +15,7 @@ main() {
 }
 
 set_hostname() {
-    local flag_file="${HOME}/.local/state/chezmoi/hostname-set"
+    local flag_file="{{ .chezmoi.homeDir }}/.local/state/chezmoi/hostname-set"
 
     if [[ -f "$flag_file" ]]; then
         log_info "Hostname already configured ($(cat "$flag_file")), skipping"

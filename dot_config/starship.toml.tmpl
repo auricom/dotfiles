@@ -47,7 +47,7 @@ fish_style_pwd_dir_length = 1
 home_symbol = "~"
 
 [directory.substitutions]
-'/var/home/{{ .chezmoi.username }}' = '~'
+'{{ .chezmoi.homeDir }}' = '~'
 
 [fill]
 style = 'white'

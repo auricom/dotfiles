@@ -26,7 +26,7 @@ main() {
 }
 
 enable_system_services() {
-    local unit_dir="$HOME/.config/systemd/user"
+    local unit_dir="{{ .chezmoi.homeDir }}/.config/systemd/user"
     local -A has_timer=()
 
     # Collect timer units (skip templates containing @)
