@@ -4,6 +4,17 @@
 .config/bat/themes/Catppuccin Mocha.tmTheme
 .config/systemd/user/dotfiles-update-custom.service
 .config/systemd/user/dotfiles-update-custom.timer
+.config/systemd/user/dotfiles-update.service
+.config/systemd/user/dotfiles-update.timer
+.config/systemd/user/distrobox-upgrade.service
+.config/systemd/user/distrobox-upgrade.timer
+.config/systemd/user/distrobox-update.service
+.config/systemd/user/distrobox-update.timer
+.config/systemd/user/fisher-update.service
+.config/systemd/user/fisher-update.timer
+.config/systemd/user/gearlever-update.service
+.config/systemd/user/gearlever-update.timer
+.local/bin/dotfiles-update
 .local/share/starship
 scripts
 mise.toml

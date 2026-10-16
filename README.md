@@ -29,7 +29,7 @@ You will be prompted for:
 To re-apply after changes:
 
 ```sh
-dotfiles-update
+update-dotfiles
 # or manually:
 chezmoi apply
 ```
@@ -62,7 +62,7 @@ chezmoi apply
 │   ├── systemd/                # User systemd services (workstation/laptop)
 │   └── ...
 ├── dot_local/
-│   ├── bin/                    # Custom scripts (dotfiles-update, fishfy-path, …)
+│   ├── bin/                    # Custom scripts (update-dotfiles, fishfy-path, …)
 │   ├── lib/                    # Shared shell libraries (chezmoi_utils, common_utils)
 │   └── libexec/                # Container/install helpers
 ├── dot_ssh/                    # SSH config

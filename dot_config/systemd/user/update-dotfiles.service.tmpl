@@ -1,7 +1,7 @@
 {{ includeTemplate "systemd-oneshot" (dict
     "description" "dotfiles update"
     "after" (list "local-fs.target" "network-online.target")
-    "condition" "%h/.local/bin/dotfiles-update"
-    "exec" "/usr/bin/bash -c \"%h/.local/bin/dotfiles-update\""
+    "condition" "%h/.local/bin/update-dotfiles"
+    "exec" "/usr/bin/bash -c \"%h/.local/bin/update-dotfiles\""
     "path" (includeTemplate "brew-path" . | trim)
 ) -}}
