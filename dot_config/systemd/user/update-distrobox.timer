@@ -3,7 +3,7 @@ Description=distrobox upgrade daily
 Wants=network-online.target
 
 [Timer]
-OnCalendar=weekly
+OnCalendar=daily
 Persistent=true
 
 [Install]
