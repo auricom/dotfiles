@@ -9,8 +9,8 @@ DJI_SOURCE_DIR="/run/media/{{ .chezmoi.username }}/SD_Card/DCIM"
 SORT_DEST_DIR="{{ .nfs.mountpoint_prefix }}/photo"
 
 # Validate required directories
-[[ -d "${DJI_SOURCE_DIR}" ]] || { log_error "Source not mounted" path="${DJI_SOURCE_DIR}"; exit 1; }
-[[ -d "${SORT_DEST_DIR}" ]]  || { log_error "Destination not mounted" path="${SORT_DEST_DIR}"; exit 1; }
+[[ -d "${DJI_SOURCE_DIR}" ]] || { log_error "Source not mounted" "path" "${DJI_SOURCE_DIR}"; exit 1; }
+[[ -d "${SORT_DEST_DIR}" ]]  || { log_error "Destination not mounted" "path" "${SORT_DEST_DIR}"; exit 1; }
 
 # Process a single DJI file
 process_dji_file() {

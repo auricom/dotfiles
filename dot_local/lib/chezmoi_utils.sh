@@ -15,17 +15,44 @@ _C_OVERLAY1="#7f849c"
 _C_TEXT="#cdd6f4"
 
 _GUM="$(command -v gum 2>/dev/null || true)"
+_PRETTY_OUTPUT=false
+if [[ -t 2 && -z ${NO_COLOR-} && ${TERM-} != "dumb" ]]; then
+    _PRETTY_OUTPUT=true
+fi
 
+_print_log_metadata() {
+    while (($# >= 2)); do
+        printf ' %s=%s' "$1" "$2" >&2
+        shift 2
+    done
+}
+
+_plain_log() {
+    local label="$1" message="$2"
+    shift 2
+    printf '%s %s' "${label}" "${message}" >&2
+    _print_log_metadata "$@"
+    printf '\n' >&2
+}
+
+# Public logging usage: log_<level> <message> [key value ...]
 if [[ -x ${_GUM} ]]; then
     # LOG_TIME: gum time format for log timestamps (kitchen, ansic, rfc822…). Empty = no timestamp.
     _LOG_TIME="${LOG_TIME-}"
 
     # Internal: single gum log call with full Catppuccin styling.
-    # Usage: _gum_log <level> <level-color> <message> [key=value ...]
+    # Usage: _gum_log <level> <level-color> <message> [key value ...]
     _gum_log() {
         local level="$1" color="$2"
         shift 2
+        local message="$1"
+        shift
+        if [[ -n ${NO_COLOR-} || ${TERM-} == "dumb" ]]; then
+            _plain_log "${level^^}" "${message}" "$@"
+            return
+        fi
         local -a args=(
+            --structured
             --level "${level}"
             --level.foreground "${color}"
             --message.foreground "${_C_TEXT}"
@@ -34,34 +61,27 @@ if [[ -x ${_GUM} ]]; then
             --separator.foreground "${_C_OVERLAY1}"
         )
         [[ -n ${_LOG_TIME} ]] && args+=(--time "${_LOG_TIME}" --time.foreground "${_C_OVERLAY1}")
-        "${_GUM}" log "${args[@]}" -- "$@" >&2
+        "${_GUM}" log "${args[@]}" -- "${message}" "$@" >&2
     }
 
     log_section() {
-        "${_GUM}" style \
-            --bold \
-            --foreground "${_C_YELLOW}" \
-            --border-foreground "${_C_YELLOW}" \
-            --border rounded \
-            --padding "0 1" \
-            --margin "1 0" \
-            "▶ $*" >&2
+        if [[ ${_PRETTY_OUTPUT} == true ]]; then
+            "${_GUM}" style \
+                --bold \
+                --foreground "${_C_YELLOW}" \
+                --border-foreground "${_C_YELLOW}" \
+                --border rounded \
+                --padding "0 1" \
+                --margin "1 0" \
+                "▶ $*" >&2
+        else
+            printf '\n== %s ==\n' "$*" >&2
+        fi
     }
     log_info() { _gum_log info "${_C_GREEN}" "$@"; }
     log_warn() { _gum_log warn "${_C_PEACH}" "$@"; }
     log_error() { _gum_log error "${_C_RED}" "$@"; }
     log_debug() { [[ ${DEBUG-} == "1" ]] && _gum_log debug "${_C_OVERLAY1}" "$@" || true; }
-    run_spin() {
-        local title="$1"
-        shift
-        "${_GUM}" spin \
-            --spinner dot \
-            --spinner.foreground "${_C_BLUE}" \
-            --title.foreground "${_C_TEXT}" \
-            --title "${title}" \
-            --show-error \
-            -- "$@"
-    }
 else
     # Catppuccin Mocha truecolor ANSI fallback
     readonly _A_YELLOW='\033[38;2;249;226;175m' # #f9e2af
@@ -73,16 +93,48 @@ else
     readonly _A_BOLD='\033[1m'
     readonly _A_NC='\033[0m'
 
-    log_section() { echo -e "\n${_A_BOLD}${_A_YELLOW}▶ $*${_A_NC}" >&2; }
-    log_info() { echo -e "  ${_A_GREEN}✓${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2; }
-    log_warn() { echo -e "  ${_A_PEACH}⚠${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2; }
-    log_error() { echo -e "  ${_A_RED}✗${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2; }
-    log_debug() { [[ ${DEBUG-} == "1" ]] && echo -e "  ${_A_OVL1}·${_A_NC} ${_A_TEXT}$*${_A_NC}" >&2 || true; }
-    run_spin() {
-        shift
-        "$@"
+    _fallback_log() {
+        local label="$1" symbol="$2" color="$3" message="$4"
+        shift 4
+        if [[ ${_PRETTY_OUTPUT} == true ]]; then
+            printf '  %b%s%b %b%s%b' "${color}" "${symbol}" "${_A_NC}" "${_A_TEXT}" "${message}" "${_A_NC}" >&2
+        else
+            _plain_log "${label}" "${message}" "$@"
+            return
+        fi
+        _print_log_metadata "$@"
+        printf '\n' >&2
     }
+
+    log_section() {
+        if [[ ${_PRETTY_OUTPUT} == true ]]; then
+            printf '\n%b%b▶ %s%b\n' "${_A_BOLD}" "${_A_YELLOW}" "$*" "${_A_NC}" >&2
+        else
+            printf '\n== %s ==\n' "$*" >&2
+        fi
+    }
+    log_info() { _fallback_log INFO "✓" "${_A_GREEN}" "$@"; }
+    log_warn() { _fallback_log WARN "⚠" "${_A_PEACH}" "$@"; }
+    log_error() { _fallback_log ERROR "✗" "${_A_RED}" "$@"; }
+    log_debug() { [[ ${DEBUG-} == "1" ]] && _fallback_log DEBUG "·" "${_A_OVL1}" "$@" || true; }
 fi
+
+run_spin() {
+    local title="$1"
+    shift
+    if [[ -x ${_GUM} && ${_PRETTY_OUTPUT} == true ]]; then
+        "${_GUM}" spin \
+            --spinner dot \
+            --spinner.foreground "${_C_BLUE}" \
+            --title.foreground "${_C_TEXT}" \
+            --title "${title}" \
+            --show-error \
+            -- "$@"
+    else
+        log_info "${title}"
+        "$@"
+    fi
+}
 
 # Check if command exists
 command_exists() {

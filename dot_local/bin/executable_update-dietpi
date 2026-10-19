@@ -11,10 +11,10 @@ update_host() {
 
     log_section "Updating DietPi on ${host}"
     if ssh -t "dietpi@${host}" 'bash -lic dietpi-update'; then
-        log_info "DietPi update completed" "host=${host}"
+        log_info "DietPi update completed" "host" "${host}"
     else
         status=$?
-        log_error "DietPi update failed" "host=${host}"
+        log_error "DietPi update failed" "host" "${host}"
         return "${status}"
     fi
 }
