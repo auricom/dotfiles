@@ -38,6 +38,9 @@ chezmoi apply
 > `isLaptop`, `isWorkstation`) generated into the config's `[data]` section. If you
 > change the profile, or if `chezmoi` warns that the config template has changed,
 > re-run `chezmoi init --data=false` once to regenerate `~/.config/chezmoi/chezmoi.toml`.
+> `isDesktop` selects desktop machines (`formFactor = "workstation"`);
+> `isWorkstation` includes both desktops and laptops. NFS and Distrobox deployment
+> remain desktop-only.
 
 ## Repository Structure
 

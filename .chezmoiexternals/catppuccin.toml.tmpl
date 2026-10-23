@@ -13,7 +13,7 @@
 # eza
 {{ includeTemplate "external-file" (dict "path" ".config/eza/theme.yml" "url" "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/mocha/catppuccin-mocha-mauve.yml") }}
 
-{{ if .isDesktop }}
+{{ if .isWorkstation }}
 # k9s
 {{ includeTemplate "external-archive" (dict "path" ".config/k9s/skins" "url" "https://github.com/catppuccin/k9s/archive/main.tar.gz" "strip" 2) }}
 

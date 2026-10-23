@@ -3,7 +3,7 @@ tap "{{ . }}"
 {{- end }}
 
 {{- range $category, $config := .brew }}
-{{- if or $.isDesktop $config.server }}
+{{- if or $.isWorkstation $config.server }}
 # {{ $category | replace "_" " " | title }}
 {{- range $config.packages }}
 brew "{{ . }}"
@@ -11,7 +11,7 @@ brew "{{ . }}"
 
 {{- end }}
 {{- end }}
-{{- if .isDesktop }}
+{{- if .isWorkstation }}
 {{- range $category, $config := .cask }}
 # {{ $category | replace "_" " " | title }}
 {{- range $config.packages }}

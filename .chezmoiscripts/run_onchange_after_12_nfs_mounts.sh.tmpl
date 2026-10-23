@@ -1,4 +1,4 @@
-{{- if .isDesktop }}
+{{- if eq .formFactor "workstation" }}
 {{- includeTemplate "script-header" . }}
 
 # NFS mounts configuration script

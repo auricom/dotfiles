@@ -24,9 +24,9 @@ encryption = "age"
   formFactor = "{{ $formFactor }}"
   # Derived profile flags — keeps templates free of repeated formFactor comparisons.
   isServer = {{ eq $formFactor "server" }}
-  isDesktop = {{ ne $formFactor "server" }}
+  isDesktop = {{ eq $formFactor "workstation" }}
   isLaptop = {{ eq $formFactor "laptop" }}
-  isWorkstation = {{ eq $formFactor "workstation" }}
+  isWorkstation = {{ or (eq $formFactor "workstation") (eq $formFactor "laptop") }}
 
 [data.niri]
   # Niri layout, tighter on laptops.

@@ -35,6 +35,6 @@ mise.toml
 .config/systemd/user/resilio-sync.service
 {{- end }}
 
-{{- if not (has .chezmoi.hostname .wireguardHosts) }}
+{{- if not .isLaptop }}
 .config/wireguard/
 {{- end }}
