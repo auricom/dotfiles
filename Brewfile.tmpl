@@ -19,11 +19,4 @@ cask "{{ . }}"
 {{- end }}
 
 {{- end }}
-{{- range $category, $config := .flatpak }}
-# Flatpak - {{ $category | replace "_" " " | title }}
-{{- range $config.packages }}
-flatpak "{{ . }}"
-{{- end }}
-
-{{- end }}
 {{- end }}

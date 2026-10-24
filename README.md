@@ -73,7 +73,7 @@ chezmoi apply
 └── Brewfile.tmpl               # Homebrew packages rendered from chezmoidata
 ```
 
-Package definitions live in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, `.chezmoidata/packages_flatpak.yaml`, and `.chezmoidata/packages_appimage.yaml`. Homebrew and Flatpak packages are rendered into `Brewfile.tmpl`; AppImages are reconciled through Gear Lever.
+Package definitions live in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, `.chezmoidata/packages_flatpak.yaml`, and `.chezmoidata/packages_appimage.yaml`. Homebrew packages are rendered into `Brewfile.tmpl`; Flatpaks are installed per-user by a separate chezmoi script; AppImages are reconciled through Gear Lever.
 
 ## Profiles
 
@@ -108,6 +108,7 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_once_after_21_atuin.sh` | once | Atuin history sync setup |
 | `run_once_after_27_cursors.sh` | once | Bibata cursor installation |
 | `run_once_after_28_tailscale.sh` | once | Enable/start `tailscaled` |
+| `run_onchange_after_00_flatpak.sh` | Flatpak data change | Add user Flathub remote and install Flatpaks without sudo |
 | `run_onchange_after_00_homebrew.sh` | Brewfile change | `brew bundle install` |
 | `run_onchange_after_01_appimages.sh` | AppImage data change | Reconcile Gear Lever AppImages |
 | `run_onchange_after_12_nfs_mounts.sh` | nfs.yaml change | Configure NFS mounts |
@@ -118,6 +119,16 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_onchange_after_25_rclone.sh` | rclone change | Cloud storage mounts |
 | `run_onchange_after_26_bat.sh` | bat theme change | Rebuild syntax theme cache |
 | `run_onchange_after_27_sysexts.sh` | sysexts.yaml change | Install Flatcar system extensions |
+
+Run `chezmoi apply` to install both Homebrew and Flatpak packages. Flatpaks use
+`--user` for the Flathub remote, installation, and scheduled updates. After
+successful installation, matching system copies of declared apps are removed
+only when the same architecture and branch exist in the user installation.
+Application data is preserved. System-only apps and unlisted apps are left alone.
+The script checks the local user inventory first and installs only missing apps;
+when all declared apps are present, it skips remote setup and installation.
+Flatpaks run outside Homebrew because `brew-proxy` executes Homebrew as the
+`linuxbrew` account, which does not have your user's Flatpak authorization.
 
 ## Managed Git Repositories
 

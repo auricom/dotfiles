@@ -2,10 +2,10 @@
 
 # Package installation script
 # This script installs packages via Homebrew
-# Hash dependencies: {{ include "Brewfile.tmpl" | sha256sum }} {{ include ".chezmoidata/packages_brew.yaml" | sha256sum }} {{ include ".chezmoidata/packages_cask.yaml" | sha256sum }} {{ include ".chezmoidata/packages_flatpak.yaml" | sha256sum }}
+# Hash dependencies: {{ include "Brewfile.tmpl" | sha256sum }} {{ include ".chezmoidata/packages_brew.yaml" | sha256sum }} {{ include ".chezmoidata/packages_cask.yaml" | sha256sum }}
 
 main() {
-    log_section "Installing Brewfile (Homebrew and Flatpak packages)"
+    log_section "Installing Brewfile (Homebrew packages)"
 
     require_command brew "Homebrew package installation"
 

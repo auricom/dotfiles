@@ -7,7 +7,7 @@ OnFailure=notify-failure@%p.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/flatpak upgrade --assumeyes
+ExecStart=/usr/bin/flatpak upgrade --user --assumeyes
 
 [Install]
 WantedBy=default.target

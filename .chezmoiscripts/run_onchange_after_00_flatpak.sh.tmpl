@@ -1,0 +1,57 @@
+{{- if .isWorkstation }}
+{{- includeTemplate "script-header" . }}
+
+# Hash dependencies: {{ include ".chezmoidata/packages_flatpak.yaml" | sha256sum }}
+
+main() {
+    log_section "Installing Flatpak packages for the current user"
+    require_command flatpak "Flatpak package installation"
+
+    local -a packages=(
+{{- range $category, $config := .flatpak }}
+{{- range $config.packages }}
+        "{{ . }}"
+{{- end }}
+{{- end }}
+    )
+
+    local installed package
+    local -a missing=()
+    installed=$(flatpak list --user --app --columns=application)
+    for package in "${packages[@]}"; do
+        # Match complete lines so similar application IDs cannot match each other.
+        if [[ $'\n'"${installed}"$'\n' != *$'\n'"${package}"$'\n'* ]]; then
+            missing+=("${package}")
+        fi
+    done
+
+    if ((${#missing[@]} == 0)); then
+        log_info "All Flatpak packages are already installed for the current user"
+    else
+        flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+        run_spin "Installing ${#missing[@]} missing Flatpak packages..." \
+            flatpak install --user --assumeyes --noninteractive flathub "${missing[@]}"
+    fi
+
+    # Remove managed system copies only after the same user ref is installed.
+    # Without --delete-data, application settings and data are preserved.
+    local user_refs system_refs declared ref
+    local -a duplicates=()
+    user_refs=$(flatpak list --user --app --columns=ref)
+    system_refs=$(flatpak list --system --app --columns=ref)
+    declared=$(printf '%s\n' "${packages[@]}")
+    while IFS= read -r ref; do
+        package=${ref%%/*}
+        if [[ -n ${ref} && $'\n'"${declared}"$'\n' == *$'\n'"${package}"$'\n'* &&
+              $'\n'"${user_refs}"$'\n' == *$'\n'"${ref}"$'\n'* ]]; then
+            duplicates+=("${ref}")
+        fi
+    done <<< "${system_refs}"
+    if ((${#duplicates[@]})); then
+        run_spin "Removing ${#duplicates[@]} duplicate system Flatpak packages..." \
+            flatpak uninstall --system --app --assumeyes --noninteractive "${duplicates[@]}"
+    fi
+}
+
+{{ includeTemplate "script-footer" . -}}
+{{- end -}}
