@@ -9,6 +9,17 @@ main() {
 
     require_command brew "Homebrew package installation"
 
+    if command_exists brew-proxy; then
+        if [[ " $(id -nG "{{ .chezmoi.username }}") " != *" linuxbrew "* ]]; then
+            log_info "Granting {{ .chezmoi.username }} unattended Homebrew access"
+            sudo usermod -aG linuxbrew "{{ .chezmoi.username }}"
+        fi
+
+        # Let brew-proxy/Polkit check access; inherited process groups can be stale.
+        # Fail instead of prompting when brew-proxy authorization is unavailable.
+        export BREW_PROXY_NONINTERACTIVE=1
+    fi
+
     run_spin "Updating Homebrew..." brew update
     log_info "Homebrew updated"
 

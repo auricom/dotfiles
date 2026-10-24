@@ -109,7 +109,7 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_once_after_27_cursors.sh` | once | Bibata cursor installation |
 | `run_once_after_28_tailscale.sh` | once | Enable/start `tailscaled` |
 | `run_onchange_after_00_flatpak.sh` | Flatpak data change | Add user Flathub remote and install Flatpaks without sudo |
-| `run_onchange_after_00_homebrew.sh` | Brewfile change | `brew bundle install` |
+| `run_onchange_after_00_homebrew.sh` | Brewfile change | Configure brew-proxy access and run `brew bundle install` |
 | `run_onchange_after_01_appimages.sh` | AppImage data change | Reconcile Gear Lever AppImages |
 | `run_onchange_after_12_nfs_mounts.sh` | nfs.yaml change | Configure NFS mounts |
 | `run_onchange_after_22_dms.sh` | theme change | DankMaterialShell theme setup |
@@ -129,6 +129,16 @@ The script checks the local user inventory first and installs only missing apps;
 when all declared apps are present, it skips remote setup and installation.
 Flatpaks run outside Homebrew because `brew-proxy` executes Homebrew as the
 `linuxbrew` account, which does not have your user's Flatpak authorization.
+
+When `brew-proxy` is installed, the Homebrew script adds your account to the
+`linuxbrew` group, allowing all Homebrew commands without authentication in an
+active local session. The initial setup may require sudo authentication.
+Authorization is checked by brew-proxy/Polkit. Its D-Bus checks can still see
+stale process groups when the user service manager survives a logout. In that
+case, run `sg linuxbrew -c 'chezmoi apply'` to activate the group for the command;
+a reboot refreshes groups for the whole session. Homebrew commands use `BREW_PROXY_NONINTERACTIVE=1`
+and fail instead of prompting if authorization is unavailable. The built-in
+brew-proxy policy does not grant this access to SSH or background sessions.
 
 ## Managed Git Repositories
 
