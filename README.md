@@ -111,6 +111,7 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_onchange_after_00_flatpak.sh` | Flatpak data change | Add user Flathub remote and install Flatpaks without sudo |
 | `run_onchange_after_00_homebrew.sh` | Brewfile change | Configure brew-proxy access and run `brew bundle install` |
 | `run_onchange_after_01_appimages.sh` | AppImage data change | Reconcile Gear Lever AppImages |
+| `run_onchange_after_03_dcal.sh` | Script change | Grant Dux Calendar read access to Dux Shell theme colors |
 | `run_onchange_after_12_nfs_mounts.sh` | nfs.yaml change | Configure NFS mounts |
 | `run_onchange_after_22_dms.sh` | theme change | Dux Shell theme setup |
 | `run_onchange_after_23_git_repositories.sh` | repos.yaml change | Clone repos & symlinks |

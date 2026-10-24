@@ -26,6 +26,7 @@ flatpak:
 
   productivity:
     packages:
+      - com.danklinux.dankcalendar # Dux Calendar - calendar app
       - com.orcaslicer.OrcaSlicer # 3D Printer slicer
       - org.gnome.Evince # GNOME document viewer
       - com.onepassword.OnePassword # 1Password - password manager
