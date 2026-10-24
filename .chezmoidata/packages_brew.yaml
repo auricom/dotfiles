@@ -33,7 +33,6 @@ brew:
     server: true
     packages:
       - age # A simple, modern and secure encryption tool
-      - btop # Interactive process viewer
       - chezmoi # Dotfiles management
       - direnv # Load and unload environment variables depending on the current directory
       - dust # Disk analysis

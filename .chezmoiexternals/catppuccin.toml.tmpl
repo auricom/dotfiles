@@ -5,11 +5,6 @@
 {{ includeTemplate "external-file" (dict "path" (printf ".config/bat/themes/Catppuccin_%s.tmTheme" .title) "url" (printf "https://github.com/catppuccin/bat/raw/main/themes/Catppuccin%%20%s.tmTheme" .title)) }}
 {{- end }}
 
-# btop
-{{- range .catppuccin.flavors }}
-{{ includeTemplate "external-file" (dict "path" (printf ".config/btop/themes/catppuccin_%s.theme" .id) "url" (printf "https://github.com/catppuccin/btop/raw/main/themes/catppuccin_%s.theme" .id)) }}
-{{- end }}
-
 # eza
 {{ includeTemplate "external-file" (dict "path" ".config/eza/theme.yml" "url" "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/mocha/catppuccin-mocha-mauve.yml") }}
 
