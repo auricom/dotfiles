@@ -112,7 +112,7 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_onchange_after_00_homebrew.sh` | Brewfile change | Configure brew-proxy access and run `brew bundle install` |
 | `run_onchange_after_01_appimages.sh` | AppImage data change | Reconcile Gear Lever AppImages |
 | `run_onchange_after_12_nfs_mounts.sh` | nfs.yaml change | Configure NFS mounts |
-| `run_onchange_after_22_dms.sh` | theme change | DankMaterialShell theme setup |
+| `run_onchange_after_22_dms.sh` | theme change | Dux Shell theme setup |
 | `run_onchange_after_23_git_repositories.sh` | repos.yaml change | Clone repos & symlinks |
 | `run_onchange_after_24_distrobox.sh` | Distrobox/service change | Create/update declarative Distroboxes |
 | `run_onchange_after_24_systemd.sh` | systemd change | Enable/reload services |

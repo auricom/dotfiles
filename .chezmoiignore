@@ -13,7 +13,7 @@ mise.toml
 .config/containers/
 .config/containers/systemd/resilio-sync*
 .config/distrobox/
-.config/DankMaterialShell/
+.config/dms/
 .config/foot/
 .config/git/
 .config/gtk*/

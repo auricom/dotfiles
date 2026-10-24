@@ -1,22 +1,22 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
 
-# DankMaterialShell configuration script
+# Dux Shell configuration script
 
 # Hash dependencies: {{ include ".chezmoiexternals/catppuccin.toml.tmpl" | sha256sum }}
 
 main() {
-    log_section "Configuring DankMaterialShell"
+    log_section "Configuring Dux Shell"
 
     if command_exists dms; then
-        log_info "Beginning DankMaterialShell configuration"
+        log_info "Beginning Dux Shell configuration"
 
         application_theme_zen
         greeter
 
-        log_info "DankMaterialShell configuration completed"
+        log_info "Dux Shell configuration completed"
     else
-        log_warn "dms not available, skipping DankMaterialShell configuration"
+        log_warn "dms not available, skipping Dux Shell configuration"
     fi
 }
 
