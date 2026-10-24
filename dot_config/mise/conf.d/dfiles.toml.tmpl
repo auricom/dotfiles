@@ -1,0 +1,7 @@
+{{- if .isWorkstation }}
+[tools."github:duxlabs-dev/dux-files"]
+version = "latest"
+prerelease = false
+asset_pattern = "dfiles-linux-{{ .chezmoi.arch }}.tar.gz"
+rename_exe = "dfiles"
+{{- end }}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Update DFiles daily
+Wants=network-online.target
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

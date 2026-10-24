@@ -18,6 +18,7 @@ mise.toml
 .config/git/
 .config/gtk*/
 .config/k9s/
+.config/mise/conf.d/dfiles.toml
 .config/niri/
 .config/qt6ct/
 .config/sops/
@@ -25,6 +26,8 @@ mise.toml
 .config/xkb/
 .config/zellij/
 .local/bin/import-dji-osmo
+.local/share/applications/dev.duxlabs.files.desktop
+.local/share/icons/hicolor/scalable/apps/dev.duxlabs.files.svg
 .kube/config
 .talos
 .var
