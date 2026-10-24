@@ -130,6 +130,7 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_once_after_20_fish.sh` | once | Fish shell setup |
 | `run_once_after_21_atuin.sh` | once | Atuin history sync setup |
 | `run_once_after_27_cursors.sh` | once | Bibata cursor installation |
+| `run_after_27_papirus.sh` | archive content change | Install Papirus and Catppuccin folder colors, restore selected color, rebuild caches |
 | `run_once_after_28_tailscale.sh` | once | Enable/start `tailscaled` |
 | `run_onchange_after_00_flatpak.sh` | Flatpak data change | Add user Flathub remote and install Flatpaks without sudo |
 | `run_onchange_after_00_homebrew.sh` | Brewfile change | Configure brew-proxy access and run `brew bundle install` |
@@ -143,6 +144,17 @@ Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 | `run_onchange_after_25_rclone.sh` | rclone change | Cloud storage mounts |
 | `run_onchange_after_26_bat.sh` | bat theme change | Rebuild syntax theme cache |
 | `run_onchange_after_27_sysexts.sh` | sysexts.yaml change | Install Flatcar system extensions |
+
+On workstations, `papirus-folders --list` lists the installed folder colors.
+Select one with `papirus-folders -C cat-mocha-blue --theme Papirus-Dark`
+or `papirus-folders -C cat-latte-blue --theme Papirus-Light`.
+Papirus and all Mocha/Latte colors are managed by `.chezmoiexternals/papirus.toml.tmpl`,
+following upstream branches with a weekly cache refresh during apply.
+Only two archives and the color switcher are tracked by chezmoi; the installer
+uses `rsync` to reconcile the three Papirus themes when archive checksums change.
+Unchanged archives skip installation and cache rebuilding.
+Use `chezmoi apply --refresh-externals` to fetch updates immediately.
+The saved folder color is restored after installation.
 
 Run `chezmoi apply` to install both Homebrew and Flatpak packages. Flatpaks use
 `--user` for the Flathub remote, installation, and scheduled updates. After

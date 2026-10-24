@@ -1,0 +1,18 @@
+{{ if .isWorkstation }}
+# Keep archives as files: tracking every extracted icon makes apply very slow.
+[".local/share/chezmoi-assets/papirus/icon-theme.tar.gz"]
+    type = "file"
+    url = "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/archive/refs/heads/master.tar.gz"
+    refreshPeriod = "168h"
+
+[".local/share/chezmoi-assets/papirus/folder-colors.tar.gz"]
+    type = "file"
+    url = "https://github.com/catppuccin/papirus-folders/archive/refs/heads/main.tar.gz"
+    refreshPeriod = "168h"
+
+[".local/bin/papirus-folders"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-folders/master/papirus-folders"
+    executable = true
+    refreshPeriod = "168h"
+{{ end }}

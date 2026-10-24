@@ -1,0 +1,52 @@
+{{- if .isWorkstation }}
+{{- includeTemplate "script-header" . }}
+
+main() {
+    local assets_dir="{{ .chezmoi.homeDir }}/.local/share/chezmoi-assets/papirus"
+    local icons_dir="{{ .chezmoi.homeDir }}/.local/share/icons"
+    local stamp="${assets_dir}/installed.sha256"
+    local checksum theme
+
+    checksum=$(sha256sum "${assets_dir}/icon-theme.tar.gz" "${assets_dir}/folder-colors.tar.gz")
+    if [[ -f "${icons_dir}/Papirus/index.theme" &&
+          -f "${icons_dir}/Papirus-Dark/index.theme" &&
+          -f "${icons_dir}/Papirus-Light/index.theme" ]] &&
+        printf '%s\n' "${checksum}" | cmp -s - "${stamp}"; then
+        return 0
+    fi
+
+    log_section "Installing Papirus and Catppuccin folder colors"
+    require_command rsync "Papirus icon installation"
+    PAPIRUS_TMP_DIR=$(mktemp -d)
+    trap 'rm -rf "${PAPIRUS_TMP_DIR}"' EXIT
+
+    tar -xzf "${assets_dir}/icon-theme.tar.gz" --strip-components=1 \
+        -C "${PAPIRUS_TMP_DIR}" \
+        papirus-icon-theme-master/Papirus papirus-icon-theme-master/Papirus-Dark papirus-icon-theme-master/Papirus-Light
+    tar -xzf "${assets_dir}/folder-colors.tar.gz" --strip-components=2 \
+        -C "${PAPIRUS_TMP_DIR}/Papirus" --wildcards \
+        '*/src/*/places/*cat-mocha-*.svg' '*/src/*/places/*cat-latte-*.svg'
+
+    # Reconcile only our themes, removing icons dropped by upstream.
+    for theme in Papirus Papirus-Dark Papirus-Light; do
+        mkdir -p "${icons_dir}/${theme}"
+        rsync -a --delete "${PAPIRUS_TMP_DIR}/${theme}/" "${icons_dir}/${theme}/"
+    done
+
+    # Installing a new base theme resets folder symlinks.
+    if [[ -s "${XDG_CONFIG_HOME:-{{ .chezmoi.homeDir }}/.config}/papirus-folders/keep" ]]; then
+        "{{ .chezmoi.homeDir }}/.local/bin/papirus-folders" --restore
+    fi
+
+    if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+        for theme in Papirus Papirus-Dark Papirus-Light; do
+            gtk-update-icon-cache -qf "${icons_dir}/${theme}"
+        done
+    fi
+    # Mark successful installs only; failed installs are retried next apply.
+    printf '%s\n' "${checksum}" > "${stamp}"
+    log_info "Installed all 14 Mocha and 14 Latte folder colors"
+}
+
+{{ includeTemplate "script-footer" . -}}
+{{- end -}}

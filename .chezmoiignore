@@ -5,6 +5,7 @@ docs
 justfile
 LICENSE
 README.md
+tests
 mise.toml
 
 {{- if .isServer }}
