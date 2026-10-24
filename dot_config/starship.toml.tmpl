@@ -7,6 +7,7 @@ format = """\
   $username\
   $hostname\
   ${custom.git_host}\
+  $shell\
   $directory\
   $git_branch\
   $fill\
@@ -20,6 +21,14 @@ format = """\
   """
 
 palette = "catppuccin_mocha"
+
+[shell]
+disabled = false
+fish_indicator = ''
+bash_indicator = 'bash'
+zsh_indicator = 'zsh'
+format = '[$indicator]($style) '
+style = 'bold red'
 
 [character]
 success_symbol = "\n[❯](bold green)"
