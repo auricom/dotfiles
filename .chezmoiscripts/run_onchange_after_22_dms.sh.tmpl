@@ -51,7 +51,7 @@ application_theme_zen() {
 greeter() {
     log_info "Syncing greeter configuration..."
     sudo usermod -aG greeter {{ .chezmoi.username }}
-    DMS_PRIVESC=sudo dms greeter sync --auth
+    DMS_PRIVESC=sudo dms-greeter sync --auth
     log_info "Greeter configured"
 }
 
