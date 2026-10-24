@@ -3,8 +3,8 @@
 # Requires: git
 
 url=$(git ls-remote --get-url 2>/dev/null) || {
-  echo "error: not a git repo" >&2
-  exit 1
+    echo "error: not a git repo" >&2
+    exit 1
 }
 
 # Normalize: strip protocol prefix to get "host:path" form

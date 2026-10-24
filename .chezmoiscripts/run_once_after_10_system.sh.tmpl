@@ -26,10 +26,10 @@ set_hostname() {
     current_hostname=$(hostname)
 
     local new_hostname
-    new_hostname=$(gum input \
-        --placeholder "Enter hostname" \
-        --value "$current_hostname" \
-        --prompt "Hostname: ")
+    if ! new_hostname=$(prompt_input "Hostname" "${current_hostname}"); then
+        log_warn "Hostname configuration skipped"
+        return 0
+    fi
 
     if [[ -z "$new_hostname" ]]; then
         log_warn "No hostname entered, skipping"

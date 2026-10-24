@@ -4,7 +4,7 @@
 # Configuration: {{ include "dot_config/mise/conf.d/dfiles.toml.tmpl" | sha256sum }}
 
 main() {
-    log_info "Installing DFiles from stable GitHub releases"
+    log_section "Installing DFiles from stable GitHub releases"
     "{{ .brewPrefix }}/bin/mise" install --yes github:duxlabs-dev/dux-files
     xdg-mime default dev.duxlabs.files.desktop inode/directory
 }

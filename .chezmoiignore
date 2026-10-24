@@ -1,5 +1,10 @@
 # Repository files (not dotfiles)
 .editorconfig
+.lefthook.toml
+.shellcheckrc
+.mise
+.justfile
+scripts
 .worktree
 docs
 justfile

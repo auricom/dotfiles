@@ -1,17 +1,264 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-source "${HOME}/.local/lib/pushover.sh"
+# Shared presentation and shell helpers. Callers own shell options and traps.
+[[ ${_COMMON_UTILS_LOADED-} == 1 ]] && return 0
+_COMMON_UTILS_LOADED=1
 
-# Function to handle errors
-error_handler() {
-    local hostname="$1"
-    local stderr_content="$2"
+# Catppuccin Mocha colors
+_C_YELLOW="#f9e2af"
+_C_GREEN="#a6e3a1"
+_C_PEACH="#fab387"
+_C_RED="#f38ba8"
+_C_BLUE="#89b4fa"
+_C_OVERLAY1="#7f849c"
+_C_TEXT="#cdd6f4"
 
-    send_pushover_message "${hostname}: ${stderr_content}"
+_GUM="$(command -v gum 2>/dev/null || true)"
+_PRETTY_OUTPUT=false
+if [[ -t 2 && -z ${NO_COLOR-} && ${TERM-} != "dumb" ]]; then
+    _PRETTY_OUTPUT=true
+fi
+
+_print_log_metadata() {
+    while (($# >= 2)); do
+        printf ' %s=%s' "$1" "$2" >&2
+        shift 2
+    done
 }
 
-# Function to log messages to stdout
-log_message() {
-    DATE=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "${DATE} - $1"
+_plain_log() {
+    local label="$1" message="$2"
+    shift 2
+    printf '%s %s' "${label}" "${message}" >&2
+    _print_log_metadata "$@"
+    printf '\n' >&2
+}
+
+# Public logging usage: log_<level> <message> [key value ...]
+if [[ -x ${_GUM} ]]; then
+    # LOG_TIME: gum time format for log timestamps (kitchen, ansic, rfc822…). Empty = no timestamp.
+    _LOG_TIME="${LOG_TIME-}"
+
+    # Internal: single gum log call with full Catppuccin styling.
+    # Usage: _gum_log <level> <level-color> <message> [key value ...]
+    _gum_log() {
+        local level="$1" color="$2"
+        shift 2
+        local message="$1"
+        shift
+        if [[ ${_PRETTY_OUTPUT} != true ]]; then
+            _plain_log "${level^^}" "${message}" "$@"
+            return
+        fi
+        local -a args=(
+            --structured
+            --level "${level}"
+            --level.foreground "${color}"
+            --message.foreground "${_C_TEXT}"
+            --key.foreground "${_C_BLUE}"
+            --value.foreground "${_C_OVERLAY1}"
+            --separator.foreground "${_C_OVERLAY1}"
+        )
+        [[ -n ${_LOG_TIME} ]] && args+=(--time "${_LOG_TIME}" --time.foreground "${_C_OVERLAY1}")
+        "${_GUM}" log "${args[@]}" -- "${message}" "$@" >&2
+    }
+
+    log_section() {
+        if [[ ${_PRETTY_OUTPUT} == true ]]; then
+            "${_GUM}" style \
+                --bold \
+                --foreground "${_C_YELLOW}" \
+                --border-foreground "${_C_YELLOW}" \
+                --border rounded \
+                --padding "0 1" \
+                --margin "1 0" \
+                "▶ $*" >&2
+        else
+            printf '\n== %s ==\n' "$*" >&2
+        fi
+    }
+    log_info() { _gum_log info "${_C_GREEN}" "$@"; }
+    log_warn() { _gum_log warn "${_C_PEACH}" "$@"; }
+    log_error() { _gum_log error "${_C_RED}" "$@"; }
+    log_debug() { [[ ${DEBUG-} == "1" ]] && _gum_log debug "${_C_OVERLAY1}" "$@" || true; }
+else
+    # Catppuccin Mocha truecolor ANSI fallback
+    readonly _A_YELLOW='\033[38;2;249;226;175m' # #f9e2af
+    readonly _A_GREEN='\033[38;2;166;227;161m'  # #a6e3a1
+    readonly _A_PEACH='\033[38;2;250;179;135m'  # #fab387
+    readonly _A_RED='\033[38;2;243;139;168m'    # #f38ba8
+    readonly _A_OVL1='\033[38;2;127;132;156m'   # #7f849c
+    readonly _A_TEXT='\033[38;2;205;214;244m'   # #cdd6f4
+    readonly _A_BOLD='\033[1m'
+    readonly _A_NC='\033[0m'
+
+    _fallback_log() {
+        local label="$1" symbol="$2" color="$3" message="$4"
+        shift 4
+        if [[ ${_PRETTY_OUTPUT} == true ]]; then
+            printf '  %b%s%b %b%s%b' "${color}" "${symbol}" "${_A_NC}" "${_A_TEXT}" "${message}" "${_A_NC}" >&2
+        else
+            _plain_log "${label}" "${message}" "$@"
+            return
+        fi
+        _print_log_metadata "$@"
+        printf '\n' >&2
+    }
+
+    log_section() {
+        if [[ ${_PRETTY_OUTPUT} == true ]]; then
+            printf '\n%b%b▶ %s%b\n' "${_A_BOLD}" "${_A_YELLOW}" "$*" "${_A_NC}" >&2
+        else
+            printf '\n== %s ==\n' "$*" >&2
+        fi
+    }
+    log_info() { _fallback_log INFO "✓" "${_A_GREEN}" "$@"; }
+    log_warn() { _fallback_log WARN "⚠" "${_A_PEACH}" "$@"; }
+    log_error() { _fallback_log ERROR "✗" "${_A_RED}" "$@"; }
+    log_debug() { [[ ${DEBUG-} == "1" ]] && _fallback_log DEBUG "·" "${_A_OVL1}" "$@" || true; }
+fi
+
+run_spin() {
+    local title="$1"
+    shift
+    if [[ -x ${_GUM} && ${_PRETTY_OUTPUT} == true ]]; then
+        "${_GUM}" spin \
+            --spinner dot \
+            --spinner.foreground "${_C_BLUE}" \
+            --title.foreground "${_C_TEXT}" \
+            --title "${title}" \
+            --show-error \
+            -- "$@"
+    else
+        log_info "${title}"
+        "$@"
+    fi
+}
+
+# Check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Require a command to exist, exiting with an error if it is missing
+require_command() {
+    local command="$1"
+    local context="${2:-required command}"
+
+    if ! command_exists "${command}"; then
+        log_error "${command} is required for ${context}"
+        exit 1
+    fi
+}
+
+# Create directory if it doesn't exist
+ensure_dir() {
+    local dir="$1"
+    if [[ ! -d ${dir} ]]; then
+        log_debug "Creating directory: ${dir}"
+        mkdir -p "${dir}"
+    fi
+}
+
+# Calculate SHA256 checksum for a file
+file_sha256() {
+    [[ -f $1 && -r $1 ]] && sha256sum "$1" | awk '{print $1}' || echo ""
+}
+
+# Calculate SHA256 checksum for a directory (recursive, includes permissions)
+dir_sha256() {
+    [[ -d $1 ]] || {
+        echo ""
+        return
+    }
+    (
+        find "$1/" -type f -print0 | sort -z | xargs -0 sha256sum
+        find "$1/" \( -type f -o -type d \) -print0 | sort -z | xargs -0 stat -c '%n %a'
+    ) | sha256sum | awk '{print $1}'
+}
+
+# Retry a command with exponential backoff
+# Usage: retry_with_backoff <max_attempts> <initial_delay_seconds> <cmd> [args...]
+retry_with_backoff() {
+    local max_attempts="$1"
+    local delay="$2"
+    local -a cmd=("${@:3}")
+    local attempt=1
+
+    until "${cmd[@]}"; do
+        if ((attempt >= max_attempts)); then
+            log_error "Command failed after ${max_attempts} attempts: ${cmd[*]}"
+            return 1
+        fi
+        log_warn "Attempt ${attempt} failed, retrying in ${delay}s..."
+        sleep "${delay}"
+        delay=$((delay * 2))
+        ((attempt++))
+    done
+}
+
+# Validate required environment variables are set and non-empty
+validate_env_vars() {
+    local -a missing=()
+    for var in "$@"; do
+        [[ -n ${!var-} ]] || missing+=("${var}")
+    done
+    if ((${#missing[@]} > 0)); then
+        log_error "Missing required environment variables: ${missing[*]}"
+        return 1
+    fi
+}
+
+# Report the original failure without executing the command again.
+report_error() {
+    local status="$1" line="$2"
+    trap - ERR
+    log_error "${0##*/} failed" status "${status}" line "${line}"
+    return "${status}"
+}
+
+# For commands with no options. Help exits before dependencies or side effects.
+require_no_args() {
+    local description="$1"
+    shift
+    if (($# == 1)) && [[ $1 == --help || $1 == -h ]]; then
+        printf 'Usage: %s\n\n%s\n' "${0##*/}" "${description}"
+        exit 0
+    fi
+    if (($#)); then
+        log_error "Usage: ${0##*/}"
+        exit 2
+    fi
+}
+
+# Return 0 for yes, 1 for no, and >1 when input is unavailable or interrupted.
+confirm() {
+    local message="$1" answer
+    if [[ ! -t 0 || ! -t 2 ]]; then
+        log_error "Confirmation requires a terminal"
+        return 2
+    fi
+    if [[ -x ${_GUM} && ${_PRETTY_OUTPUT} == true ]]; then
+        "${_GUM}" confirm --default=false -- "${message}"
+    else
+        printf '%s [y/N] ' "${message}" >&2
+        IFS= read -r answer || return 2
+        [[ ${answer} == [yY] || ${answer} == [yY][eE][sS] ]]
+    fi
+}
+
+# Print only the answer to stdout; prompt text belongs to stderr.
+prompt_input() {
+    local message="$1" default="${2-}" answer
+    if [[ ! -t 0 || ! -t 2 ]]; then
+        log_warn "Input requires a terminal; skipping" prompt "${message}"
+        return 2
+    fi
+    if [[ -x ${_GUM} && ${_PRETTY_OUTPUT} == true ]]; then
+        "${_GUM}" input --prompt "${message}: " --value "${default}"
+    else
+        printf '%s [%s]: ' "${message}" "${default}" >&2
+        IFS= read -r answer || return 2
+        printf '%s\n' "${answer:-${default}}"
+    fi
 }

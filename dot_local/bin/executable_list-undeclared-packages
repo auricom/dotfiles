@@ -2,8 +2,9 @@
 
 set -Eeuo pipefail
 
-# shellcheck source=.local/lib/chezmoi_utils.sh
-source "${HOME}/.local/lib/chezmoi_utils.sh"
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
 
 report() {
     local label=$1 key=$2 target=$3 installed declared extra section package
@@ -27,7 +28,7 @@ report() {
                 preview+="• ${package}"$'\n'
             fi
         fi
-    done <<< "${extra}"
+    done <<<"${extra}"
 
     if [[ ${mode} == --notify* ]] && ((count > 0)); then
         if ((count > 4)); then
@@ -42,10 +43,17 @@ report() {
 }
 
 main() {
+    if (($# == 1)) && [[ $1 == --help || $1 == -h ]]; then
+        printf 'Usage: %s [--notify|--notify-test|--cleanup]\n' "${0##*/}"
+        return 0
+    fi
     local mode=${1:-}
     case ${1:-} in
-        ''|--notify|--notify-test|--cleanup) ;;
-        *) log_error "Usage: ${0##*/} [--notify|--notify-test|--cleanup]"; exit 2 ;;
+    '' | --notify | --notify-test | --cleanup) ;;
+    *)
+        log_error "Usage: ${0##*/} [--notify|--notify-test|--cleanup]"
+        exit 2
+        ;;
     esac
     if (($# > 1)); then
         log_error "Usage: ${0##*/} [--notify|--notify-test|--cleanup]"
@@ -83,10 +91,13 @@ main() {
         fi
 
         if [[ ${mode} == --cleanup ]]; then
-            require_command gum "package removal confirmation"
-            if ! gum confirm "Remove all ${package_count} packages listed above?" --default=false; then
+            local confirmation_status=0
+            confirm "Remove all ${package_count} packages listed above?" || confirmation_status=$?
+            if ((confirmation_status == 1)); then
                 log_info 'Kept all packages.'
                 return 0
+            elif ((confirmation_status > 1)); then
+                return "${confirmation_status}"
             fi
             # Keep native dependency checks and preserve Flatpak application data.
             if ((${#cask_packages[@]})); then
@@ -132,9 +143,9 @@ main() {
             return 0
         fi
         case ${answer} in
-            yes) log_info "Simulation: would delete ${package_count} packages. Nothing was deleted." ;;
-            no) log_info 'Simulation: kept all packages. Nothing was deleted.' ;;
-            *) log_info 'Simulation: notification dismissed. Nothing was deleted.' ;;
+        yes) log_info "Simulation: would delete ${package_count} packages. Nothing was deleted." ;;
+        no) log_info 'Simulation: kept all packages. Nothing was deleted.' ;;
+        *) log_info 'Simulation: notification dismissed. Nothing was deleted.' ;;
         esac
     fi
 }

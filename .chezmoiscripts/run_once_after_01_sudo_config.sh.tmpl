@@ -10,6 +10,8 @@ readonly STARSHIP_CONFIG="{{ .chezmoi.homeDir }}/.config/starship.toml"
 readonly ROOT_STARSHIP_CONFIG="/root/.config/starship.toml"
 readonly ROOT_BASHRC="/root/.bashrc"
 readonly ROOT_BASH_PROFILE="/root/.bash_profile"
+# Literal shell initialization written to root bashrc.
+# shellcheck disable=SC2016
 readonly STARSHIP_INIT='eval "$(starship init bash)"'
 readonly BASHRC_SOURCE='[[ -f ~/.bashrc ]] && source ~/.bashrc'
 

@@ -1,17 +1,18 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 set -Eeuo pipefail
-IFS=$'\n\t'
 
-# shellcheck source=.local/lib/chezmoi_utils.sh
-source "${HOME}/.local/lib/chezmoi_utils.sh"
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
 
 main() {
+    require_no_args "Start configured storage mount units." "$@"
     log_section "Starting storage mount units"
 
     local -a units
-    mapfile -t units < <(systemctl list-unit-files --type=mount --no-legend 2>/dev/null \
-        | awk '$1 ~ /^var-mnt-storage/ {print $1}' | sort)
+    mapfile -t units < <(systemctl list-unit-files --type=mount --no-legend 2>/dev/null |
+        awk '$1 ~ /^var-mnt-storage/ {print $1}' | sort)
 
     if [[ ${#units[@]} -eq 0 ]]; then
         log_warn "No var-mnt-storage* mount units found"

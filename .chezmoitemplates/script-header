@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -Eeuo pipefail
 
 # Source utility functions.
-# shellcheck source=/dev/null
+# shellcheck source=chezmoi_utils.sh
 source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR

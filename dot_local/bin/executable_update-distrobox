@@ -2,8 +2,9 @@
 
 set -Eeuo pipefail
 
-# shellcheck source=.local/lib/chezmoi_utils.sh
-source "${HOME}/.local/lib/chezmoi_utils.sh"
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
 
 readonly RECUR_BOXES=(recur recur-dev)
 
@@ -39,18 +40,19 @@ fi
 '
 
 main() {
-  log_section "Upgrading distroboxes"
-  distrobox-upgrade --all
+    require_no_args "Upgrade distroboxes and their Recur installations." "$@"
+    log_section "Upgrading distroboxes"
+    distrobox-upgrade --all
 
-  local box
-  for box in "${RECUR_BOXES[@]}"; do
-    if ! podman container exists "${box}"; then
-      log_info "Skipping ${box} (not created)"
-      continue
-    fi
-    log_section "Updating Codex and Recur in ${box}"
-    distrobox enter --no-tty "${box}" -- bash -euc "${UPDATE_RECUR_BOX}"
-  done
+    local box
+    for box in "${RECUR_BOXES[@]}"; do
+        if ! podman container exists "${box}"; then
+            log_info "Skipping ${box} (not created)"
+            continue
+        fi
+        log_section "Updating Codex and Recur in ${box}"
+        distrobox enter --no-tty "${box}" -- bash -euc "${UPDATE_RECUR_BOX}"
+    done
 }
 
 main "$@"

@@ -2,10 +2,12 @@
 
 set -Eeuo pipefail
 
-# shellcheck source=.local/lib/chezmoi_utils.sh
-source "${HOME}/.local/lib/chezmoi_utils.sh"
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
 
 main() {
+    require_no_args "Update PiKVM." "$@"
     local status
 
     require_command ssh "PiKVM updates"

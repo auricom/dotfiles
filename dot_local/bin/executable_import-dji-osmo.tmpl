@@ -1,16 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -Eeuo pipefail
 
-source "{{ .chezmoi.homeDir }}/.local/lib/chezmoi_utils.sh"
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
 
 # Source and destination directories
 DJI_SOURCE_DIR="/run/media/{{ .chezmoi.username }}/SD_Card/DCIM"
 SORT_DEST_DIR="{{ .nfs.mountpoint_prefix }}/photo"
-
-# Validate required directories
-[[ -d "${DJI_SOURCE_DIR}" ]] || { log_error "Source not mounted" "path" "${DJI_SOURCE_DIR}"; exit 1; }
-[[ -d "${SORT_DEST_DIR}" ]]  || { log_error "Destination not mounted" "path" "${SORT_DEST_DIR}"; exit 1; }
 
 # Process a single DJI file
 process_dji_file() {
@@ -49,13 +47,22 @@ process_dji_file() {
     fi
 }
 
-log_section "DJI Osmo Import"
+main() {
+    require_no_args "Import DJI Osmo media from the SD card." "$@"
+    # Validate required directories
+    [[ -d "${DJI_SOURCE_DIR}" ]] || { log_error "Source not mounted" "path" "${DJI_SOURCE_DIR}"; exit 1; }
+    [[ -d "${SORT_DEST_DIR}" ]]  || { log_error "Destination not mounted" "path" "${SORT_DEST_DIR}"; exit 1; }
 
-while IFS= read -r -d '' dji_dir; do
-    log_info "Directory: $(basename "${dji_dir}")"
-    while IFS= read -r -d '' file; do
-        process_dji_file "${file}"
-    done < <(find "${dji_dir}" -type f -print0)
-done < <(find "${DJI_SOURCE_DIR}" -type d -name "DJI_*" -print0)
+    log_section "DJI Osmo Import"
 
-log_info "Import complete"
+    while IFS= read -r -d '' dji_dir; do
+        log_info "Directory: $(basename "${dji_dir}")"
+        while IFS= read -r -d '' file; do
+            process_dji_file "${file}"
+        done < <(find "${dji_dir}" -type f -print0)
+    done < <(find "${DJI_SOURCE_DIR}" -type d -name "DJI_*" -print0)
+
+    log_info "Import complete"
+}
+
+main "$@"

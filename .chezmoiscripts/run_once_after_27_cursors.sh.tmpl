@@ -32,9 +32,9 @@ main() {
         return 1
     fi
 
-    if [[ -d "${ICONS_DIR}/${CURSOR_THEME}" ]]; then
+    if [[ -d "${ICONS_DIR:?}/${CURSOR_THEME:?}" ]]; then
         log_info "Deleting ${CURSOR_THEME} current installation"
-        rm -rf "${ICONS_DIR}/${CURSOR_THEME}"
+        rm -rf "${ICONS_DIR:?}/${CURSOR_THEME:?}"
     fi
 
     cp -r "${THEME_SRC}" "${ICONS_DIR}/"

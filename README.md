@@ -24,6 +24,7 @@ chezmoi init --apply --ssh auricom
 ```
 
 You will be prompted for:
+
 - `formFactor` — `workstation` or `server` (laptops are auto-detected via DMI chassis type and never prompted)
 
 To re-apply after changes:
@@ -75,20 +76,99 @@ chezmoi apply
 
 Package definitions live in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, `.chezmoidata/packages_flatpak.yaml`, and `.chezmoidata/packages_appimage.yaml`. Homebrew packages are rendered into `Brewfile.tmpl`; Flatpaks are installed per-user by a separate chezmoi script; AppImages are reconciled through Gear Lever.
 
+## Local script checks
+
+The repository uses the same Lefthook + mise setup as `home-ops`, including
+`home-operations/.github`'s shared hooks. From this checkout, with mise, chezmoi,
+and Python 3 available:
+
+```sh
+mise trust
+mise install                         # Installs pinned tools and Git hooks
+just check                           # Full local validation, without formatting
+just fmt                             # Format plain shell sources, then validate
+# Without just:
+mise exec -- python3 scripts/check-shell.py
+```
+
+Commits format and check changed commands. Changes to libraries, template data,
+or shared templates check all consumers. The shell check includes extensionless
+`dot_local/bin/executable_*` files, not just `*.sh`. It renders templates with
+workstation, laptop, and server fixture configurations before checking their
+shell syntax and running ShellCheck. Rendered scripts are never executed.
+The Bibata release lookup uses a fixed test tag so shell validation needs no
+network, secrets, or configured home directory. Initial tool installation and
+the shared Lefthook configuration fetch require network access.
+
+Lefthook stages formatting fixes, matching `home-ops`. Hooks run sequentially
+here so template checks cannot race YAML formatting. Template sources are not
+passed to shfmt: Go template syntax is not shell syntax. Their rendered output
+is linted, while the source follows four-space indentation. There is no remote
+CI requirement.
+
+### Script contracts
+
+Interactive commands use Bash, four-space indentation, explicit strict mode,
+the shared library, and a final `main "$@"` entry point. Start new commands with:
+
+```bash
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
+
+main() {
+    require_no_args "Describe what this command does." "$@"
+    require_command example "describe why it is needed"
+    log_section "Operation title"
+    example
+    log_info "Operation completed"
+}
+
+main "$@"
+```
+
+Commands with options implement `--help` and return status 2 for invalid usage
+before dependencies or side effects. Use `log_section`, `log_info`, `log_warn`,
+`log_error`, `log_debug`, and `run_spin` for presentation. Keep human diagnostics
+on stderr and pipeable results on stdout. Logging is plain when redirected,
+when `NO_COLOR` is nonempty, or when `TERM=dumb`; gum is optional.
+
+Use `confirm` and `prompt_input` rather than direct gum calls. Confirmation
+defaults to no: status 0 means yes, 1 means no, and greater than 1 means input
+is unavailable or interrupted. Handle those statuses explicitly before doing
+work. Input requires terminal stdin and stderr. Error traps report the original
+status and line without re-executing the failed command. Notification support
+is opt-in through `notifications.sh`; ordinary scripts never load Pushover.
+
+Chezmoi lifecycle scripts retain their own framework: include `script-header`,
+define `main`, and include `script-footer` inside any profile condition. Use
+`chezmoi_utils.sh` for lifecycle operations; it loads the same generic helpers.
+Keep operations idempotent and skip optional interactive setup without a terminal.
+
+The convention checker in `scripts/check-shell.py` explicitly exempts the three
+POSIX prompt-data utilities (`github-icon`, `fishfy-path`, `relative-time-commit`)
+and the transparent `recur-app` launcher from the interactive framework. They
+still receive syntax, formatting, and ShellCheck checks. New exceptions must
+be named and justified in that checker; a different shebang is not an exemption.
+
 ## Profiles
 
-| Feature | Workstation | Laptop | Server |
-|---|---|---|---|
-| Kubernetes tools (flux, helm, k9s, talosctl) | ✓ | ✓ | |
-| GUI apps via Flatpak (Zen, Slack, Zed, Steam…) | ✓ | ✓ | |
-| Fonts (Nerd Fonts, JetBrains Mono, IBM Plex) | ✓ | ✓ | |
-| VSCodium + extensions | ✓ | ✓ | |
-| SOPS/age encryption | ✓ | ✓ | |
-| Systemd user services | ✓ | ✓ | |
-| NFS mounts | ✓ | ✓ | |
-| Niri — wider columns & tighter gaps | | ✓ | |
-| ZFS rebalance script | | | ✓ |
-| Core CLI tools | ✓ | ✓ | ✓ |
+| Feature                                        | Workstation | Laptop | Server |
+| ---------------------------------------------- | ----------- | ------ | ------ |
+| Kubernetes tools (flux, helm, k9s, talosctl)   | ✓           | ✓      |        |
+| GUI apps via Flatpak (Zen, Slack, Zed, Steam…) | ✓           | ✓      |        |
+| Fonts (Nerd Fonts, JetBrains Mono, IBM Plex)   | ✓           | ✓      |        |
+| VSCodium + extensions                          | ✓           | ✓      |        |
+| SOPS/age encryption                            | ✓           | ✓      |        |
+| Systemd user services                          | ✓           | ✓      |        |
+| NFS mounts                                     | ✓           | ✓      |        |
+| Niri — wider columns & tighter gaps            |             | ✓      |        |
+| ZFS rebalance script                           |             |        | ✓      |
+| Core CLI tools                                 | ✓           | ✓      | ✓      |
 
 ## Packages
 
@@ -121,29 +201,29 @@ and preview up to four packages per group; the terminal keeps the complete list.
 
 Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 
-| Script | Trigger | Description |
-|---|---|---|
-| `run_once_after_01_sudo_config.sh` | once | Sudo configuration |
-| `run_once_after_10_system.sh` | once | System setup per profile |
-| `run_once_after_11_udev_rules.sh` | once | udev rules |
-| `run_once_after_13_timesync.sh` | once | systemd-timesyncd ownership/UTC fix |
-| `run_once_after_20_fish.sh` | once | Fish shell setup |
-| `run_once_after_21_atuin.sh` | once | Atuin history sync setup |
-| `run_once_after_27_cursors.sh` | once | Bibata cursor installation |
-| `run_after_27_papirus.sh` | archive content change | Install Papirus and Catppuccin folder colors, restore selected color, rebuild caches |
-| `run_once_after_28_tailscale.sh` | once | Enable/start `tailscaled` |
-| `run_onchange_after_00_flatpak.sh` | Flatpak data change | Add user Flathub remote and install Flatpaks without sudo |
-| `run_onchange_after_00_homebrew.sh` | Brewfile change | Configure brew-proxy access and run `brew bundle install` |
-| `run_onchange_after_01_appimages.sh` | AppImage data change | Reconcile Gear Lever AppImages |
-| `run_onchange_after_03_dcal.sh` | Script change | Grant Dux Calendar read access to Dux Shell theme colors |
-| `run_onchange_after_12_nfs_mounts.sh` | nfs.yaml change | Configure NFS mounts |
-| `run_onchange_after_22_dms.sh` | theme change | Dux Shell theme setup |
-| `run_onchange_after_23_git_repositories.sh` | repos.yaml change | Clone repos & symlinks |
-| `run_onchange_after_24_distrobox.sh` | Distrobox/service change | Create/update declarative Distroboxes |
-| `run_onchange_after_24_systemd.sh` | systemd change | Enable/reload services |
-| `run_onchange_after_25_rclone.sh` | rclone change | Cloud storage mounts |
-| `run_onchange_after_26_bat.sh` | bat theme change | Rebuild syntax theme cache |
-| `run_onchange_after_27_sysexts.sh` | sysexts.yaml change | Install Flatcar system extensions |
+| Script                                      | Trigger                  | Description                                                                          |
+| ------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------ |
+| `run_once_after_01_sudo_config.sh`          | once                     | Sudo configuration                                                                   |
+| `run_once_after_10_system.sh`               | once                     | System setup per profile                                                             |
+| `run_once_after_11_udev_rules.sh`           | once                     | udev rules                                                                           |
+| `run_once_after_13_timesync.sh`             | once                     | systemd-timesyncd ownership/UTC fix                                                  |
+| `run_once_after_20_fish.sh`                 | once                     | Fish shell setup                                                                     |
+| `run_once_after_21_atuin.sh`                | once                     | Atuin history sync setup                                                             |
+| `run_once_after_27_cursors.sh`              | once                     | Bibata cursor installation                                                           |
+| `run_after_27_papirus.sh`                   | archive content change   | Install Papirus and Catppuccin folder colors, restore selected color, rebuild caches |
+| `run_once_after_28_tailscale.sh`            | once                     | Enable/start `tailscaled`                                                            |
+| `run_onchange_after_00_flatpak.sh`          | Flatpak data change      | Add user Flathub remote and install Flatpaks without sudo                            |
+| `run_onchange_after_00_homebrew.sh`         | Brewfile change          | Configure brew-proxy access and run `brew bundle install`                            |
+| `run_onchange_after_01_appimages.sh`        | AppImage data change     | Reconcile Gear Lever AppImages                                                       |
+| `run_onchange_after_03_dcal.sh`             | Script change            | Grant Dux Calendar read access to Dux Shell theme colors                             |
+| `run_onchange_after_12_nfs_mounts.sh`       | nfs.yaml change          | Configure NFS mounts                                                                 |
+| `run_onchange_after_22_dms.sh`              | theme change             | Dux Shell theme setup                                                                |
+| `run_onchange_after_23_git_repositories.sh` | repos.yaml change        | Clone repos & symlinks                                                               |
+| `run_onchange_after_24_distrobox.sh`        | Distrobox/service change | Create/update declarative Distroboxes                                                |
+| `run_onchange_after_24_systemd.sh`          | systemd change           | Enable/reload services                                                               |
+| `run_onchange_after_25_rclone.sh`           | rclone change            | Cloud storage mounts                                                                 |
+| `run_onchange_after_26_bat.sh`              | bat theme change         | Rebuild syntax theme cache                                                           |
+| `run_onchange_after_27_sysexts.sh`          | sysexts.yaml change      | Install Flatcar system extensions                                                    |
 
 On workstations, `papirus-folders --list` lists the installed folder colors.
 Select one with `papirus-folders -C cat-mocha-blue --theme Papirus-Dark`

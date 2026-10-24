@@ -17,3 +17,6 @@ trim_trailing_whitespace = false
 [{Dockerfile,*.bash,*.sh,*.sh.tmpl,*.fish,*.fish.tmpl}]
 indent_style = space
 indent_size = 4
+
+[dot_local/bin/executable_*]
+indent_size = 4

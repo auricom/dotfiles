@@ -2,7 +2,7 @@
 {{- includeTemplate "script-header" . }}
 
 main() {
-    log_info "Granting Dux Calendar read access to Dux Shell theme colors"
+    log_section "Granting Dux Calendar read access to Dux Shell theme colors"
     require_command flatpak "Dux Calendar configuration"
     flatpak override --user --filesystem=xdg-cache/dms:ro com.danklinux.dankcalendar
 }

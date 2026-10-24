@@ -2,8 +2,9 @@
 
 set -Eeuo pipefail
 
-# shellcheck source=.local/lib/chezmoi_utils.sh
-source "${HOME}/.local/lib/chezmoi_utils.sh"
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
 
 update_host() {
     local host="$1"
@@ -20,6 +21,7 @@ update_host() {
 }
 
 main() {
+    require_no_args "Update the configured DietPi hosts." "$@"
     require_command ssh "DietPi updates"
 
     update_host dns-1
