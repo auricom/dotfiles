@@ -94,6 +94,29 @@ Package definitions live in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/pac
 
 Package inventories are intentionally not duplicated in this README to avoid drift. The source of truth lives in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/packages_cask.yaml`, `.chezmoidata/packages_flatpak.yaml`, and `.chezmoidata/packages_appimage.yaml`.
 
+Run `list-undeclared-packages` to list installed packages missing from these
+declarations. It reports explicitly installed Homebrew formulas that no installed
+formula or cask depends on (`brew leaves --installed-on-request`), casks, and
+Flatpak apps in user and system installations separately. It reads live chezmoi
+data across all profiles. Without options, it only lists packages.
+
+On workstation and laptop profiles (`isWorkstation`), `review-packages.timer`
+runs weekly and catches up missed runs. A desktop notification offers Review
+or Later when undeclared packages exist. Review opens Foot with a fresh scan
+and the full package list; removal requires a final confirmation in the terminal
+(No by default). Homebrew dependency checks remain enabled and Flatpak app data
+is preserved. Servers do not install the timer or service.
+
+Run `list-undeclared-packages --notify` for a review now, or
+`list-undeclared-packages --cleanup` to go directly to the terminal confirmation.
+The notification and terminal remain open while waiting for your response.
+
+Run `list-undeclared-packages --notify-test` to show the real package report in
+a Yes/No desktop notification. The terminal prints your choice. This is a
+simulation: even choosing Yes does not uninstall anything. No notification is
+sent when there are no undeclared packages. Notifications omit empty groups
+and preview up to four packages per group; the terminal keeps the complete list.
+
 ## Post-Apply Scripts
 
 Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:

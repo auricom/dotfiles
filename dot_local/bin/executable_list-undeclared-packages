@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# shellcheck source=.local/lib/chezmoi_utils.sh
+source "${HOME}/.local/lib/chezmoi_utils.sh"
+
+report() {
+    local label=$1 key=$2 target=$3 installed declared extra section package
+    local count=0 preview=''
+    local -n packages="${target}"
+    shift 3
+
+    installed=$("$@")
+    declared=$(chezmoi execute-template "{{ range index . \"${key}\" }}{{ range .packages }}{{ . }}{{ \"\\n\" }}{{ end }}{{ end }}")
+    extra=$(LC_ALL=C comm -23 <(printf '%s\n' "${installed}" | LC_ALL=C sort -u) \
+        <(printf '%s\n' "${declared}" | LC_ALL=C sort -u))
+
+    log_section "${label}"
+    printf '%s\n\n' "${extra:-  (none)}"
+    while IFS= read -r package; do
+        if [[ -n ${package} ]]; then
+            packages+=("${package}")
+            package_count=$((package_count + 1))
+            count=$((count + 1))
+            if ((count <= 4)); then
+                preview+="• ${package}"$'\n'
+            fi
+        fi
+    done <<< "${extra}"
+
+    if [[ ${mode} == --notify* ]] && ((count > 0)); then
+        if ((count > 4)); then
+            preview+="… $((count - 4)) more (see terminal)"$'\n'
+        fi
+        # Escape package text before adding supported notification markup.
+        preview=$(printf '%s' "${preview}" | sed 's/\&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
+        printf -v section '<b>%s · %s</b>\n%s\n\n' \
+            "${label/ (installed on request)/}" "${count}" "${preview}"
+        notification_report+="${section}"
+    fi
+}
+
+main() {
+    local mode=${1:-}
+    case ${1:-} in
+        ''|--notify|--notify-test|--cleanup) ;;
+        *) log_error "Usage: ${0##*/} [--notify|--notify-test|--cleanup]"; exit 2 ;;
+    esac
+    if (($# > 1)); then
+        log_error "Usage: ${0##*/} [--notify|--notify-test|--cleanup]"
+        exit 2
+    fi
+
+    local -a brew_packages=() cask_packages=() user_flatpaks=() system_flatpaks=()
+    local notification_report=''
+    local package_count=0
+
+    require_command chezmoi "package inventory"
+
+    if [[ ${mode} == --notify* ]]; then
+        require_command notify-send "package review notification"
+    fi
+
+    if command_exists brew; then
+        report 'Homebrew formulas (installed on request)' brew brew_packages brew leaves --installed-on-request
+        report 'Homebrew casks' cask cask_packages brew list --cask
+    else
+        log_warn 'Homebrew is not installed; skipping.'
+    fi
+
+    if command_exists flatpak; then
+        report 'Flatpak apps (user)' flatpak user_flatpaks flatpak list --user --app --columns=application
+        report 'Flatpak apps (system)' flatpak system_flatpaks flatpak list --system --app --columns=application
+    else
+        log_warn 'Flatpak is not installed; skipping.'
+    fi
+
+    if [[ -n ${mode} ]]; then
+        if ((package_count == 0)); then
+            log_info 'No undeclared packages found; no cleanup notification needed.'
+            return 0
+        fi
+
+        if [[ ${mode} == --cleanup ]]; then
+            require_command gum "package removal confirmation"
+            if ! gum confirm "Remove all ${package_count} packages listed above?" --default=false; then
+                log_info 'Kept all packages.'
+                return 0
+            fi
+            # Keep native dependency checks and preserve Flatpak application data.
+            if ((${#cask_packages[@]})); then
+                brew uninstall --cask -- "${cask_packages[@]}"
+            fi
+            if ((${#brew_packages[@]})); then
+                brew uninstall --formula -- "${brew_packages[@]}"
+            fi
+            if ((${#user_flatpaks[@]})); then
+                flatpak uninstall --user --app --assumeyes -- "${user_flatpaks[@]}"
+            fi
+            if ((${#system_flatpaks[@]})); then
+                flatpak uninstall --system --app --assumeyes -- "${system_flatpaks[@]}"
+            fi
+            log_info 'Package cleanup completed.'
+            return 0
+        fi
+
+        local body answer
+        printf -v body '%sWould you remove these packages?\n<i>Preview only — nothing will be removed.</i>' \
+            "${notification_report}"
+        local -a actions=(--action='yes=Yes' --action='no=No')
+        if [[ ${mode} == --notify ]]; then
+            require_command foot "interactive package review"
+            printf -v body '%sReview the full list and confirm removal in a terminal.' "${notification_report}"
+            body=${body//see terminal/full list on Review}
+            actions=(--action='review=Review' --action='no=Later')
+        fi
+        # Dux Shell renders markup as StyledText, which collapses literal newlines.
+        body=${body//$'\n'/<br/>}
+        log_info 'Waiting for your notification response...'
+        answer=$(notify-send --app-name='Chezmoi package review' \
+            "${actions[@]}" \
+            "${package_count} undeclared packages" \
+            "${body}")
+        if [[ ${mode} == --notify ]]; then
+            if [[ ${answer} == review ]]; then
+                # Re-scan current installations and declarations in the terminal.
+                foot --hold --title='Chezmoi package cleanup' /usr/bin/bash "$0" --cleanup
+            else
+                log_info 'Package review postponed. Nothing was deleted.'
+            fi
+            return 0
+        fi
+        case ${answer} in
+            yes) log_info "Simulation: would delete ${package_count} packages. Nothing was deleted." ;;
+            no) log_info 'Simulation: kept all packages. Nothing was deleted.' ;;
+            *) log_info 'Simulation: notification dismissed. Nothing was deleted.' ;;
+        esac
+    fi
+}
+
+main "$@"

@@ -1,0 +1,12 @@
+[Unit]
+Description=Review installed packages missing from chezmoi data
+After=graphical-session.target
+PartOf=graphical-session.target
+OnFailure=notify-failure@%p.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/list-undeclared-packages --notify
+Environment="PATH={{ includeTemplate "brew-path" . | trim }}"
+# Notification actions and the review terminal can remain open for user input.
+TimeoutStartSec=infinity

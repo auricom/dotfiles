@@ -34,6 +34,8 @@ mise.toml
 {{- end }}
 
 {{- if not .isWorkstation }}
+.config/systemd/user/review-packages.service
+.config/systemd/user/review-packages.timer
 .config/distrobox/resilio-sync.ini
 .config/systemd/user/resilio-sync.service
 {{- end }}

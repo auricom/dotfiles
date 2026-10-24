@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly review of undeclared packages
+PartOf=graphical-session.target
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+
+[Install]
+WantedBy=graphical-session.target
