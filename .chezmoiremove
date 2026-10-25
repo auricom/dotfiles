@@ -21,3 +21,11 @@ mise.toml
 .config/containers/systemd/resilio-sync.container
 .config/fish/conf.d/interactive_direnv.fish
 .local/libexec/install-recur-release
+.config/fish/config.fish
+.config/fish/conf.d/interactive_krew.fish
+.config/fish/conf.d/interactive_fzf.fish
+.config/fish/conf.d/_interactive_config.fish
+.config/fish/conf.d/interactive_mise.fish
+.config/fish/conf.d/interactive_podman.fish
+.config/fish/conf.d/interactive_zoxide.fish
+.config/fish/conf.d/trunk.fish

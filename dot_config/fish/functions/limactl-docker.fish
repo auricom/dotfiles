@@ -1,18 +1,21 @@
-function limactl-docker
-    set -l status_output (limactl list docker 2>/dev/null)
+function limactl-docker --description 'Start Lima Docker and select its Docker context'
+    set -l status_output (command limactl list docker 2>/dev/null)
     if test $status -ne 0
-        limactl create --name=docker --yes https://raw.githubusercontent.com/tulilirockz/carinata/refs/heads/main/docker-carinata-rootful.yaml
-        limactl start docker
-    else if echo $status_output | grep -q "Stopped"
-        limactl start docker
+        command limactl create --name=docker --yes https://raw.githubusercontent.com/tulilirockz/carinata/refs/heads/main/docker-carinata-rootful.yaml
+        or return
+        command limactl start docker; or return
+    else if string match -q '*Stopped*' -- $status_output
+        command limactl start docker; or return
     end
 
-    if not docker context inspect lima-docker >/dev/null 2>&1
-        docker context create lima-docker --docker "host=unix://$HOME/.lima/docker/sock/docker.sock"
+    if not command docker context inspect lima-docker >/dev/null 2>&1
+        command docker context create lima-docker --docker "host=unix://$HOME/.lima/docker/sock/docker.sock"
+        or return
     end
 
-    set -l current_context (docker context show 2>/dev/null)
+    set -l current_context (command docker context show 2>/dev/null)
+    or return
     if test "$current_context" != lima-docker
-        docker context use lima-docker
+        command docker context use lima-docker
     end
 end

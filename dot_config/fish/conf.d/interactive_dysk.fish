@@ -1,5 +1,4 @@
-if type -q dysk
-    if status is-interactive
-        alias dysk='dysk --remote-stats=no'
-    end
-end
+status is-interactive; or return
+command -q dysk; or return
+
+alias dysk 'dysk --remote-stats=no'

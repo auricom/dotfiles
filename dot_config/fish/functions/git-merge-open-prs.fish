@@ -1,23 +1,23 @@
-function git-merge-open-prs
-    set -l prs (gh pr list --state open --limit 100 --json number,headRefName,title --jq '.[] | "\(.number)\t\(.headRefName)\t\(.title)"')
+function git-merge-open-prs --description 'Squash and merge open pull requests'
+    set -l prs (command gh pr list --state open --limit 100 --json number,title --jq '.[] | "\(.number)\t\(.title)"')
+    or return
 
-    if test -z "$prs"
+    if not set -q prs[1]
         echo "No open pull requests."
         return 0
     end
 
     for pr in $prs
-        set -l parts (string split \t $pr)
+        set -l parts (string split -m 1 \t -- "$pr")
         set -l number $parts[1]
-        set -l branch $parts[2]
-        set -l title $parts[3]
+        set -l title $parts[2]
 
         echo "Merging #$number: $title"
-        if not gh pr merge $number --squash --delete-branch
+        if not command gh pr merge "$number" --squash --delete-branch
             echo "Failed to merge #$number, stopping."
             return 1
         end
     end
 
-    git fetch --prune
+    command git fetch --prune
 end

@@ -1,0 +1,20 @@
+{{- $m := .catppuccin.palette.mocha -}}
+KUBE_EDITOR=nano
+VISUAL=nano
+EDITOR=nano
+HOMEBREW_NO_ANALYTICS=1
+ANSIBLE_FORCE_COLOR=true
+ANSIBLE_HOST_KEY_CHECKING=False
+PY_COLORS=true
+LC_ALL=${LC_ALL:-C.UTF-8}
+BAT_THEME=Catppuccin_Mocha
+HOMEBREW_PREFIX={{ .brewPrefix }}
+HOMEBREW_CELLAR=${HOMEBREW_PREFIX}/Cellar
+HOMEBREW_REPOSITORY=${HOMEBREW_PREFIX}
+PATH=${HOME}/.local/bin:${HOMEBREW_PREFIX}/bin:${PATH}:${HOME}/.krew/bin
+
+# Catppuccin Mocha
+FZF_DEFAULT_OPTS="\
+    --color=bg+:#{{ $m.surface0 }},bg:#{{ $m.base }},spinner:#{{ $m.rosewater }},hl:#{{ $m.red }} \
+    --color=fg:#{{ $m.text }},header:#{{ $m.red }},info:#{{ $m.mauve }},pointer:#{{ $m.rosewater }} \
+    --color=marker:#{{ $m.rosewater }},fg+:#{{ $m.text }},prompt:#{{ $m.mauve }},hl+:#{{ $m.red }}"

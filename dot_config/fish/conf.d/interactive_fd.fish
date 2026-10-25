@@ -1,5 +1,4 @@
-if type -q fd
-    if status is-interactive
-        alias find='fd' 2>/dev/null
-    end
-end
+status is-interactive; or return
+command -q fd; or return
+
+alias find fd

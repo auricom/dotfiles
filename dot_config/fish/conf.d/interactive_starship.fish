@@ -1,6 +1,4 @@
-if type -q starship
-    if status is-interactive
-        set -x STARSHIP_CONFIG ~/.config/starship.toml
-        starship init fish | source
-    end
-end
+status is-interactive; or return
+command -q starship; or return
+
+starship init fish | source

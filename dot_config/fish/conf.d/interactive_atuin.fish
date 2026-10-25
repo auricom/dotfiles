@@ -1,5 +1,4 @@
-if type -q atuin
-    if status is-interactive
-        atuin init fish --disable-up-arrow | source
-    end
-end
+status is-interactive; or return
+command -q atuin; or return
+
+atuin init fish --disable-up-arrow | source

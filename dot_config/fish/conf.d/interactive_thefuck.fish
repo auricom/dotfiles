@@ -1,5 +1,4 @@
-if type -q thefuck
-    if status is-interactive
-        thefuck --alias | source
-    end
-end
+status is-interactive; or return
+command -q thefuck; or return
+
+thefuck --alias | source
