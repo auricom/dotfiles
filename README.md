@@ -79,34 +79,36 @@ Package definitions live in `.chezmoidata/packages_brew.yaml`, `.chezmoidata/pac
 ## Local script checks
 
 The repository uses the same Lefthook + mise setup as `home-ops`, including
-`home-operations/.github`'s shared hooks. From this checkout, with mise, chezmoi,
-and Python 3 available:
+`home-operations/.github`'s shared hooks. Install the pinned tools and Git hooks
+from this checkout:
 
 ```sh
 mise trust
-mise install                         # Installs pinned tools and Git hooks
-just check                           # Full local validation, without formatting
-just fmt                             # Format plain shell sources, then validate
-# Without just:
-mise exec -- python3 scripts/check-shell.py
+mise install
 ```
 
-Commits format and check changed commands. Changes to libraries, template data,
-or shared templates check all consumers. The shell check includes extensionless
-`dot_local/bin/executable_*` files, not just `*.sh`. It renders templates with
-workstation, laptop, and server fixture configurations before checking their
-shell syntax and running ShellCheck. Rendered scripts are never executed.
-The Bibata release lookup uses a fixed test tag so shell validation needs no
-network, secrets, or configured home directory. Initial tool installation and
-the shared Lefthook configuration fetch require network access.
+Use the native tools directly for local checks:
 
-Lefthook stages formatting fixes, matching `home-ops`. Hooks run sequentially
-here so template checks cannot race YAML formatting. Template sources are not
-passed to shfmt: Go template syntax is not shell syntax. Their rendered output
-is linted, while the source follows four-space indentation. There is no remote
-CI requirement.
+```bash
+mise exec -- shellcheck dot_local/lib/*.sh
+mise exec -- shfmt -d -i 4 dot_local/lib/*.sh
+fish_indent --check dot_config/fish/conf.d/*.fish dot_config/fish/functions/*.fish
+for file in dot_config/fish/{conf.d,functions}/*.fish; do
+    fish --no-execute "$file" || exit
+done
+```
+
+Render chezmoi templates before passing their output to shell syntax checks,
+ShellCheck, or shfmt; Go template sources are not shell syntax.
 
 ### Script contracts
+
+Fish configuration stays modular in `dot_config/fish/conf.d/`, with autoloaded
+helpers in `functions/`. `00-interactive.fish` sets shell and plugin preferences;
+`00-mise.fish` initializes managed tools before the remaining integrations.
+Interactive snippets return immediately in noninteractive shells. Shared static
+environment variables live in `dot_config/environment.d/`; only terminal-specific
+`GPG_TTY` stays in Fish. The Fisher zoxide plugin owns the `cd` integration.
 
 Interactive commands use Bash, four-space indentation, explicit strict mode,
 the shared library, and a final `main "$@"` entry point. Start new commands with:
@@ -149,11 +151,8 @@ define `main`, and include `script-footer` inside any profile condition. Use
 `chezmoi_utils.sh` for lifecycle operations; it loads the same generic helpers.
 Keep operations idempotent and skip optional interactive setup without a terminal.
 
-The convention checker in `scripts/check-shell.py` explicitly exempts the three
-POSIX prompt-data utilities (`github-icon`, `fishfy-path`, `relative-time-commit`)
-and the transparent `recur-app` launcher from the interactive framework. They
-still receive syntax, formatting, and ShellCheck checks. New exceptions must
-be named and justified in that checker; a different shebang is not an exemption.
+The POSIX prompt-data utilities (`github-icon`, `fishfy-path`, `relative-time-commit`)
+and the transparent `recur-app` launcher do not use the interactive framework.
 
 ## Profiles
 

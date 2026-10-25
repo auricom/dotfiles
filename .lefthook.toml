@@ -2,13 +2,3 @@
 git_url = "https://github.com/home-operations/.github"
 ref = "main"
 configs = ["lefthook.common.toml"]
-
-# Rendering reads YAML that the shared formatter rewrites.
-[pre-commit]
-parallel = false
-
-# One job formats, then validates: the checker must not race its formatter.
-[pre-commit.commands.shell-contract]
-glob = ["dot_local/bin/**", "dot_local/lib/**", ".chezmoiscripts/**", ".chezmoitemplates/**", ".chezmoidata/**", ".chezmoiexternals/**", "dot_config/**", "Brewfile.tmpl", "scripts/**", "tests/check_shell*", ".shellcheckrc", ".editorconfig", ".lefthook.toml"]
-run = "python3 scripts/check-shell.py --fix {staged_files}"
-stage_fixed = true
