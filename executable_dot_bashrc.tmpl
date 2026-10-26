@@ -19,6 +19,15 @@ if [ -d {{ .brewPrefix }} ]; then
     eval "$({{ .brewPrefix }}/bin/brew shellenv)"
 fi
 
+# Make managed tools available before the other integrations are loaded.
+if command -v mise >/dev/null 2>&1; then
+    if [[ $- == *i* ]]; then
+        eval "$(mise activate bash)"
+    else
+        eval "$(mise activate bash --shims)"
+    fi
+fi
+
 # User specific aliases and functions
 if [ -d ~/.bashrc.d ]; then
     for rc in ~/.bashrc.d/*; do
@@ -31,6 +40,26 @@ unset rc
 
 # Interactive tools
 if [[ $- == *i* ]]; then
+    if command -v fzf >/dev/null 2>&1; then
+        eval "$(fzf --bash)"
+    fi
+
+    if command -v atuin >/dev/null 2>&1; then
+        eval "$(atuin init bash --disable-up-arrow)"
+    fi
+
+    if command -v zoxide >/dev/null 2>&1; then
+        eval "$(zoxide init bash --cmd cd --hook prompt)"
+    fi
+
+    if command -v direnv >/dev/null 2>&1; then
+        eval "$(direnv hook bash)"
+    fi
+
+    if command -v thefuck >/dev/null 2>&1; then
+        eval "$(thefuck --alias)"
+    fi
+
     # Clear the previous per-shell selector when reloading an existing session.
     unset -f __apply_terminal_theme __starship_apply_theme
     unset starship_precmd_user_func STARSHIP_CONFIG EZA_CONFIG_DIR

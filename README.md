@@ -110,6 +110,11 @@ Interactive snippets return immediately in noninteractive shells. Shared static
 environment variables live in `dot_config/environment.d/`; only terminal-specific
 `GPG_TTY` stays in Fish. The Fisher zoxide plugin owns the `cd` integration.
 
+Bash initializes mise before the other integrations and uses mise shims in
+noninteractive shells. Interactive Bash enables fzf, Atuin (after fzf so Atuin
+owns Ctrl-R), zoxide's `cd` integration, direnv, thefuck, Starship, and eza when
+installed.
+
 Interactive commands use Bash, four-space indentation, explicit strict mode,
 the shared library, and a final `main "$@"` entry point. Start new commands with:
 
