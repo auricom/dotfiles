@@ -1,0 +1,24 @@
+{{- $p := index .catppuccin.palette .flavor -}}
+{{- $accent := index $p .catppuccin.accent -}}
+{
+  "name": "Catppuccin {{ title .flavor }} {{ title .catppuccin.accent }}",
+  "base": "{{ .mode }}",
+  "overrides": {
+    "claude": "#{{ $accent }}",
+    "text": "#{{ $p.text }}",
+    "inverseText": "#{{ $p.base }}",
+    "inactive": "#{{ $p.subtext0 }}",
+    "subtle": "#{{ $p.overlay0 }}",
+    "suggestion": "#{{ $accent }}",
+    "permission": "#{{ $accent }}",
+    "promptBorder": "#{{ $accent }}",
+    "planMode": "#{{ $accent }}",
+    "success": "#{{ $p.green }}",
+    "error": "#{{ $p.red }}",
+    "warning": "#{{ $p.yellow }}",
+    "userMessageBackground": "#{{ $p.surface0 }}",
+    "bashMessageBackgroundColor": "#{{ $p.mantle }}",
+    "selectionBg": "#{{ $p.surface1 }}",
+    "composerSidebarBackground": "#{{ $p.mantle }}"
+  }
+}

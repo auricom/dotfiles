@@ -1,0 +1,5 @@
+{{- $p := index .catppuccin.palette .flavor -}}
+{{- $accent := index $p .catppuccin.accent -}}
+--color=bg+:#{{ $p.surface0 }},bg:#{{ $p.base }},spinner:#{{ $accent }},hl:#{{ $p.red }}
+--color=fg:#{{ $p.text }},header:#{{ $p.red }},info:#{{ $accent }},pointer:#{{ $accent }}
+--color=marker:#{{ $accent }},fg+:#{{ $p.text }},prompt:#{{ $accent }},hl+:#{{ $p.red }}

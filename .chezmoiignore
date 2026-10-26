@@ -13,6 +13,14 @@ README.md
 tests
 mise.toml
 
+# Runtime state written by the shared terminal theme hook.
+.config/foot/initial-theme.ini
+.config/eza/theme.yml
+.config/starship.toml
+.config/terminal-themes/fzf/active.opts
+.claude/themes/catppuccin-system.json
+.codex/themes/catppuccin-system.tmTheme
+
 {{- if .isServer }}
 .config/autostart/
 .config/discord/
@@ -26,6 +34,7 @@ mise.toml
 .config/k9s/
 .config/mise/conf.d/dfiles.toml
 .config/niri/
+.config/opencode/
 .config/qt6ct/
 .config/sops/
 .config/systemd/

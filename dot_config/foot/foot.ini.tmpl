@@ -1,4 +1,5 @@
 shell={{ .brewPrefix }}/bin/fish
+include={{ .chezmoi.homeDir }}/.config/foot/initial-theme.ini
 
 term=xterm-256color
 title=foot
@@ -21,7 +22,7 @@ color-theme-switch-light=Control+o
 {{- $latte := .catppuccin.palette.latte }}
 
 [colors-dark]
-cursor={{ $mocha.crust }} {{ $mocha.rosewater }}
+cursor={{ $mocha.crust }} {{ index $mocha .catppuccin.accent }}
 foreground={{ $mocha.text }}
 background={{ $mocha.base }}
 
@@ -52,11 +53,11 @@ selection-background=414356
 search-box-no-match={{ $mocha.crust }} {{ $mocha.red }}
 search-box-match={{ $mocha.text }} {{ $mocha.surface0 }}
 
-jump-labels={{ $mocha.crust }} {{ $mocha.peach }}
-urls={{ $mocha.blue }}
+jump-labels={{ $mocha.crust }} {{ index $mocha .catppuccin.accent }}
+urls={{ index $mocha .catppuccin.accent }}
 
 [colors-light]
-cursor={{ $latte.base }} {{ $latte.rosewater }}
+cursor={{ $latte.base }} {{ index $latte .catppuccin.accent }}
 foreground={{ $latte.text }}
 background={{ $latte.base }}
 
@@ -87,5 +88,5 @@ selection-background=ccced7
 search-box-no-match={{ $latte.crust }} {{ $latte.red }}
 search-box-match={{ $latte.text }} {{ $latte.surface0 }}
 
-jump-labels={{ $latte.crust }} {{ $latte.peach }}
-urls={{ $latte.blue }}
+jump-labels={{ $latte.crust }} {{ index $latte .catppuccin.accent }}
+urls={{ index $latte .catppuccin.accent }}

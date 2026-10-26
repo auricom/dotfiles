@@ -2,4 +2,6 @@
 [palettes.{{ .name }}]
 {{- range $k, $v := .colors }}
 {{ $k }} = "#{{ $v }}"
-{{- end -}}
+{{ end }}
+
+accent = "#{{ index .colors .accent }}"

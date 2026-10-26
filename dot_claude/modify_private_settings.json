@@ -1,0 +1,2 @@
+#!/bin/sh
+jq -s '(.[0] // {}) | .theme = "custom:catppuccin-system"'

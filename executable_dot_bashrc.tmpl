@@ -29,7 +29,25 @@ if [ -d ~/.bashrc.d ]; then
 fi
 unset rc
 
-# Starship prompt
-if [[ $- == *i* ]] && command -v starship >/dev/null 2>&1; then
-    eval "$(starship init bash)"
+# Interactive tools
+if [[ $- == *i* ]]; then
+    # Clear the previous per-shell selector when reloading an existing session.
+    unset -f __apply_terminal_theme __starship_apply_theme
+    unset starship_precmd_user_func STARSHIP_CONFIG EZA_CONFIG_DIR
+
+    if command -v starship >/dev/null 2>&1; then
+        eval "$(starship init bash)"
+    fi
+
+    if command -v eza >/dev/null 2>&1; then
+        eza() {
+            # Keep desktop LS_COLORS from overriding the Catppuccin theme.
+            LS_COLORS= command eza "$@"
+        }
+
+        alias ll='eza -l --icons=auto --group-directories-first'
+        alias l.='eza -d .*'
+        alias ls='eza'
+        alias l1='eza -1'
+    fi
 fi

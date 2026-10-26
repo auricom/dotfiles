@@ -1,0 +1,7 @@
+#!/bin/sh
+jq -s --arg hook '{{ .chezmoi.homeDir }}/.local/bin/terminal-theme' '
+    (.[0] // {})
+    | .dankHooks.enabled = true
+    | .dankHooks.lightMode = $hook
+    | .dankHooks.dankHooksStarted = $hook
+'
