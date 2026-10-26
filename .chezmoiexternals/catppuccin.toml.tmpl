@@ -8,6 +8,9 @@
 # eza
 {{- range $flavor := list "mocha" "latte" }}
 {{ includeTemplate "external-file" (dict "path" (printf ".config/eza/%s/theme.yml" $flavor) "url" (printf "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/%s/catppuccin-%s-%s.yml" $flavor $flavor $.catppuccin.accent)) }}
+    # Keep ordinary filenames and the current user readable after foot theme switches.
+    filter.command = "{{ $.brewPrefix }}/bin/yq"
+    filter.args = ['.filekinds.normal.foreground = "Default" | .users.user_you.foreground = "Default"']
 {{- end }}
 
 {{ if .isWorkstation }}
