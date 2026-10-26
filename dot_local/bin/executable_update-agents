@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+cd "${HOME}/repositories/auricom/agents"
+
+status=$(git status --porcelain --untracked-files=all)
+if [[ -n ${status} ]]; then
+    echo "Skipping agents update: repository has local changes."
+    if ! notify-send --app-name='Agents update' --urgency=normal \
+        'Agents update skipped' \
+        'The agents repository has local changes. Commit or stash them to resume automatic updates.'; then
+        echo "Could not send desktop notification for skipped agents update." >&2
+    fi
+    exit 0
+fi
+
+export GIT_TERMINAL_PROMPT=0
+exec git pull --ff-only --no-rebase --no-autostash

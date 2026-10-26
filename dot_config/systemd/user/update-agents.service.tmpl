@@ -1,0 +1,11 @@
+[Unit]
+Description=Update agents repository without modifying local changes
+ConditionPathExists=%h/repositories/auricom/agents/.git
+OnFailure=notify-failure@%p.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/update-agents
+Environment="PATH={{ includeTemplate "brew-path" . | trim }}"
+Environment="GIT_SSH_COMMAND=ssh -o BatchMode=yes"
+TimeoutStartSec=5min
