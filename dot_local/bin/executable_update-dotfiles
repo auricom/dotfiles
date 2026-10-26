@@ -42,7 +42,7 @@ collect_chezmoi_status() {
     for line in "${CHEZMOI_STATUS_LINES[@]}"; do
         [[ -z ${line} ]] && continue
         status_char="${line:0:1}"
-        path="${line:2}"
+        path="${line:3}"
         [[ -z ${path} ]] && continue
         if [[ ${status_char} == " " ]]; then
             CLEAN_FILES+=("${path}")
