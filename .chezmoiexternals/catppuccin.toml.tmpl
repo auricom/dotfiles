@@ -6,28 +6,61 @@
 {{- end }}
 
 # eza
-{{ includeTemplate "external-file" (dict "path" ".config/eza/theme.yml" "url" "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/mocha/catppuccin-mocha-mauve.yml") }}
+{{- range $flavor := list "mocha" "latte" }}
+{{ includeTemplate "external-file" (dict "path" (printf ".config/eza/%s/theme.yml" $flavor) "url" (printf "https://raw.githubusercontent.com/catppuccin/eza/refs/heads/main/themes/%s/catppuccin-%s-%s.yml" $flavor $flavor $.catppuccin.accent)) }}
+{{- end }}
 
 {{ if .isWorkstation }}
 # k9s
 {{ includeTemplate "external-archive" (dict "path" ".config/k9s/skins" "url" "https://github.com/catppuccin/k9s/archive/main.tar.gz" "strip" 2) }}
+
+# Accent the UI without replacing semantic status colors.
+{{ includeTemplate "external-file" (dict "path" (printf ".config/k9s/skins/catppuccin-mocha-%s-transparent.yaml" .catppuccin.accent) "url" "https://raw.githubusercontent.com/catppuccin/k9s/main/dist/catppuccin-mocha-transparent.yaml") }}
+    filter.command = "{{ .brewPrefix }}/bin/yq"
+    filter.args = ['''
+      .k9s.body.logoColor = "#{{ index .catppuccin.palette.mocha .catppuccin.accent }}" |
+      .k9s.prompt.suggestColor = .k9s.body.logoColor |
+      .k9s.help.keyColor = .k9s.body.logoColor |
+      .k9s.frame.border.fgColor = .k9s.body.logoColor |
+      .k9s.frame.border.focusColor = .k9s.body.logoColor |
+      .k9s.frame.title.highlightColor = .k9s.body.logoColor |
+      .k9s.frame.menu.keyColor = .k9s.body.logoColor |
+      .k9s.frame.crumbs.activeColor = .k9s.body.logoColor |
+      .k9s.views.table.markColor = .k9s.body.logoColor |
+      .k9s.dialog.buttonFocusBgColor = .k9s.body.logoColor
+    ''']
 
 # foot
 {{ includeTemplate "external-file" (dict "path" ".config/foot/catppuccin_frappe.ini" "url" "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-frappe.ini") }}
 {{ includeTemplate "external-file" (dict "path" ".config/foot/catppuccin_mocha.ini" "url" "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-mocha.ini") }}
 
 # opencode
-{{ includeTemplate "external-file" (dict "path" ".config/opencode/themes/catppuccin-mocha-blue.json" "url" "https://raw.githubusercontent.com/catppuccin/opencode/refs/heads/main/themes/mocha/catppuccin-mocha-blue.json") }}
+{{ includeTemplate "external-file" (dict "path" (printf ".config/opencode/themes/catppuccin-system-%s.json" .catppuccin.accent) "url" "https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/tui/src/theme/assets/catppuccin.json") }}
+    filter.command = "{{ .brewPrefix }}/bin/jq"
+    filter.args = ["--arg", "dark", "dark{{ title .catppuccin.accent }}", "--arg", "light", "light{{ title .catppuccin.accent }}", '''
+      .theme.primary = {dark: $dark, light: $light} |
+      .theme.secondary = {dark: $dark, light: $light} |
+      .theme.accent = {dark: $dark, light: $light}
+    ''']
 
 # pi-coding-agent
 {{ includeTemplate "external-file" (dict "path" ".pi/agent/themes/catppuccin-mocha.json" "url" "https://raw.githubusercontent.com/otahontas/pi-coding-agent-catppuccin/refs/heads/main/catppuccin-mocha.json") }}
+    filter.command = "{{ .brewPrefix }}/bin/jq"
+    filter.args = ["--arg", "accent", "{{ .catppuccin.accent }}", '''
+      .colors.accent = $accent |
+      .colors.border = $accent |
+      .colors.borderAccent = $accent |
+      .colors.customMessageLabel = $accent |
+      .colors.mdLink = $accent |
+      .colors.mdListBullet = $accent
+    ''']
 
-# zen (Mocha + Latte, Sky accent)
+# zen (Mocha + Latte, shared accent)
 {{- range $title := list "Mocha" "Latte" }}
 {{- $id := lower $title }}
-{{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_sky_userChrome.css" $id) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/Sky/userChrome.css" $title)) }}
-{{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_sky_userContent.css" $id) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/Sky/userContent.css" $title)) }}
-{{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_sky_zen-logo.svg" $id) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/Sky/zen-logo-%s.svg" $title $id)) }}
+{{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_%s_userChrome.css" $id $.catppuccin.accent) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/%s/userChrome.css" $title (title $.catppuccin.accent))) }}
+{{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_%s_userContent.css" $id $.catppuccin.accent) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/%s/userContent.css" $title (title $.catppuccin.accent))) }}
+{{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_%s_zen-logo.svg" $id $.catppuccin.accent) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/%s/zen-logo-%s.svg" $title (title $.catppuccin.accent) $id)) }}
 {{- end }}
 
 # zellij catppuccin theme

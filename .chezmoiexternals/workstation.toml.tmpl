@@ -2,5 +2,5 @@
 # qwerty-fr
 {{ includeTemplate "external-file" (dict "path" ".config/xkb/symbols/us_qwerty-fr" "url" "https://raw.githubusercontent.com/qwerty-fr/qwerty-fr/master/linux/us_qwerty-fr") }}
 
-{{ includeTemplate "external-file" (dict "path" ".var/app/dev.zed.Zed/config/zed/themes/catppuccin-blue.json" "url" (printf "https://github.com/catppuccin/zed/releases/download/%s/catppuccin-blue.json" (toString (gitHubLatestRelease "catppuccin/zed").TagName)) "refresh" "0") }}
+{{ includeTemplate "external-file" (dict "path" (printf ".var/app/dev.zed.Zed/config/zed/themes/catppuccin-%s.json" .catppuccin.accent) "url" (printf "https://github.com/catppuccin/zed/releases/download/%s/catppuccin-%s.json" (toString (gitHubLatestRelease "catppuccin/zed").TagName) .catppuccin.accent) "refresh" "0") }}
 {{ end }}

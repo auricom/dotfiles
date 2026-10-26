@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+import json
+import re
+import sys
+
+content = sys.stdin.read()
+accent = "{{ .catppuccin.accent }}"
+if not content.strip():
+    content = json.dumps({"theme": {
+        "mode": "system",
+        "dark": "Catppuccin Mocha",
+        "light": "Catppuccin Latte",
+    }}, indent=2) + "\n"
+
+# Change only the editor theme, preserving icon themes and JSONC comments.
+def update_theme(match):
+    return re.sub(
+        r'"Catppuccin (Latte|Mocha)(?: \([a-z]+\))?"',
+        lambda name: f'"Catppuccin {name[1]} ({accent})"',
+        match[0],
+    )
+
+content = re.sub(r'"theme"\s*:\s*(?:\{[^{}]*\}|"[^"]*")', update_theme, content)
+sys.stdout.write(content)

@@ -9,7 +9,7 @@ _C_YELLOW="#f9e2af"
 _C_GREEN="#a6e3a1"
 _C_PEACH="#fab387"
 _C_RED="#f38ba8"
-_C_BLUE="#89b4fa"
+_C_ACCENT="#{{ index .catppuccin.palette.mocha .catppuccin.accent }}"
 _C_OVERLAY1="#7f849c"
 _C_TEXT="#cdd6f4"
 
@@ -55,7 +55,7 @@ if [[ -x ${_GUM} ]]; then
             --level "${level}"
             --level.foreground "${color}"
             --message.foreground "${_C_TEXT}"
-            --key.foreground "${_C_BLUE}"
+            --key.foreground "${_C_ACCENT}"
             --value.foreground "${_C_OVERLAY1}"
             --separator.foreground "${_C_OVERLAY1}"
         )
@@ -124,7 +124,7 @@ run_spin() {
     if [[ -x ${_GUM} && ${_PRETTY_OUTPUT} == true ]]; then
         "${_GUM}" spin \
             --spinner dot \
-            --spinner.foreground "${_C_BLUE}" \
+            --spinner.foreground "${_C_ACCENT}" \
             --title.foreground "${_C_TEXT}" \
             --title "${title}" \
             --show-error \

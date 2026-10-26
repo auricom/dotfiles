@@ -24,10 +24,10 @@ application_theme_zen() {
     log_info "Zen browser theme installation"
 
     local theme_dir="{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen"
-    local chrome_latte="${theme_dir}/latte_sky_userChrome.css"
-    local chrome_mocha="${theme_dir}/mocha_sky_userChrome.css"
-    local content_latte="${theme_dir}/latte_sky_userContent.css"
-    local content_mocha="${theme_dir}/mocha_sky_userContent.css"
+    local chrome_latte="${theme_dir}/latte_{{ .catppuccin.accent }}_userChrome.css"
+    local chrome_mocha="${theme_dir}/mocha_{{ .catppuccin.accent }}_userChrome.css"
+    local content_latte="${theme_dir}/latte_{{ .catppuccin.accent }}_userContent.css"
+    local content_mocha="${theme_dir}/mocha_{{ .catppuccin.accent }}_userContent.css"
 
     # Find default profile directory
     log_info "Concatenate Catppuccin Mocha and Catppuccin Latte in userChrome.css and userContent.css for every found profile"

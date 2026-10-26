@@ -16,6 +16,9 @@
 .config/systemd/user/gearlever-update.timer
 .local/bin/dotfiles-update
 .local/share/starship
+.config/opencode/themes/catppuccin-mocha-blue.json
+.config/opencode/themes/catppuccin-mocha-sky.json
+.var/app/dev.zed.Zed/config/zed/themes/catppuccin-blue.json
 scripts
 mise.toml
 .config/containers/systemd/resilio-sync.container

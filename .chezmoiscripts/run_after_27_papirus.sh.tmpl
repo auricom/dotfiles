@@ -7,7 +7,10 @@ main() {
     local stamp="${assets_dir}/installed.sha256"
     local checksum theme
 
-    checksum=$(sha256sum "${assets_dir}/icon-theme.tar.gz" "${assets_dir}/folder-colors.tar.gz")
+    checksum=$(
+        sha256sum "${assets_dir}/icon-theme.tar.gz" "${assets_dir}/folder-colors.tar.gz"
+        printf 'folder-color=cat-mocha-%s\n' '{{ .catppuccin.accent }}'
+    )
     if [[ -f "${icons_dir}/Papirus/index.theme" &&
           -f "${icons_dir}/Papirus-Dark/index.theme" &&
           -f "${icons_dir}/Papirus-Light/index.theme" ]] &&
@@ -33,10 +36,9 @@ main() {
         rsync -a --delete "${PAPIRUS_TMP_DIR}/${theme}/" "${icons_dir}/${theme}/"
     done
 
-    # Installing a new base theme resets folder symlinks.
-    if [[ -s "${XDG_CONFIG_HOME:-{{ .chezmoi.homeDir }}/.config}/papirus-folders/keep" ]]; then
-        "{{ .chezmoi.homeDir }}/.local/bin/papirus-folders" --restore
-    fi
+    # All Papirus variants share their folder assets.
+    "{{ .chezmoi.homeDir }}/.local/bin/papirus-folders" \
+        --theme Papirus --color "cat-mocha-{{ .catppuccin.accent }}"
 
     if command -v gtk-update-icon-cache >/dev/null 2>&1; then
         for theme in Papirus Papirus-Dark Papirus-Light; do
