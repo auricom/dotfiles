@@ -4,6 +4,7 @@ layout {
 }
 
 binds {
+    Ctrl+Shift+Space hotkey-overlay-title="1Password Quick Access" { spawn "{{ joinPath .chezmoi.homeDir ".local/bin/1password" }}" "--quick-access"; }
     Mod+E hotkey-overlay-title="Open Dux Files" { spawn "{{ .brewPrefix }}/bin/mise" "exec" "github:duxlabs-dev/dux-files" "--" "dfiles" "open"; }
     Mod+P hotkey-overlay-title="Print screen" { spawn-sh "dms screenshot"; }
     Mod+Period hotkey-overlay-title="Show emojis" { spawn-sh "flatpak run it.mijorus.smile"; }
