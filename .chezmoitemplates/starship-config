@@ -6,8 +6,8 @@ format = """\
   $status\
   $username\
   $hostname\
-  ${custom.git_host}\
   $shell\
+  ${custom.git_host}\
   $directory\
   $git_branch\
   $fill\
