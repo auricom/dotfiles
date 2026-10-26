@@ -5,7 +5,7 @@
 # `#`). Per-app templates render the subset/format each app needs, so colours
 # cannot drift between starship, foot, fzf, etc.
 catppuccin:
-  accent: sky
+  accent: blue
   flavors:
     - id: latte
       title: Latte
