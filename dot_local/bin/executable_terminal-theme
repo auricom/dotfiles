@@ -26,6 +26,12 @@ for theme in "$eza_theme" "$starship_theme" "$claude_theme" "$codex_theme" "$fzf
     fi
 done
 
+k9s_theme="$config_dir/k9s/skins/catppuccin-$flavor-system.yaml"
+if test -f "$config_dir/k9s/config.yaml" && ! test -r "$k9s_theme"; then
+    echo "Missing terminal theme: $k9s_theme" >&2
+    exit 1
+fi
+
 claude_dir=${CLAUDE_CONFIG_DIR:-$HOME/.claude}
 codex_dir=${CODEX_HOME:-$HOME/.codex}
 mkdir -p "$claude_dir/themes" "$codex_dir/themes"
@@ -44,6 +50,11 @@ mv -f "$theme_tmp/claude.json" "$claude_dir/themes/catppuccin-system.json"
 mv -f "$theme_tmp/codex.tmTheme" "$codex_dir/themes/catppuccin-system.tmTheme"
 ln -s "$fzf_theme" "$theme_tmp/fzf.opts"
 mv -f "$theme_tmp/fzf.opts" "$config_dir/terminal-themes/fzf/active.opts"
+
+if test -f "$config_dir/k9s/config.yaml"; then
+    cp "$k9s_theme" "$theme_tmp/k9s.yaml"
+    mv -f "$theme_tmp/k9s.yaml" "$config_dir/k9s/skins/catppuccin-system.yaml"
+fi
 
 if test -f "$config_dir/foot/foot.ini"; then
     # Persist the mode for new standalone windows as well as running terminals.

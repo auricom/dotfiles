@@ -18,10 +18,11 @@
 {{ includeTemplate "external-archive" (dict "path" ".config/k9s/skins" "url" "https://github.com/catppuccin/k9s/archive/main.tar.gz" "strip" 2) }}
 
 # Accent the UI without replacing semantic status colors.
-{{ includeTemplate "external-file" (dict "path" (printf ".config/k9s/skins/catppuccin-mocha-%s-transparent.yaml" .catppuccin.accent) "url" "https://raw.githubusercontent.com/catppuccin/k9s/main/dist/catppuccin-mocha-transparent.yaml") }}
-    filter.command = "{{ .brewPrefix }}/bin/yq"
+{{- range $flavor := list "mocha" "latte" }}
+{{ includeTemplate "external-file" (dict "path" (printf ".config/k9s/skins/catppuccin-%s-system.yaml" $flavor) "url" (printf "https://raw.githubusercontent.com/catppuccin/k9s/main/dist/catppuccin-%s-transparent.yaml" $flavor)) }}
+    filter.command = "{{ $.brewPrefix }}/bin/yq"
     filter.args = ['''
-      .k9s.body.logoColor = "#{{ index .catppuccin.palette.mocha .catppuccin.accent }}" |
+      .k9s.body.logoColor = "#{{ index (index $.catppuccin.palette $flavor) $.catppuccin.accent }}" |
       .k9s.prompt.suggestColor = .k9s.body.logoColor |
       .k9s.help.keyColor = .k9s.body.logoColor |
       .k9s.frame.border.fgColor = .k9s.body.logoColor |
@@ -32,6 +33,7 @@
       .k9s.views.table.markColor = .k9s.body.logoColor |
       .k9s.dialog.buttonFocusBgColor = .k9s.body.logoColor
     ''']
+{{- end }}
 
 # foot
 {{ includeTemplate "external-file" (dict "path" ".config/foot/catppuccin_frappe.ini" "url" "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-frappe.ini") }}
