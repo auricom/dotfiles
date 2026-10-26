@@ -7,7 +7,6 @@ binds {
     Ctrl+Shift+Space hotkey-overlay-title="1Password Quick Access" { spawn "{{ joinPath .chezmoi.homeDir ".local/bin/1password" }}" "--quick-access"; }
     Mod+E hotkey-overlay-title="Open Dux Files" { spawn "{{ .brewPrefix }}/bin/mise" "exec" "github:duxlabs-dev/dux-files" "--" "dfiles" "open"; }
     Mod+P hotkey-overlay-title="Print screen" { spawn-sh "dms screenshot"; }
-    Mod+Period hotkey-overlay-title="Show emojis" { spawn-sh "flatpak run it.mijorus.smile"; }
     XF86AudioLowerVolume { spawn "dms" "ipc" "call" "audio" "decrement" "5"; }
     XF86AudioMute { spawn "dms" "ipc" "call" "audio" "mute"; }
     XF86AudioNext { spawn "dms" "ipc" "call" "mpris" "next"; }
@@ -35,13 +34,12 @@ window-rule {
     open-floating true
 }
 
+{{ if .isLaptop -}}
 window-rule {
-    match title="Smile"
-    open-maximized false
-    open-floating true
-    default-column-width { proportion 0.1; }
-    default-window-height { fixed 500; }
+    match app-id=r#"^dev\.zed\.Zed$"#
+    open-fullscreen true
 }
+{{ end -}}
 
 window-rule {
     match title="Calculator"
