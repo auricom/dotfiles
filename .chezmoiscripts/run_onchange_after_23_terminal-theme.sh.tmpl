@@ -1,38 +1,46 @@
-#!/bin/sh
-set -eu
+{{- includeTemplate "script-header" . }}
 
 # Hash dependencies: {{ include "dot_local/bin/executable_terminal-theme" | sha256sum }}
 # Hash dependencies: {{ include "dot_config/dms/modify_plugin_settings.json.tmpl" | sha256sum }}
 # Hash dependencies: {{ include "dot_config/dms/modify_settings.json.tmpl" | sha256sum }}
 
-mode=dark
-state="{{ .chezmoi.homeDir }}/.config/foot/initial-theme.ini"
-if test -r "$state"; then
-    while IFS='=' read -r key value; do
-        if test "$key" = initial-color-theme; then
-            mode=$value
+main() {
+    log_section "Configuring terminal themes"
+    local key value
+
+    local mode=dark
+    local state="{{ .chezmoi.homeDir }}/.config/foot/initial-theme.ini"
+    if test -r "$state"; then
+        while IFS='=' read -r key value; do
+            if test "$key" = initial-color-theme; then
+                mode=$value
+            fi
+        done < "$state"
+    fi
+
+{{ if .isWorkstation }}
+    local desktop_running=false
+    local desktop_mode
+    if command -v dms >/dev/null 2>&1; then
+        if ! test -f "{{ .chezmoi.homeDir }}/.config/dms/plugins/dankHooks/plugin.json"; then
+            dms plugins install dankHooks
         fi
-    done < "$state"
-fi
-
-{{ if .isWorkstation -}}
-desktop_running=false
-if command -v dms >/dev/null 2>&1; then
-    if ! test -f "{{ .chezmoi.homeDir }}/.config/dms/plugins/dankHooks/plugin.json"; then
-        dms plugins install dankHooks
+        if desktop_mode=$(dms ipc call theme getMode 2>/dev/null); then
+            mode=$desktop_mode
+            desktop_running=true
+        fi
     fi
-    if desktop_mode=$(dms ipc call theme getMode 2>/dev/null); then
-        mode=$desktop_mode
-        desktop_running=true
+{{ end }}
+
+    "{{ .chezmoi.homeDir }}/.local/bin/terminal-theme" onLightModeChanged "$mode"
+
+{{ if .isWorkstation }}
+    if "$desktop_running"; then
+        # DMS reads plugin_settings.json at startup, not on external edits.
+        dms restart
     fi
-fi
-{{ end -}}
+{{ end }}
+    log_info "Terminal themes configured"
+}
 
-"{{ .chezmoi.homeDir }}/.local/bin/terminal-theme" onLightModeChanged "$mode"
-
-{{ if .isWorkstation -}}
-if "$desktop_running"; then
-    # DMS reads plugin_settings.json at startup, not on external edits.
-    dms restart
-fi
-{{ end -}}
+{{ includeTemplate "script-footer" . -}}

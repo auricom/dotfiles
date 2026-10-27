@@ -90,6 +90,7 @@ mise install
 Use the native tools directly for local checks:
 
 ```bash
+bash scripts/check-script-style.sh
 mise exec -- shellcheck dot_local/lib/*.sh
 mise exec -- shfmt -d -i 4 dot_local/lib/*.sh
 fish_indent --check dot_config/fish/conf.d/*.fish dot_config/fish/functions/*.fish
@@ -102,6 +103,10 @@ Render chezmoi templates before passing their output to shell syntax checks,
 ShellCheck, or shfmt; Go template sources are not shell syntax.
 
 ### Script contracts
+
+Repository agent instructions live in [AGENTS.md](AGENTS.md). The local
+`script-style` Lefthook check enforces the shared framework for lifecycle scripts
+and operational commands.
 
 Fish configuration stays modular in `dot_config/fish/conf.d/`, with autoloaded
 helpers in `functions/`. `00-interactive.fish` sets shell and plugin preferences;
@@ -157,7 +162,9 @@ define `main`, and include `script-footer` inside any profile condition. Use
 Keep operations idempotent and skip optional interactive setup without a terminal.
 
 The POSIX prompt-data utilities (`github-icon`, `fishfy-path`, `relative-time-commit`)
-and the transparent `recur-app` launcher do not use the interactive framework.
+and the transparent `1password`/`recur-app` launchers do not use the interactive
+framework. The `terminal-theme` background hook uses shared diagnostics and
+stays silent on success.
 
 ## Profiles
 
@@ -205,29 +212,40 @@ and preview up to four packages per group; the terminal keeps the complete list.
 
 Scripts in `.chezmoiscripts/` run automatically after `chezmoi apply`:
 
-| Script                                      | Trigger                  | Description                                                                          |
-| ------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------ |
-| `run_once_after_01_sudo_config.sh`          | once                     | Sudo configuration                                                                   |
-| `run_once_after_10_system.sh`               | once                     | System setup per profile                                                             |
-| `run_once_after_11_udev_rules.sh`           | once                     | udev rules                                                                           |
-| `run_once_after_13_timesync.sh`             | once                     | systemd-timesyncd ownership/UTC fix                                                  |
-| `run_once_after_20_fish.sh`                 | once                     | Fish shell setup                                                                     |
-| `run_once_after_21_atuin.sh`                | once                     | Atuin history sync setup                                                             |
-| `run_once_after_27_cursors.sh`              | once                     | Bibata cursor installation                                                           |
-| `run_after_27_papirus.sh`                   | archive content change   | Install Papirus and Catppuccin folder colors, restore selected color, rebuild caches |
-| `run_once_after_28_tailscale.sh`            | once                     | Enable/start `tailscaled`                                                            |
-| `run_onchange_after_00_flatpak.sh`          | Flatpak data change      | Add user Flathub remote and install Flatpaks without sudo                            |
-| `run_onchange_after_00_homebrew.sh`         | Brewfile change          | Configure brew-proxy access and run `brew bundle install`                            |
-| `run_onchange_after_01_appimages.sh`        | AppImage data change     | Reconcile Gear Lever AppImages                                                       |
-| `run_onchange_after_03_dcal.sh`             | Script change            | Grant Dux Calendar read access to Dux Shell theme colors                             |
-| `run_onchange_after_12_nfs_mounts.sh`       | nfs.yaml change          | Configure NFS mounts                                                                 |
-| `run_onchange_after_22_dms.sh`              | theme change             | Dux Shell theme setup                                                                |
-| `run_onchange_after_23_git_repositories.sh` | repos.yaml change        | Clone repos & symlinks                                                               |
-| `run_onchange_after_24_distrobox.sh`        | Distrobox/service change | Create/update declarative Distroboxes                                                |
-| `run_onchange_after_24_systemd.sh`          | systemd change           | Enable/reload services                                                               |
-| `run_onchange_after_25_rclone.sh`           | rclone change            | Cloud storage mounts                                                                 |
-| `run_onchange_after_26_bat.sh`              | bat theme change         | Rebuild syntax theme cache                                                           |
-| `run_onchange_after_27_sysexts.sh`          | sysexts.yaml change      | Install Flatcar system extensions                                                    |
+| Script                                      | Trigger                  | Description                                                                              |
+| ------------------------------------------- | ------------------------ | ---------------------------------------------------------------------------------------- |
+| `run_once_after_01_sudo_config.sh`          | once                     | Sudo configuration                                                                       |
+| `run_once_after_10_system.sh`               | once                     | System setup per profile                                                                 |
+| `run_once_after_11_udev_rules.sh`           | once                     | udev rules                                                                               |
+| `run_once_after_13_timesync.sh`             | once                     | systemd-timesyncd ownership/UTC fix                                                      |
+| `run_once_after_20_fish.sh`                 | once                     | Fish shell setup                                                                         |
+| `run_once_after_21_atuin.sh`                | once                     | Atuin history sync setup                                                                 |
+| `run_once_after_27_cursors.sh`              | once                     | Bibata cursor installation                                                               |
+| `run_after_27_papirus.sh`                   | archive content change   | Install Papirus and Catppuccin folder colors, restore selected color, rebuild caches     |
+| `run_once_after_28_tailscale.sh`            | once                     | Enable/start `tailscaled`                                                                |
+| `run_onchange_after_00_flatpak.sh`          | Flatpak data change      | Add user Flathub remote and install Flatpaks without sudo                                |
+| `run_onchange_after_00_homebrew.sh`         | Brewfile change          | Configure brew-proxy access and run `brew bundle install`                                |
+| `run_onchange_after_01_appimages.sh`        | AppImage data change     | Reconcile Gear Lever AppImages                                                           |
+| `run_onchange_after_03_dcal.sh`             | Script change            | Grant Dux Calendar read access to Dux Shell theme colors                                 |
+| `run_onchange_after_12_nfs_mounts.sh`       | nfs.yaml change          | Configure NFS mounts                                                                     |
+| `run_onchange_after_22_dms.sh`              | theme change             | Dux Shell theme setup                                                                    |
+| `run_after_22_zen.sh`                       | every apply              | Enable Zen custom styles and install automatic Latte/Mocha themes with the shared accent |
+| `run_onchange_after_23_git_repositories.sh` | repos.yaml change        | Clone repos & symlinks                                                                   |
+| `run_onchange_after_24_distrobox.sh`        | Distrobox/service change | Create/update declarative Distroboxes                                                    |
+| `run_onchange_after_24_systemd.sh`          | systemd change           | Enable/reload services                                                                   |
+| `run_onchange_after_25_rclone.sh`           | rclone change            | Cloud storage mounts                                                                     |
+| `run_onchange_after_26_bat.sh`              | bat theme change         | Rebuild syntax theme cache                                                               |
+| `run_onchange_after_27_sysexts.sh`          | sysexts.yaml change      | Install Flatcar system extensions                                                        |
+
+Zen's Flatpak profiles receive Catppuccin Latte (light) and Mocha (dark), using
+`catppuccin.accent` from `.chezmoidata/flavors.yaml` (blue). If Zen has no profile
+registry yet, `chezmoi apply` initializes its default profile headlessly and
+installs the theme before the first interactive launch. Existing Zen sessions
+need a restart after the first theme installation. The installer enables custom CSS
+and selects the system browser theme through a managed block in each profile's
+`user.js`, preserving other settings. Subsequent desktop light/dark changes
+switch the CSS automatically, as supported by the
+[upstream theme](https://github.com/catppuccin/zen-browser#-faq).
 
 On workstations, `papirus-folders --list` lists the installed folder colors.
 Select one with `papirus-folders -C cat-mocha-blue --theme Papirus-Dark`

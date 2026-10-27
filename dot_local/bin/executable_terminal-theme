@@ -1,65 +1,85 @@
-#!/bin/sh
-set -eu
+#!/usr/bin/env bash
 
-case "${1:-}" in
+set -Eeuo pipefail
+
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
+
+main() {
+    case "${1:-}" in
     onLightModeChanged) mode=${2:-} ;;
     onDankHooksStarted) mode=$(dms ipc call theme getMode) ;;
     *) exit 0 ;;
-esac
+    esac
 
-case "$mode" in
-    dark) flavor=mocha; title=Mocha; signal=USR1 ;;
-    light) flavor=latte; title=Latte; signal=USR2 ;;
-    *) echo "Unknown terminal theme: $mode" >&2; exit 1 ;;
-esac
+    case "$mode" in
+    dark)
+        flavor=mocha
+        title=Mocha
+        signal=USR1
+        ;;
+    light)
+        flavor=latte
+        title=Latte
+        signal=USR2
+        ;;
+    *)
+        log_error "Unknown terminal theme" mode "$mode"
+        exit 1
+        ;;
+    esac
 
-config_dir=${XDG_CONFIG_HOME:-$HOME/.config}
-eza_theme="$config_dir/eza/$flavor/theme.yml"
-starship_theme="$config_dir/starship/$flavor.toml"
-claude_theme="$config_dir/terminal-themes/claude/$flavor.json"
-codex_theme="$config_dir/bat/themes/Catppuccin_$title.tmTheme"
-fzf_theme="$config_dir/terminal-themes/fzf/$flavor.opts"
-for theme in "$eza_theme" "$starship_theme" "$claude_theme" "$codex_theme" "$fzf_theme"; do
-    if ! test -r "$theme"; then
-        echo "Missing terminal theme: $theme" >&2
+    config_dir=${XDG_CONFIG_HOME:-$HOME/.config}
+    eza_theme="$config_dir/eza/$flavor/theme.yml"
+    starship_theme="$config_dir/starship/$flavor.toml"
+    claude_theme="$config_dir/terminal-themes/claude/$flavor.json"
+    codex_theme="$config_dir/bat/themes/Catppuccin_$title.tmTheme"
+    fzf_theme="$config_dir/terminal-themes/fzf/$flavor.opts"
+    for theme in "$eza_theme" "$starship_theme" "$claude_theme" "$codex_theme" "$fzf_theme"; do
+        if ! test -r "$theme"; then
+            log_error "Missing terminal theme" path "$theme"
+            exit 1
+        fi
+    done
+
+    k9s_theme="$config_dir/k9s/skins/catppuccin-$flavor-system.yaml"
+    if test -f "$config_dir/k9s/config.yaml" && ! test -r "$k9s_theme"; then
+        log_error "Missing terminal theme" path "$k9s_theme"
         exit 1
     fi
-done
 
-k9s_theme="$config_dir/k9s/skins/catppuccin-$flavor-system.yaml"
-if test -f "$config_dir/k9s/config.yaml" && ! test -r "$k9s_theme"; then
-    echo "Missing terminal theme: $k9s_theme" >&2
-    exit 1
-fi
+    claude_dir=${CLAUDE_CONFIG_DIR:-$HOME/.claude}
+    codex_dir=${CODEX_HOME:-$HOME/.codex}
+    mkdir -p "$claude_dir/themes" "$codex_dir/themes"
 
-claude_dir=${CLAUDE_CONFIG_DIR:-$HOME/.claude}
-codex_dir=${CODEX_HOME:-$HOME/.codex}
-mkdir -p "$claude_dir/themes" "$codex_dir/themes"
+    # Replace each active link atomically so applications never read a partial file.
+    theme_tmp=$(mktemp -d "$config_dir/.terminal-theme.XXXXXX")
+    trap 'rm -rf "$theme_tmp"' EXIT HUP INT TERM
+    ln -s "$eza_theme" "$theme_tmp/eza.yml"
+    ln -s "$starship_theme" "$theme_tmp/starship.toml"
+    mv -f "$theme_tmp/eza.yml" "$config_dir/eza/theme.yml"
+    mv -f "$theme_tmp/starship.toml" "$config_dir/starship.toml"
+    ln -s "$claude_theme" "$theme_tmp/claude.json"
+    ln -s "$codex_theme" "$theme_tmp/codex.tmTheme"
+    mv -f "$theme_tmp/claude.json" "$claude_dir/themes/catppuccin-system.json"
+    # Codex loads custom syntax themes at startup; this selects the next session's palette.
+    mv -f "$theme_tmp/codex.tmTheme" "$codex_dir/themes/catppuccin-system.tmTheme"
+    ln -s "$fzf_theme" "$theme_tmp/fzf.opts"
+    mv -f "$theme_tmp/fzf.opts" "$config_dir/terminal-themes/fzf/active.opts"
 
-# Replace each active link atomically so applications never read a partial file.
-theme_tmp=$(mktemp -d "$config_dir/.terminal-theme.XXXXXX")
-trap 'rm -rf "$theme_tmp"' EXIT HUP INT TERM
-ln -s "$eza_theme" "$theme_tmp/eza.yml"
-ln -s "$starship_theme" "$theme_tmp/starship.toml"
-mv -f "$theme_tmp/eza.yml" "$config_dir/eza/theme.yml"
-mv -f "$theme_tmp/starship.toml" "$config_dir/starship.toml"
-ln -s "$claude_theme" "$theme_tmp/claude.json"
-ln -s "$codex_theme" "$theme_tmp/codex.tmTheme"
-mv -f "$theme_tmp/claude.json" "$claude_dir/themes/catppuccin-system.json"
-# Codex loads custom syntax themes at startup; this selects the next session's palette.
-mv -f "$theme_tmp/codex.tmTheme" "$codex_dir/themes/catppuccin-system.tmTheme"
-ln -s "$fzf_theme" "$theme_tmp/fzf.opts"
-mv -f "$theme_tmp/fzf.opts" "$config_dir/terminal-themes/fzf/active.opts"
+    if test -f "$config_dir/k9s/config.yaml"; then
+        cp "$k9s_theme" "$theme_tmp/k9s.yaml"
+        mv -f "$theme_tmp/k9s.yaml" "$config_dir/k9s/skins/catppuccin-system.yaml"
+    fi
 
-if test -f "$config_dir/k9s/config.yaml"; then
-    cp "$k9s_theme" "$theme_tmp/k9s.yaml"
-    mv -f "$theme_tmp/k9s.yaml" "$config_dir/k9s/skins/catppuccin-system.yaml"
-fi
+    if test -f "$config_dir/foot/foot.ini"; then
+        # Persist the mode for new standalone windows as well as running terminals.
+        printf '[main]\ninitial-color-theme=%s\n' "$mode" >"$theme_tmp/foot.ini"
+        mv -f "$theme_tmp/foot.ini" "$config_dir/foot/initial-theme.ini"
+    fi
 
-if test -f "$config_dir/foot/foot.ini"; then
-    # Persist the mode for new standalone windows as well as running terminals.
-    printf '[main]\ninitial-color-theme=%s\n' "$mode" > "$theme_tmp/foot.ini"
-    mv -f "$theme_tmp/foot.ini" "$config_dir/foot/initial-theme.ini"
-fi
+    pkill -u "$(id -u)" -"$signal" -x foot || test "$?" -eq 1
+}
 
-pkill -u "$(id -u)" -"$signal" -x foot || test "$?" -eq 1
+main "$@"

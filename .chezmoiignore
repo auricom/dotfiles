@@ -1,4 +1,5 @@
 # Repository files (not dotfiles)
+AGENTS.md
 .editorconfig
 .lefthook.toml
 .shellcheckrc

@@ -2,18 +2,29 @@
 
 set -Eeuo pipefail
 
-cd "${HOME}/repositories/auricom/agents"
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
 
-status=$(git status --porcelain --untracked-files=all)
-if [[ -n ${status} ]]; then
-    echo "Skipping agents update: repository has local changes."
-    if ! notify-send --app-name='Agents update' --urgency=normal \
-        'Agents update skipped' \
-        'The agents repository has local changes. Commit or stash them to resume automatic updates.'; then
-        echo "Could not send desktop notification for skipped agents update." >&2
+main() {
+    require_no_args "Update the agents repository when it has no local changes." "$@"
+    log_section "Updating agents repository"
+    cd "${HOME}/repositories/auricom/agents"
+
+    local status
+    status=$(git status --porcelain --untracked-files=all)
+    if [[ -n ${status} ]]; then
+        log_warn "Skipping agents update: repository has local changes"
+        if ! notify-send --app-name='Agents update' --urgency=normal \
+            'Agents update skipped' \
+            'The agents repository has local changes. Commit or stash them to resume automatic updates.'; then
+            log_warn "Could not send desktop notification for skipped agents update"
+        fi
+        return 0
     fi
-    exit 0
-fi
 
-export GIT_TERMINAL_PROMPT=0
-exec git pull --ff-only --no-rebase --no-autostash
+    export GIT_TERMINAL_PROMPT=0
+    exec git pull --ff-only --no-rebase --no-autostash
+}
+
+main "$@"

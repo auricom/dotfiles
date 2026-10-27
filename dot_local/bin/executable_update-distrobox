@@ -14,6 +14,10 @@ export PATH="/usr/bin:${PATH}"
 # Runs inside a box; only downloads Codex/Recur when a newer version is released.
 # shellcheck disable=SC2016
 readonly UPDATE_RECUR_BOX='
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap '\''report_error "$?" "$LINENO"'\'' ERR
+
 tmp="$(mktemp -d)"
 trap "rm -rf \"${tmp}\"" EXIT
 
@@ -21,21 +25,21 @@ trap "rm -rf \"${tmp}\"" EXIT
 codex_latest="$(npm view --cache "${tmp}/npm" @openai/codex version)"
 codex_current="$(node -p "require(\"$(npm root -g)/@openai/codex/package.json\").version" 2>/dev/null || true)"
 if [[ "${codex_current}" != "${codex_latest}" ]]; then
-  echo "Codex ${codex_current:-none} -> ${codex_latest}"
+  log_info "Codex ${codex_current:-none} -> ${codex_latest}"
   sudo -H npm install --global "@openai/codex@${codex_latest}"
 else
-  echo "Codex ${codex_current} up to date"
+  log_info "Codex ${codex_current} up to date"
 fi
 
 recur_latest="$(gh release view --repo celestiaorg/recur --json tagName -q .tagName)"
 recur_latest="${recur_latest#v}"
 recur_current="$(dpkg-query -W -f="\${Version}" recur 2>/dev/null || true)"
 if [[ "${recur_current}" != "${recur_latest}" ]]; then
-  echo "Recur ${recur_current:-none} -> ${recur_latest}"
+  log_info "Recur ${recur_current:-none} -> ${recur_latest}"
   gh release download "v${recur_latest}" --repo celestiaorg/recur --pattern Recur-linux-amd64.deb --dir "${tmp}"
   sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${tmp}/Recur-linux-amd64.deb"
 else
-  echo "Recur ${recur_current} up to date"
+  log_info "Recur ${recur_current} up to date"
 fi
 '
 
