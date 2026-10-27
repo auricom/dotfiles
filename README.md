@@ -246,6 +246,7 @@ and selects the system browser theme through a managed block in each profile's
 `user.js`, preserving other settings. Subsequent desktop light/dark changes
 switch the CSS automatically, as supported by the
 [upstream theme](https://github.com/catppuccin/zen-browser#-faq).
+Unchanged profiles are skipped silently without rewriting their files.
 
 On workstations, `papirus-folders --list` lists the installed folder colors.
 Select one with `papirus-folders -C cat-mocha-blue --theme Papirus-Dark`

@@ -1,13 +1,12 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 main() {
-    log_section "Configuring Zen browser theme"
     local theme_dir="{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen"
     local profile_root="{{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen"
     local accent="{{ .catppuccin.accent }}"
 
-    local flavor asset profile_dir stylesheet prefs_tmp
+    local flavor asset profile_dir stylesheet prefs_source current
+    local configured=false
     local -a profile_dirs
 
     # Validate all assets before changing profiles.
@@ -28,6 +27,8 @@ main() {
             log_warn "Zen Flatpak is not installed; skipping theme setup"
             exit 0
         fi
+        log_section "Configuring Zen browser theme"
+        configured=true
         run_spin "Initializing Zen default profile" timeout 60s flatpak run app.zen_browser.zen --headless --no-remote --screenshot /dev/null about:blank
         profile_dirs=("$profile_root"/????????.*/)
         if ((${#profile_dirs[@]} == 0)); then
@@ -36,37 +37,56 @@ main() {
         fi
     fi
 
+    ZEN_THEME_TMP_DIR=$(mktemp -d "$profile_root/.catppuccin.XXXXXX")
+    trap 'rm -rf "$ZEN_THEME_TMP_DIR"' EXIT
+    for stylesheet in userChrome.css userContent.css; do
+        cat "$theme_dir/latte_${accent}_$stylesheet" \
+            "$theme_dir/mocha_${accent}_$stylesheet" >"$ZEN_THEME_TMP_DIR/$stylesheet"
+    done
+    for flavor in latte mocha; do
+        cp "$theme_dir/${flavor}_${accent}_zen-logo.svg" "$ZEN_THEME_TMP_DIR/zen-logo-$flavor.svg"
+    done
+
     # Run on every apply so profiles created after the initial setup are themed too.
     for profile_dir in "${profile_dirs[@]}"; do
         profile_dir=${profile_dir%/}
-        mkdir -p "$profile_dir/chrome"
-        for stylesheet in userChrome.css userContent.css; do
-            cat "$theme_dir/latte_${accent}_$stylesheet" \
-                "$theme_dir/mocha_${accent}_$stylesheet" >"$profile_dir/chrome/$stylesheet"
-        done
-        for flavor in latte mocha; do
-            cp "$theme_dir/${flavor}_${accent}_zen-logo.svg" "$profile_dir/chrome/zen-logo-$flavor.svg"
-        done
 
         # Preserve other user.js settings; prefs.js belongs to the running browser.
-        touch "$profile_dir/user.js"
-        prefs_tmp=$(mktemp "$profile_dir/user.js.XXXXXX")
+        prefs_source="$profile_dir/user.js"
+        [[ -f "$prefs_source" ]] || prefs_source=/dev/null
         awk '
         /^\/\/ BEGIN chezmoi Zen theme$/ { managed = 1; next }
         /^\/\/ END chezmoi Zen theme$/ { managed = 0; next }
         !managed { print }
-    ' "$profile_dir/user.js" >"$prefs_tmp"
-        cat >>"$prefs_tmp" <<'PREFS'
+    ' "$prefs_source" >"$ZEN_THEME_TMP_DIR/user.js"
+        cat >>"$ZEN_THEME_TMP_DIR/user.js" <<'PREFS'
 // BEGIN chezmoi Zen theme
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 user_pref("extensions.activeThemeID", "default-theme@mozilla.org");
 user_pref("layout.css.prefers-color-scheme.content-override", 2);
 // END chezmoi Zen theme
 PREFS
-        mv "$prefs_tmp" "$profile_dir/user.js"
+        current=true
+        for asset in userChrome.css userContent.css zen-logo-latte.svg zen-logo-mocha.svg; do
+            cmp -s "$ZEN_THEME_TMP_DIR/$asset" "$profile_dir/chrome/$asset" || current=false
+        done
+        if "$current" && cmp -s "$ZEN_THEME_TMP_DIR/user.js" "$profile_dir/user.js"; then
+            continue
+        fi
+
+        if ! "$configured"; then
+            log_section "Configuring Zen browser theme"
+            configured=true
+        fi
+        mkdir -p "$profile_dir/chrome"
+        cp "$ZEN_THEME_TMP_DIR/"{userChrome.css,userContent.css,zen-logo-latte.svg,zen-logo-mocha.svg} "$profile_dir/chrome/"
+        chmod 600 "$ZEN_THEME_TMP_DIR/user.js"
+        mv "$ZEN_THEME_TMP_DIR/user.js" "$profile_dir/user.js"
         log_info "Installed Catppuccin Latte/Mocha" accent "$accent" profile "$profile_dir"
     done
-    log_info "Zen theme configured; restart any running Zen session to load"
+    if "$configured"; then
+        log_info "Zen theme configured; restart any running Zen session to load"
+    fi
 }
 
 {{ includeTemplate "script-footer" . -}}
