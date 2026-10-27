@@ -19,6 +19,7 @@ mise.toml
 .config/eza/theme.yml
 .config/starship.toml
 .config/terminal-themes/fzf/active.opts
+.config/terminal-themes/delta/active.gitconfig
 .config/k9s/skins/catppuccin-system.yaml
 .claude/themes/catppuccin-system.json
 .codex/themes/catppuccin-system.tmTheme

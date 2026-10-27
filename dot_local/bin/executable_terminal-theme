@@ -36,7 +36,8 @@ main() {
     claude_theme="$config_dir/terminal-themes/claude/$flavor.json"
     codex_theme="$config_dir/bat/themes/Catppuccin_$title.tmTheme"
     fzf_theme="$config_dir/terminal-themes/fzf/$flavor.opts"
-    for theme in "$eza_theme" "$starship_theme" "$claude_theme" "$codex_theme" "$fzf_theme"; do
+    delta_theme="$config_dir/terminal-themes/delta/$flavor.gitconfig"
+    for theme in "$eza_theme" "$starship_theme" "$claude_theme" "$codex_theme" "$fzf_theme" "$delta_theme"; do
         if ! test -r "$theme"; then
             log_error "Missing terminal theme" path "$theme"
             exit 1
@@ -67,6 +68,8 @@ main() {
     mv -f "$theme_tmp/codex.tmTheme" "$codex_dir/themes/catppuccin-system.tmTheme"
     ln -s "$fzf_theme" "$theme_tmp/fzf.opts"
     mv -f "$theme_tmp/fzf.opts" "$config_dir/terminal-themes/fzf/active.opts"
+    ln -s "$delta_theme" "$theme_tmp/delta.gitconfig"
+    mv -f "$theme_tmp/delta.gitconfig" "$config_dir/terminal-themes/delta/active.gitconfig"
 
     if test -f "$config_dir/k9s/config.yaml"; then
         cp "$k9s_theme" "$theme_tmp/k9s.yaml"

@@ -1,3 +1,16 @@
+# Small set of shortcuts; most git shortcuts live in fish abbrs
+[alias]
+    # Compact graph log with dates and authors
+    lg = "log --graph --abbrev-commit --pretty=format:'%C(yellow)%h%C(reset) -%C(auto)%d%C(reset) %s %C(green)(%cr) %C(blue)<%an>%C(reset)'"
+    # Undo the last commit, keep its changes staged
+    undo = "reset --soft HEAD~"
+    # Default branch name from origin/HEAD (`git remote set-head origin --auto` if unset)
+    mainormaster = "!git symbolic-ref --short refs/remotes/origin/HEAD | sed 's@^origin/@@'"
+    # What the PR will contain, like GitHub's compare view
+    diffbranch = "!f() { git diff \"origin/$(git mainormaster)...\" \"$@\"; }; f"
+    # Commits on this branch only
+    difflog = "!f() { git log --no-merges \"origin/$(git mainormaster)..\" \"$@\"; }; f"
+
 # Makes it a bit more readable
 [blame]
     coloring = "repeatedLines"
@@ -5,8 +18,8 @@
     markUnblamables = true
 
 [branch]
-    # pull --rebase` as a default
-    autosetubrebase = "always"
+    # Most recently used branches first
+    sort = "-committerdate"
 
 # Shiny colors
 [color]
@@ -25,13 +38,28 @@
     old = "red"
     whitespace = "red reverse"
 
+# List branches, tags, etc. in columns when they fit
+[column]
+    ui = "auto"
+
 [commit]
     gpgSign = true
     # Show my changes when writing the message
     verbose = true
 
+[core]
+    pager = "delta"
+
 [delta]
     features = "diff-highlight decorations"
+    # Jump between files with n/N
+    navigate = true
+    # Dark fallback; the terminal-theme hook overrides it below
+    syntax-theme = "Catppuccin_Mocha"
+
+# Light/dark syntax theme selected by the terminal-theme hook
+[include]
+    path = "~/.config/terminal-themes/delta/active.gitconfig"
 
 # Personal preference for easier reading
 [delta "decorations"]
@@ -50,10 +78,14 @@
     whitespace-error-style = "reverse red"
 
 [diff]
-    # Usually leads to better results
-    algorithm = "patience"
+    # Faster patience variant, usually cleaner hunks
+    algorithm = "histogram"
+    # Show moved blocks as moved, not as delete + add
+    colorMoved = "plain"
     # Use better, descriptive initials (c, i, w) instead of a/b.
     mnemonicPrefix = true
+    # Detect copies as well as renames
+    renames = "copies"
     # Display submodule-related information (commit listings)
     submodule = "log"
     # When using --word-diff, assume --word-diff-regex=.
@@ -72,12 +104,19 @@
 [gpg]
     format = "ssh"
 
+# `git stauts` asks before running `git status`
+[help]
+    autocorrect = "prompt"
+
 # Local configuration, not-versioned
 [include]
     path = "config.local"
 
 [init]
     defaultBranch = "main"
+
+[interactive]
+    diffFilter = "delta --color-only"
 
 [merge]
     conflictStyle = "zdiff3"
@@ -104,6 +143,13 @@
 [rebase]
     autoSquash = true
     autoStash = true
+    # Move stacked branches along with the rebased one
+    updateRefs = true
+
+# Reuse recorded conflict resolutions
+[rerere]
+    autoupdate = true
+    enabled = true
 
 [status]
     # Display submodule rev change summaries in status

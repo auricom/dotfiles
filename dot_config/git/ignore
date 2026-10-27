@@ -1,9 +1,9 @@
 # Swap and backup files
 *~
-~.swp
+*.swp
 
 # Trash
-.DS_Stpre
+.DS_Store
 Thumbs.db
 
 # Binaries

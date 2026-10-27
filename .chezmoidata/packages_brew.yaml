@@ -19,6 +19,7 @@ brew:
       - eza # Modern replacement for ls
       - fd # Simple, fast alternative to find
       - fzf # A command-line fuzzy finder
+      - git-delta # Syntax-highlighting pager for git diffs
       - ripgrep # ripgrep - faster grep
 
   shell_enhancements:
