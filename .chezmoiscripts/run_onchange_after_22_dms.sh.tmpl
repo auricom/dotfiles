@@ -11,41 +11,12 @@ main() {
     if command_exists dms; then
         log_info "Beginning Dux Shell configuration"
 
-        application_theme_zen
         greeter
 
         log_info "Dux Shell configuration completed"
     else
         log_warn "dms not available, skipping Dux Shell configuration"
     fi
-}
-
-application_theme_zen() {
-    log_info "Zen browser theme installation"
-
-    local theme_dir="{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen"
-    local chrome_latte="${theme_dir}/latte_{{ .catppuccin.accent }}_userChrome.css"
-    local chrome_mocha="${theme_dir}/mocha_{{ .catppuccin.accent }}_userChrome.css"
-    local content_latte="${theme_dir}/latte_{{ .catppuccin.accent }}_userContent.css"
-    local content_mocha="${theme_dir}/mocha_{{ .catppuccin.accent }}_userContent.css"
-
-    # Find default profile directory
-    log_info "Concatenate Catppuccin Mocha and Catppuccin Latte in userChrome.css and userContent.css for every found profile"
-    find {{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen -maxdepth 1 -type d -name "????????.*" -print0 | while IFS= read -r -d '' profile_dir; do
-        log_info "Found profile $profile_dir. Executing..."
-        mkdir -p "$profile_dir/chrome"
-        {
-            cat "$chrome_latte"
-            cat "$chrome_mocha"
-        } > "$profile_dir/chrome/userChrome.css"
-        {
-            cat "$content_latte"
-            cat "$content_mocha"
-        } > "$profile_dir/chrome/userContent.css"
-    done
-
-    log_info "Profiles configured."
-    log_info "Theming must be enabled in Zen browser for changes to userChrome.css to take effect! Open about:config and enable toolkit.legacyUserProfileCustomizations.stylesheets. Restart your browser."
 }
 
 greeter() {

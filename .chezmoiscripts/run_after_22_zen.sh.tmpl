@@ -1,0 +1,73 @@
+{{- if .isWorkstation }}
+{{- includeTemplate "script-header" . }}
+
+main() {
+    log_section "Configuring Zen browser theme"
+    local theme_dir="{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen"
+    local profile_root="{{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen"
+    local accent="{{ .catppuccin.accent }}"
+
+    local flavor asset profile_dir stylesheet prefs_tmp
+    local -a profile_dirs
+
+    # Validate all assets before changing profiles.
+    for flavor in latte mocha; do
+        for asset in userChrome.css userContent.css zen-logo.svg; do
+            if [[ ! -s "$theme_dir/${flavor}_${accent}_$asset" ]]; then
+                log_error "Missing Zen theme asset" path "$theme_dir/${flavor}_${accent}_$asset"
+                exit 1
+            fi
+        done
+    done
+
+    # Let Zen register its own default profile before the first interactive launch.
+    shopt -s nullglob
+    profile_dirs=("$profile_root"/????????.*/)
+    if [[ ! -f "$profile_root/profiles.ini" ]] || ((${#profile_dirs[@]} == 0)); then
+        if ! command -v flatpak >/dev/null || ! flatpak info app.zen_browser.zen >/dev/null 2>&1; then
+            log_warn "Zen Flatpak is not installed; skipping theme setup"
+            exit 0
+        fi
+        run_spin "Initializing Zen default profile" timeout 60s flatpak run app.zen_browser.zen --headless --no-remote --screenshot /dev/null about:blank
+        profile_dirs=("$profile_root"/????????.*/)
+        if ((${#profile_dirs[@]} == 0)); then
+            log_error "Zen did not create a profile; theme setup failed"
+            exit 1
+        fi
+    fi
+
+    # Run on every apply so profiles created after the initial setup are themed too.
+    for profile_dir in "${profile_dirs[@]}"; do
+        profile_dir=${profile_dir%/}
+        mkdir -p "$profile_dir/chrome"
+        for stylesheet in userChrome.css userContent.css; do
+            cat "$theme_dir/latte_${accent}_$stylesheet" \
+                "$theme_dir/mocha_${accent}_$stylesheet" >"$profile_dir/chrome/$stylesheet"
+        done
+        for flavor in latte mocha; do
+            cp "$theme_dir/${flavor}_${accent}_zen-logo.svg" "$profile_dir/chrome/zen-logo-$flavor.svg"
+        done
+
+        # Preserve other user.js settings; prefs.js belongs to the running browser.
+        touch "$profile_dir/user.js"
+        prefs_tmp=$(mktemp "$profile_dir/user.js.XXXXXX")
+        awk '
+        /^\/\/ BEGIN chezmoi Zen theme$/ { managed = 1; next }
+        /^\/\/ END chezmoi Zen theme$/ { managed = 0; next }
+        !managed { print }
+    ' "$profile_dir/user.js" >"$prefs_tmp"
+        cat >>"$prefs_tmp" <<'PREFS'
+// BEGIN chezmoi Zen theme
+user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+user_pref("extensions.activeThemeID", "default-theme@mozilla.org");
+user_pref("layout.css.prefers-color-scheme.content-override", 2);
+// END chezmoi Zen theme
+PREFS
+        mv "$prefs_tmp" "$profile_dir/user.js"
+        log_info "Installed Catppuccin Latte/Mocha" accent "$accent" profile "$profile_dir"
+    done
+    log_info "Zen theme configured; restart any running Zen session to load"
+}
+
+{{ includeTemplate "script-footer" . -}}
+{{- end -}}
