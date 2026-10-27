@@ -1,4 +1,5 @@
 .pi/*state.json
 .worktree
-docs/plans
 .worktrees/
+docs/plans
+tests/
