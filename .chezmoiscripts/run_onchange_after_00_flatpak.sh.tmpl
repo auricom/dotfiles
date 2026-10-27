@@ -1,6 +1,10 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
 
+# Install missing declared apps in the user's Flathub installation, independently
+# of Homebrew: brew-proxy runs as linuxbrew without the user's Flatpak authorization.
+# Skip remote setup when all apps are present. Remove declared system duplicates
+# only after matching user refs exist (same architecture/branch); preserve app data.
 # Hash dependencies: {{ include ".chezmoidata/packages_flatpak.yaml" | sha256sum }}
 
 main() {

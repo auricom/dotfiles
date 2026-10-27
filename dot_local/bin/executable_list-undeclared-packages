@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# Compare installed Homebrew leaves/casks and user/system Flatpaks with live
+# chezmoi declarations across profiles. Default: report only.
+# --notify opens Review/Later; Review launches Foot with a fresh --cleanup scan.
+# --cleanup requires terminal confirmation (default no), keeps Homebrew dependency
+# checks, and preserves Flatpak app data. --notify-test simulates Yes/No only.
+# Empty reports send no notification; previews show up to four packages per group.
+# Notification responses wait for input. review-packages.timer runs weekly and
+# catches up missed runs on workstation/laptop profiles; servers omit the timer.
+
 set -Eeuo pipefail
 
 # shellcheck source=common_utils.sh

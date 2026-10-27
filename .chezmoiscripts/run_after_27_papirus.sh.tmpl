@@ -1,6 +1,13 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
 
+# Reconcile Papirus and Catppuccin folder colors when archive checksums change;
+# unchanged assets skip installation and cache rebuilding. Default to the shared
+# Mocha accent. External archives refresh weekly; fetch now with:
+#   chezmoi apply --refresh-externals
+# List colors with papirus-folders --list; choose one with, for example:
+#   papirus-folders -C cat-latte-blue --theme Papirus-Light
+# Reinstallation reapplies the shared Mocha accent.
 main() {
     local assets_dir="{{ .chezmoi.homeDir }}/.local/share/chezmoi-assets/papirus"
     local icons_dir="{{ .chezmoi.homeDir }}/.local/share/icons"

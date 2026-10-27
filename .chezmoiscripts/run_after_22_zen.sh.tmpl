@@ -1,5 +1,9 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
+# Theme Zen Flatpak profiles with automatic Latte/Mocha CSS and the shared accent
+# from .chezmoidata/flavors.yaml. Initialize a default profile headlessly if needed.
+# Manage only our user.js block; skip unchanged files. Restart an existing Zen
+# session after the first install; later light/dark switches follow the system.
 main() {
     local theme_dir="{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen"
     local profile_root="{{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen"

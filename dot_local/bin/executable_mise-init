@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Create mise.toml at the Git root and exclude it locally through info/exclude.
+# Safe to repeat: preserve existing contents and reject tracked mise.toml files.
+
 set -Eeuo pipefail
 
 # shellcheck source=common_utils.sh

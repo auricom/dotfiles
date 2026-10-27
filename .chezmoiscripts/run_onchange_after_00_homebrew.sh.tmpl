@@ -1,7 +1,11 @@
 {{- includeTemplate "script-header" . }}
 
-# Package installation script
-# This script installs packages via Homebrew
+# Install the declared Brewfile through Homebrew, including brew-proxy support.
+# Initial linuxbrew group setup may need sudo. Proxy access requires an active
+# local session; SSH/background sessions are not authorized by its default policy.
+# If the user service manager retains stale groups, retry with:
+#   sg linuxbrew -c 'chezmoi apply'
+# A reboot refreshes groups for the whole session; proxy calls fail without prompting.
 # Hash dependencies: {{ include "Brewfile.tmpl" | sha256sum }} {{ include ".chezmoidata/packages_brew.yaml" | sha256sum }} {{ include ".chezmoidata/packages_cask.yaml" | sha256sum }}
 
 main() {
