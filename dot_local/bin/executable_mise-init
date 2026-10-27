@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
+
+main() {
+    require_no_args "Create a repository-local mise.toml and exclude it from Git." "$@"
+    require_command git "repository setup"
+
+    local root exclude
+    if ! root=$(git rev-parse --show-toplevel 2>/dev/null); then
+        log_error "Run mise-init inside a Git working tree."
+        return 1
+    fi
+    cd -- "$root"
+
+    if git ls-files --error-unmatch -- mise.toml >/dev/null 2>&1; then
+        log_error "mise.toml is already tracked; Git excludes cannot hide tracked files."
+        return 1
+    fi
+
+    log_section "Initialize local mise configuration"
+    if [[ ! -e mise.toml ]]; then
+        touch mise.toml
+    fi
+
+    exclude=$(git rev-parse --git-path info/exclude)
+    mkdir -p -- "$(dirname -- "$exclude")"
+    if [[ ! -f $exclude ]] || ! grep -Fxq '/mise.toml' "$exclude"; then
+        printf '\n/mise.toml\n' >>"$exclude"
+    fi
+    log_info "mise.toml is ready in $root (ignored locally by Git)."
+}
+
+main "$@"

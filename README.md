@@ -120,6 +120,10 @@ noninteractive shells. Interactive Bash enables fzf, Atuin (after fzf so Atuin
 owns Ctrl-R), zoxide's `cd` integration, direnv, thefuck, Starship, and eza when
 installed.
 
+Run `mise-init` anywhere inside a Git working tree to create an empty `mise.toml`
+at its root and add `/mise.toml` to Git's local `info/exclude`. Existing contents
+are preserved, repeated runs are safe, and tracked `mise.toml` files are rejected.
+
 Interactive commands use Bash, four-space indentation, explicit strict mode,
 the shared library, and a final `main "$@"` entry point. Start new commands with:
 
