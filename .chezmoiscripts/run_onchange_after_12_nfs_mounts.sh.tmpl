@@ -11,6 +11,34 @@ MOUNTPOINT_PREFIX="{{ .nfs.mountpoint_prefix }}"
 NFS_OPTS="{{ .nfs.options | replace ",x-systemd.automount" "" }}"
 UNIT_DIR="/etc/systemd/system"
 _needs_reload=false
+declare -A DECLARED_MOUNT_POINTS=(
+{{- range .nfs.mounts }}
+    ["${MOUNTPOINT_PREFIX}/{{ .mountpoint }}"]=1
+{{- end }}
+)
+
+remove_undeclared_mount_units() {
+    local mount_unit mount_point unit_name
+
+    for mount_unit in "${UNIT_DIR}"/*.mount; do
+        [[ -f "$mount_unit" ]] || continue
+        grep -qxF "Type=nfs" "$mount_unit" || continue
+
+        mount_point=$(sed -n 's/^Where=//p' "$mount_unit")
+        [[ "$mount_point" == "${MOUNTPOINT_PREFIX}/"* ]] || continue
+        [[ -n "${DECLARED_MOUNT_POINTS[$mount_point]:-}" ]] && continue
+
+        unit_name=${mount_unit##*/}
+        log_info "Removing undeclared NFS mount unit: ${unit_name}"
+        sudo systemctl disable --now "$unit_name"
+        sudo rm -f -- "$mount_unit"
+        _needs_reload=true
+
+        if [[ -d "$mount_point" ]] && ! sudo rmdir -- "$mount_point"; then
+            log_warn "Keeping non-empty mountpoint: ${mount_point}"
+        fi
+    done
+}
 
 install_mount_unit() {
     local share="$1"
@@ -69,6 +97,8 @@ activate_mount_unit() {
 
 main() {
     log_section "Configuring NFS mounts"
+
+    remove_undeclared_mount_units
 
 {{- range .nfs.mounts }}
     install_mount_unit \
