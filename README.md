@@ -37,6 +37,10 @@ to regenerate profile flags.
 Edit package declarations in `.chezmoidata/`, then run `chezmoi apply`.
 Use `list-undeclared-packages` to review installed packages missing from declarations.
 
+Declare Dux Shell plugins in `.chezmoidata/dux.yaml`, then run `chezmoi apply`
+to install and enable them on workstations and laptops. Existing plugins are
+not updated, disabled, or uninstalled when the list changes.
+
 ## Contributing
 
 Follow [AGENTS.md](AGENTS.md) for script conventions. Install check tools and hooks:

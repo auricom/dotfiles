@@ -2,8 +2,10 @@
 {{- includeTemplate "script-header" . }}
 
 # Dux Shell configuration script
+# Installs missing declared plugins; existing plugins are not updated or removed.
 
 # Hash dependencies: {{ include ".chezmoiexternals/catppuccin.toml.tmpl" | sha256sum }}
+# Hash dependencies: {{ include ".chezmoidata/dux.yaml" | sha256sum }}
 
 main() {
     log_section "Configuring Dux Shell"
@@ -11,12 +13,30 @@ main() {
     if command_exists dms; then
         log_info "Beginning Dux Shell configuration"
 
+        install_plugins
         greeter
 
         log_info "Dux Shell configuration completed"
     else
         log_warn "dms not available, skipping Dux Shell configuration"
     fi
+}
+
+install_plugins() {
+    local plugin
+    local plugins=(
+        {{- range .dux.plugins }}
+        {{ . | quote }}
+        {{- end }}
+    )
+
+    for plugin in "${plugins[@]}"; do
+        if [[ -f "{{ .chezmoi.homeDir }}/.config/dms/plugins/${plugin}/plugin.json" ]]; then
+            log_debug "Dux plugin already installed: ${plugin}"
+        else
+            run_spin "Installing Dux plugin: ${plugin}" dms plugins install "$plugin"
+        fi
+    done
 }
 
 greeter() {

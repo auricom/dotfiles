@@ -1,0 +1,4 @@
+dux:
+  plugins:
+    - dankscale
+    - dankHooks

@@ -3,6 +3,7 @@
 # Hash dependencies: {{ include "dot_local/bin/executable_terminal-theme" | sha256sum }}
 # Hash dependencies: {{ include "dot_config/dms/modify_plugin_settings.json.tmpl" | sha256sum }}
 # Hash dependencies: {{ include "dot_config/dms/modify_settings.json.tmpl" | sha256sum }}
+# Hash dependencies: {{ include ".chezmoidata/dux.yaml" | sha256sum }}
 
 main() {
     log_section "Configuring terminal themes"
@@ -22,9 +23,6 @@ main() {
     local desktop_running=false
     local desktop_mode
     if command -v dms >/dev/null 2>&1; then
-        if ! test -f "{{ .chezmoi.homeDir }}/.config/dms/plugins/dankHooks/plugin.json"; then
-            dms plugins install dankHooks
-        fi
         if desktop_mode=$(dms ipc call theme getMode 2>/dev/null); then
             mode=$desktop_mode
             desktop_running=true
