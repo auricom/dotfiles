@@ -1,6 +1,7 @@
 {{- /* One-shot user systemd unit scaffold.
 Args: description, after (list), wants (optional), condition (optional),
-      exec, path (PATH value, typically includeTemplate "brew-path" | trim). */ -}}
+      exec (command or list of sequential commands),
+      path (PATH value, typically includeTemplate "brew-path" | trim). */ -}}
 [Unit]
 Description={{ .description }}
 {{- range .after }}
@@ -16,7 +17,13 @@ OnFailure=notify-failure@%p.service
 
 [Service]
 Type=oneshot
+{{- if kindIs "slice" .exec }}
+{{- range .exec }}
+ExecStart={{ . }}
+{{- end }}
+{{- else }}
 ExecStart={{ .exec }}
+{{- end }}
 Environment="PATH={{ .path }}"
 
 [Install]

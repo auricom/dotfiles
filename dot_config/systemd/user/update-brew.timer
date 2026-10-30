@@ -1,6 +1,5 @@
 [Unit]
-Description=flatpak update
-Wants=network-online.target
+Description=Update Homebrew and installed packages every six hours
 
 [Timer]
 OnBootSec=10min

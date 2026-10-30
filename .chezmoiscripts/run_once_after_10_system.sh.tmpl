@@ -9,7 +9,6 @@ main() {
 
     set_hostname
     deactivate_swap
-    activate_brew_timers
 
     log_info "System configuration completed"
 }
@@ -60,26 +59,6 @@ deactivate_swap() {
     else
         log_info "No active swap found"
     fi
-}
-
-activate_brew_timers() {
-    log_info "Activating Homebrew systemd timers"
-
-    for timer in brew-update.timer brew-upgrade.timer; do
-        if systemctl list-unit-files "$timer" &>/dev/null 2>&1; then
-            if systemctl is-active "$timer" &>/dev/null; then
-                log_info "$timer is already active"
-            else
-                if sudo systemctl enable --now "$timer"; then
-                    log_info "Activated $timer"
-                else
-                    log_warn "Failed to activate $timer"
-                fi
-            fi
-        else
-            log_info "$timer not found, skipping"
-        fi
-    done
 }
 
 {{ includeTemplate "script-footer" . -}}

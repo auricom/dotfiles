@@ -1,5 +1,5 @@
 [Unit]
-Description=flatpak upgrade
+Description=Update Flatpak applications
 After=local-fs.target
 After=network-online.target
 ConditionPathExists=/usr/bin/flatpak

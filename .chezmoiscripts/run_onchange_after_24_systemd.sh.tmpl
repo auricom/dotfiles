@@ -3,6 +3,11 @@
 
 # Systemd services management script
 # Manages user systemd services and quadlets
+# Replaces vendor Brew timers with user timers. With brew-proxy, installs a
+# username-scoped Polkit rule for unattended update/upgrade only; other actions
+# retain the vendor policy. Initial migration and rule installation require sudo.
+# .chezmoiremove deletes former Brew/Flatpak units and enablement symlinks.
+# Stop any loaded copies before reloading and enabling update-<tool> timers.
 
 # Hash dependencies for change detection:
 {{- range glob "dot_config/systemd/user/*" }}
@@ -11,6 +16,9 @@
 
 main() {
     log_section "Managing systemd services and quadlets"
+
+    configure_brew_maintenance
+    migrate_update_units
 
     # Reload systemd daemon to pick up new/changed units
     log_info "Reloading systemd user daemon"
@@ -23,6 +31,61 @@ main() {
     systemd_enable_start "podman-auto-update.timer"
 
     log_info "Systemd configuration completed"
+}
+
+configure_brew_maintenance() {
+    local unit load_state
+    for unit in brew-update.timer brew-upgrade.timer brew-update.service brew-upgrade.service; do
+        load_state=$(systemctl show --property=LoadState --value "$unit")
+        if [[ "$load_state" == not-found ]]; then
+            log_info "System $unit not found, skipping"
+            continue
+        fi
+        if [[ "$unit" == *.timer ]]; then
+            log_info "Disabling system $unit"
+            sudo systemctl disable --now "$unit"
+        else
+            log_info "Stopping system $unit"
+            sudo systemctl stop "$unit"
+        fi
+    done
+
+    command_exists brew-proxy || return 0
+
+    local rule_file="/etc/polkit-1/rules.d/49-chezmoi-brew-maintenance.rules"
+    local rule
+    rule=$(cat <<'RULE'
+// Managed by chezmoi: allow unattended Brew updates for this user only.
+polkit.addRule(function(action, subject) {
+    if (subject.user === {{ .chezmoi.username | toJson }}
+        && (action.id === "sh.brew.BrewProxy.update"
+            || action.id === "sh.brew.BrewProxy.upgrade")) {
+        return polkit.Result.YES;
+    }
+});
+RULE
+    )
+    if printf '%s\n' "$rule" | sudo cmp -s - "$rule_file"; then
+        log_info "Brew maintenance authorization already configured"
+    else
+        log_info "Authorizing unattended Brew update and upgrade"
+        sudo mkdir -p /etc/polkit-1/rules.d
+        printf '%s\n' "$rule" | sudo install -o root -g root -m 0644 /dev/stdin "$rule_file"
+    fi
+}
+
+migrate_update_units() {
+    local name suffix unit load_state
+    for suffix in timer service; do
+        for name in brew-update brew-upgrade flatpak-upgrade; do
+            unit="$name.$suffix"
+            load_state=$(systemctl --user show --property=LoadState --value "$unit")
+            if [[ "$load_state" != not-found ]]; then
+                log_info "Stopping former user unit: $unit"
+                systemctl --user stop "$unit"
+            fi
+        done
+    done
 }
 
 enable_system_services() {
