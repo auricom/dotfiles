@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# Stage sysext updates for next boot. Never merge images or restart workloads.
+# Installed root-owned by chezmoi; invoked by update-sysexts.service or manually.
+# Requires systemd-sysupdate, jq, flock and (on SELinux hosts) squashfs-tools/setfiles.
+# shellcheck source=common_utils.sh
+source /usr/local/lib/chezmoi/common_utils.sh
+trap 'report_error "$?" "$LINENO"' ERR
+
+SYSEXTS=({{ range .sysexts.flatcar }}"{{ . }}" {{ end }})
+SYSEXT_ARCH="{{ get (dict "amd64" "x86-64" "arm64" "arm64") .chezmoi.arch }}"
+
+main() {
+    require_no_args "Stage system extension updates for next boot." "$@"
+    log_section "Staging sysext updates"
+    ((${#SYSEXTS[@]})) || return 0
+    if [[ -z "$SYSEXT_ARCH" ]]; then
+        log_error "Unsupported sysext architecture: {{ .chezmoi.arch }}"
+        return 1
+    fi
+
+    local command name
+    for command in jq flock readlink; do
+        require_command "$command" "sysext updates"
+    done
+    if [[ -r /sys/fs/selinux/enforce ]]; then
+        for command in unsquashfs mksquashfs setfiles; do
+            require_command "$command" "sysext preparation"
+        done
+    fi
+    if [[ ! -x /usr/lib/systemd/systemd-sysupdate ]]; then
+        log_error "systemd-sysupdate is required for sysext updates"
+        return 1
+    fi
+
+    exec 9>/run/lock/chezmoi-sysexts.lock
+    if ! flock -n 9; then
+        log_info "Another sysext update is already running"
+        return 0
+    fi
+    for name in "${SYSEXTS[@]}"; do
+        stage_sysext "$name"
+    done
+}
+
+stage_sysext() {
+    local name="$1" version image
+    local link="/etc/extensions/${name}.raw"
+
+    if [[ -e "$link" && ! -L "$link" ]]; then
+        log_error "Expected a symlink: $link"
+        return 1
+    fi
+    run_spin "Checking $name sysext updates" /usr/lib/systemd/systemd-sysupdate -C "$name" update >&2
+    # Query installed versions because sysupdate does nothing when the image is cached.
+    version=$(/usr/lib/systemd/systemd-sysupdate -C "$name" --offline --json=short list | jq -er '.current')
+    image="/opt/extensions/${name}/${name}-${version}-${SYSEXT_ARCH}.raw"
+    if [[ ! -f "$image" ]]; then
+        log_error "Sysupdate did not install a usable image: $image"
+        return 1
+    fi
+    image=$(prepare_selinux_image "$image")
+    if [[ $(readlink -f "$link" || true) == "$(readlink -f "$image")" ]]; then
+        log_info "$name image is already selected for next boot"
+        return 0
+    fi
+    # Only publish a fully prepared image; the currently mounted image stays in use.
+    ln -sfn "$image" "${link}.new"
+    mv -Tf "${link}.new" "$link"
+    log_info "$name update staged for next boot"
+}
+
+prepare_selinux_image() {
+    local image="$1" prepared directory policy contexts unsquashfs mksquashfs
+    if [[ ! -r /sys/fs/selinux/enforce ]]; then
+        printf '%s\n' "$image"
+        return 0
+    fi
+    policy=$(sed -n 's/^SELINUXTYPE=//p' /etc/selinux/config)
+    if [[ ! "$policy" =~ ^[[:alnum:]_-]+$ ]]; then
+        log_error "Cannot determine the host SELinux policy"
+        return 1
+    fi
+    contexts="/etc/selinux/${policy}/contexts/files/file_contexts"
+    if [[ ! -r "$contexts" ]]; then
+        log_error "Missing SELinux file contexts: $contexts"
+        return 1
+    fi
+    prepared="${image%/*}/selinux/${image##*/}"
+    if [[ -f "$prepared" ]]; then
+        printf '%s\n' "$prepared"
+        return 0
+    fi
+
+    unsquashfs=$(command -v unsquashfs)
+    mksquashfs=$(command -v mksquashfs)
+    mkdir -p "${prepared%/*}" || return
+    directory=$(mktemp -d "${prepared%/*}/.prepare.XXXXXX") || return
+    # Atomic desktops expose /opt through /var/opt; setfiles needs the real root.
+    directory=$(readlink -f "$directory") || return
+    log_info "Preparing sysext with the host file contexts"
+    if "$unsquashfs" -no-progress -d "$directory/root" "$image" >&2 &&
+        setfiles -F -r "$directory/root" "$contexts" "$directory/root" >&2 &&
+        "$mksquashfs" "$directory/root" "$directory/image.raw" -noappend -no-progress -xattrs -processors 2 >&2 &&
+        chmod 0644 "$directory/image.raw" &&
+        mv "$directory/image.raw" "$prepared"; then
+        rm -rf -- "$directory" || return
+        printf '%s\n' "$prepared"
+    else
+        rm -rf -- "$directory"
+        log_error "Could not prepare the sysext; keeping the previous installation"
+        return 1
+    fi
+}
+
+
+main "$@"

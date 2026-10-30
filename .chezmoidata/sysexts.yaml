@@ -3,4 +3,4 @@ sysexts:
     # - docker
     # - docker-buildx
     # - docker-compose
-    # - tailscale
+    - tailscale

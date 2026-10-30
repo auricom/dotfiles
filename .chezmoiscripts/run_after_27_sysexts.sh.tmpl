@@ -1,0 +1,103 @@
+{{- if and (eq .chezmoi.os "linux") .isWorkstation }}
+{{- includeTemplate "script-header" . }}
+
+# Install the root-owned sysext updater and daily system timer, then stage updates.
+# Images take effect at next boot; configure active Tailscale without restarting.
+# Keep the raw sysupdate download symlink outside /etc/extensions so a failed
+# preparation cannot select an unlabelled image for the next boot.
+
+SYSEXTS=({{ range .sysexts.flatcar }}"{{ . }}" {{ end }})
+
+main() {
+    log_section "Configuring sysext updates"
+    local name conf_src
+    require_command sudo "sysext management"
+    require_command systemctl "sysext management"
+    for name in "${SYSEXTS[@]}"; do
+        conf_src="{{ .chezmoi.homeDir }}/.local/share/sysexts/${name}/${name}.conf"
+        if [[ ! -r "$conf_src" ]] || ! grep -q '^CurrentSymlink=' "$conf_src"; then
+            log_error "Missing or invalid sysext configuration: $conf_src"
+            return 1
+        fi
+    done
+    systemctl show --property=Version --value >/dev/null
+
+    sudo mkdir -p /etc/extensions /opt/extensions /usr/local/libexec /usr/local/lib/chezmoi
+    sudo install -Z -o root -g root -m 0644 "{{ .chezmoi.homeDir }}/.local/lib/common_utils.sh" /usr/local/lib/chezmoi/common_utils.sh
+    sudo install -Z -o root -g root -m 0755 /dev/stdin /usr/local/libexec/update-sysexts <<'SYSEXT_UPDATER'
+{{ includeTemplate "sysext-updater" . }}
+SYSEXT_UPDATER
+
+    if ((${#SYSEXTS[@]} == 0)); then
+        if [[ -e /etc/systemd/system/update-sysexts.timer ]]; then
+            sudo systemctl disable --now update-sysexts.timer >&2
+        fi
+        log_info "No sysext updates configured"
+        return 0
+    fi
+
+    for name in "${SYSEXTS[@]}"; do
+        conf_src="{{ .chezmoi.homeDir }}/.local/share/sysexts/${name}/${name}.conf"
+        sudo mkdir -p "/etc/sysupdate.${name}.d"
+        sed "s|^CurrentSymlink=.*|CurrentSymlink=/opt/extensions/${name}/download.raw|" "$conf_src" |
+            sudo install -o root -g root -m 0644 /dev/stdin "/etc/sysupdate.${name}.d/${name}.transfer"
+        sudo rm -f "/etc/sysupdate.${name}.d/${name}.conf"
+        if [[ "$name" == tailscale ]]; then
+            configure_tailscale_boot
+        fi
+    done
+    configure_timer
+    sudo systemctl daemon-reload
+    sudo systemctl enable systemd-sysext.service >&2
+    sudo systemctl enable --now update-sysexts.timer >&2
+    sudo systemctl start update-sysexts.service
+    log_info "Sysext updates are staged for next boot; running services are unchanged"
+}
+
+configure_tailscale_boot() {
+    sudo mkdir -p /etc/systemd/system/tailscaled.service.d /etc/systemd/system/multi-user.target.wants
+    sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/tailscaled.service.d/20-chezmoi-sysext.conf <<'UNIT'
+# Managed by chezmoi. Keep local settings in /etc/default/tailscaled.
+[Service]
+EnvironmentFile=
+Environment="PORT=41641"
+Environment="TS_DEBUG_FIREWALL_MODE=auto"
+EnvironmentFile=-/usr/share/tailscale/tailscaled.defaults
+EnvironmentFile=-/etc/default/tailscaled
+ExecStartPost=/usr/bin/tailscale set --auto-update=false --operator="{{ .chezmoi.username }}"
+UNIT
+    sudo ln -sfn /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service
+    if systemctl is-active --quiet tailscaled.service && command_exists tailscale; then
+        sudo tailscale set --auto-update=false --operator="{{ .chezmoi.username }}"
+    fi
+}
+
+configure_timer() {
+    sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/update-sysexts.service <<'UNIT'
+[Unit]
+Description=Stage system extension updates for next boot
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/update-sysexts
+Environment="PATH={{ includeTemplate "brew-path" . | trim }}"
+TimeoutStartSec=15min
+UNIT
+    sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/update-sysexts.timer <<'UNIT'
+[Unit]
+Description=Stage system extension updates daily
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=30m
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+UNIT
+}
+
+{{ includeTemplate "script-footer" . -}}
+{{- end -}}

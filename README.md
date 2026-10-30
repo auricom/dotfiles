@@ -41,6 +41,51 @@ Declare Dux Shell plugins in `.chezmoidata/dux.yaml`, then run `chezmoi apply`
 to install and enable them on workstations and laptops. Existing plugins are
 not updated, disabled, or uninstalled when the list changes.
 
+### Tailscale system extension
+
+On Linux workstations and laptops, `chezmoi apply` installs and stages stable
+[Flatcar Tailscale sysext](https://flatcar.github.io/sysext-bakery/tailscale/)
+updates using systemd-sysupdate. Versioned images live under `/opt/extensions`,
+with `/etc/extensions/tailscale.raw` selecting the image for the next boot.
+The root-owned `update-sysexts.service` also checks daily through a system timer,
+with up to 30 minutes of randomized delay and catch-up after missed runs.
+Updates only download, prepare and select the next image: they never refresh
+sysext mounts, restart Tailscale or reboot. Tailscale's own automatic updater is
+disabled so it cannot bypass this boot-only update policy. Servers are excluded.
+
+The extension overlays packaged Tailscale binaries; keep the package for rollback.
+Existing identity and settings in `/var/lib/tailscale` are preserved. Local daemon
+options belong in `/etc/default/tailscaled`, which overrides the shipped defaults.
+For a new node, reboot after installation, then run `sudo tailscale up` interactively.
+
+Download or preparation failure leaves the previous boot image selected.
+On SELinux hosts, the script uses `unsquashfs`, `setfiles` and `mksquashfs` to
+prepare a local copy under `/opt/extensions/tailscale/selinux/` with the host's
+file contexts. Tailscale binaries are unchanged, and the original download stays
+intact for sysupdate. Each downloaded version is prepared once; the active
+symlink selects the prepared copy. Raw downloads use a separate staging symlink,
+so incomplete preparation cannot select an unlabelled boot image. SELinux
+enforcement is unchanged. A lock serializes timer and manual updates.
+Check `systemd-sysext status`, `tailscale version`,
+`systemctl status tailscaled.service`, and `tailscale status` after applying and
+again after the next reboot. Check the updater with
+`systemctl list-timers update-sysexts.timer` and
+`journalctl -u update-sysexts.service`. To stage updates manually, run
+`sudo systemctl start update-sysexts.service`.
+
+To return to the packaged version, first comment out Tailscale in
+`.chezmoidata/sysexts.yaml` and run `chezmoi apply` to update the timer's
+configuration. Then remove the extension selection and managed drop-in:
+
+```sh
+sudo rm -f /etc/extensions/tailscale.raw
+sudo rm -f /etc/systemd/system/tailscaled.service.d/20-chezmoi-sysext.conf
+```
+
+The packaged version takes over at the next boot. Keep `/var/lib/tailscale`
+intact during rollback. Do not remove other extensions
+or disable their shared `systemd-sysext.service`.
+
 ## Contributing
 
 Follow [AGENTS.md](AGENTS.md) for script conventions. Install check tools and hooks:
