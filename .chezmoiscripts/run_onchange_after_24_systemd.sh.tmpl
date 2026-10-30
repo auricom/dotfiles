@@ -10,8 +10,9 @@
 # Stop any loaded copies before reloading and enabling update-<tool> timers.
 
 # Hash dependencies for change detection:
-{{- range glob "dot_config/systemd/user/*" }}
-# {{ . }}: {{ include . | sha256sum }}
+{{- range glob (joinPath .chezmoi.sourceDir "dot_config/systemd/user/*") }}
+{{- $source := trimPrefix (printf "%s/" $.chezmoi.sourceDir) . }}
+# {{ $source }}: {{ include $source | sha256sum }}
 {{- end }}
 
 main() {

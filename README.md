@@ -43,7 +43,7 @@ not updated, disabled, or uninstalled when the list changes.
 
 ### Tailscale system extension
 
-On Linux workstations and laptops, `chezmoi apply` installs and stages stable
+On Linux workstations and laptops, `chezmoi apply` configures stable
 [Flatcar Tailscale sysext](https://flatcar.github.io/sysext-bakery/tailscale/)
 updates using systemd-sysupdate. Versioned images live under `/opt/extensions`,
 with `/etc/extensions/tailscale.raw` selecting the image for the next boot.
@@ -51,6 +51,8 @@ The user `update-sysexts.service` triggers the root-owned updater using
 noninteractive sudo (the workstation passwordless sudo configuration is required).
 Its user timer checks daily, with up to 30 minutes of randomized delay and
 catch-up after missed runs. `update-all` includes this user service.
+Setup runs only when its configuration changes; `chezmoi apply` does not
+directly start sysext updates. The timer is enabled after the updater is installed.
 Updates only download, prepare and select the next image: they never refresh
 sysext mounts, restart Tailscale or reboot. Tailscale's own automatic updater is
 disabled so it cannot bypass this boot-only update policy. Servers are excluded.

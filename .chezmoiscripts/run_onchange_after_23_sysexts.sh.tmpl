@@ -1,10 +1,12 @@
 {{- if and (eq .chezmoi.os "linux") .isWorkstation }}
 {{- includeTemplate "script-header" . }}
 
-# Install the root-owned sysext updater, then stage updates; the user timer schedules it.
+# Install the root-owned sysext updater before user timers are enabled at step 24.
+# Only configuration changes rerun setup; updates belong to the user service/timer.
 # Images take effect at next boot; configure active Tailscale without restarting.
 # Keep the raw sysupdate download symlink outside /etc/extensions so a failed
 # preparation cannot select an unlabelled image for the next boot.
+# Hash dependencies: {{ include "dot_local/lib/common_utils.sh.tmpl" | sha256sum }}
 
 SYSEXTS=({{ range .sysexts.flatcar }}"{{ . }}" {{ end }})
 
@@ -53,8 +55,7 @@ SYSEXT_UPDATER
     configure_service
     sudo systemctl daemon-reload
     sudo systemctl enable systemd-sysext.service >&2
-    sudo systemctl start update-sysexts.service
-    log_info "Sysext updates are staged for next boot; running services are unchanged"
+    log_info "Sysext updater configured; updates are scheduled by the user timer"
 }
 
 configure_tailscale_boot() {
