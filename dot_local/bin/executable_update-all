@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Start all installed update-*.service user units and wait for completion.
+# Systemd runs independent updates in parallel and keeps their logs in the journal.
+# Already-running services are joined rather than restarted; timers stay enabled.
+
+set -Eeuo pipefail
+
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
+
+main() {
+    require_no_args "Run all installed update-* systemd user services now." "$@"
+    require_command systemctl "running update services"
+    log_section "Updating everything"
+
+    local unit_files unit
+    unit_files=$(systemctl --user list-unit-files --type=service --no-legend --no-pager 'update-*.service')
+    local -a units=()
+    while read -r unit _; do
+        [[ -n "$unit" ]] || continue
+        units+=("$unit")
+    done <<< "$unit_files"
+
+    if ((${#units[@]} == 0)); then
+        log_warn "No update services installed"
+        return 0
+    fi
+
+    if ! run_spin "Running ${#units[@]} update services..." systemctl --user start "${units[@]}" >&2; then
+        log_error "An update failed; inspect failures with: systemctl --user --failed"
+        return 1
+    fi
+    log_info "Update services completed"
+}
+
+main "$@"
