@@ -1,7 +1,7 @@
 {{- if and (eq .chezmoi.os "linux") .isWorkstation }}
 {{- includeTemplate "script-header" . }}
 
-# Install the root-owned sysext updater and daily system timer, then stage updates.
+# Install the root-owned sysext updater, then stage updates; the user timer schedules it.
 # Images take effect at next boot; configure active Tailscale without restarting.
 # Keep the raw sysupdate download symlink outside /etc/extensions so a failed
 # preparation cannot select an unlabelled image for the next boot.
@@ -22,6 +22,13 @@ main() {
     done
     systemctl show --property=Version --value >/dev/null
 
+    # Retire the former system timer now that the user timer schedules updates.
+    if [[ -e /etc/systemd/system/update-sysexts.timer ]]; then
+        sudo systemctl disable --now update-sysexts.timer >&2
+        sudo rm -f /etc/systemd/system/update-sysexts.timer
+        sudo systemctl daemon-reload
+    fi
+
     sudo mkdir -p /etc/extensions /opt/extensions /usr/local/libexec /usr/local/lib/chezmoi
     sudo install -Z -o root -g root -m 0644 "{{ .chezmoi.homeDir }}/.local/lib/common_utils.sh" /usr/local/lib/chezmoi/common_utils.sh
     sudo install -Z -o root -g root -m 0755 /dev/stdin /usr/local/libexec/update-sysexts <<'SYSEXT_UPDATER'
@@ -29,9 +36,6 @@ main() {
 SYSEXT_UPDATER
 
     if ((${#SYSEXTS[@]} == 0)); then
-        if [[ -e /etc/systemd/system/update-sysexts.timer ]]; then
-            sudo systemctl disable --now update-sysexts.timer >&2
-        fi
         log_info "No sysext updates configured"
         return 0
     fi
@@ -46,10 +50,9 @@ SYSEXT_UPDATER
             configure_tailscale_boot
         fi
     done
-    configure_timer
+    configure_service
     sudo systemctl daemon-reload
     sudo systemctl enable systemd-sysext.service >&2
-    sudo systemctl enable --now update-sysexts.timer >&2
     sudo systemctl start update-sysexts.service
     log_info "Sysext updates are staged for next boot; running services are unchanged"
 }
@@ -72,7 +75,7 @@ UNIT
     fi
 }
 
-configure_timer() {
+configure_service() {
     sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/update-sysexts.service <<'UNIT'
 [Unit]
 Description=Stage system extension updates for next boot
@@ -84,18 +87,6 @@ Type=oneshot
 ExecStart=/usr/local/libexec/update-sysexts
 Environment="PATH={{ includeTemplate "brew-path" . | trim }}"
 TimeoutStartSec=15min
-UNIT
-    sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/update-sysexts.timer <<'UNIT'
-[Unit]
-Description=Stage system extension updates daily
-
-[Timer]
-OnCalendar=daily
-RandomizedDelaySec=30m
-Persistent=true
-
-[Install]
-WantedBy=timers.target
 UNIT
 }
 

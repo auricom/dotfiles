@@ -47,8 +47,10 @@ On Linux workstations and laptops, `chezmoi apply` installs and stages stable
 [Flatcar Tailscale sysext](https://flatcar.github.io/sysext-bakery/tailscale/)
 updates using systemd-sysupdate. Versioned images live under `/opt/extensions`,
 with `/etc/extensions/tailscale.raw` selecting the image for the next boot.
-The root-owned `update-sysexts.service` also checks daily through a system timer,
-with up to 30 minutes of randomized delay and catch-up after missed runs.
+The user `update-sysexts.service` triggers the root-owned updater using
+noninteractive sudo (the workstation passwordless sudo configuration is required).
+Its user timer checks daily, with up to 30 minutes of randomized delay and
+catch-up after missed runs. `update-all` includes this user service.
 Updates only download, prepare and select the next image: they never refresh
 sysext mounts, restart Tailscale or reboot. Tailscale's own automatic updater is
 disabled so it cannot bypass this boot-only update policy. Servers are excluded.
@@ -69,9 +71,10 @@ enforcement is unchanged. A lock serializes timer and manual updates.
 Check `systemd-sysext status`, `tailscale version`,
 `systemctl status tailscaled.service`, and `tailscale status` after applying and
 again after the next reboot. Check the updater with
-`systemctl list-timers update-sysexts.timer` and
+`systemctl --user list-timers update-sysexts.timer` and
+`journalctl --user -u update-sysexts.service`. Detailed updater logs are in
 `journalctl -u update-sysexts.service`. To stage updates manually, run
-`sudo systemctl start update-sysexts.service`.
+`systemctl --user start update-sysexts.service`.
 
 To return to the packaged version, first comment out Tailscale in
 `.chezmoidata/sysexts.yaml` and run `chezmoi apply` to update the timer's
