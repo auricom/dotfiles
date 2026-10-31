@@ -43,3 +43,4 @@ mise.toml
 .config/fish/conf.d/interactive_podman.fish
 .config/fish/conf.d/interactive_zoxide.fish
 .config/fish/conf.d/trunk.fish
+.config/fish/conf.d/interactive_thefuck.fish

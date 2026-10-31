@@ -32,3 +32,10 @@ encryption = "age"
   # Niri layout, tighter on laptops.
   column_width = {{ if eq $formFactor "laptop" }}0.5{{ else }}0.33333{{ end }}
   gaps = {{ if eq $formFactor "laptop" }}6{{ else }}10{{ end }}
+
+[github]
+  refreshPeriod = "12h"
+
+[diff]
+  pager = "delta"
+  exclude = ["scripts"]
