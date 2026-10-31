@@ -6,3 +6,6 @@ appimages:
       repo: comictagger/comictagger
       filename: ComicTagger-x86_64.AppImage
       allow_prereleases: true
+  grokbot:
+    name: Grok Bot
+    url: https://downloads.cursor.com/grokbot/stable/72e130b4e6be3fdc47b97e809b6b420908ce2dd8/linux/x64/Grok_Bot_0.78.1.AppImage
