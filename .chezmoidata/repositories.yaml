@@ -1,19 +1,17 @@
 repositories:
   auricom:
     - agents
+    - docs
     - home-ops
     - containers
     - renovate-config
   01builders:
     - infra
-  evstack:
-    - ev-toolbox
-    - ev-metrics
-    - ev-node
-    - ev-reth
-  Collect-Labs:
-    - collect-blockchain
-
+  celestiaorg:
+    - infrastructure
+    - recur
+    - tailscale-admin
+    - x402-orchestrator
 symlinks:
   dotfiles:
     source: .local/share/chezmoi
