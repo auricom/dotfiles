@@ -8,7 +8,7 @@ AGENTS.md
 scripts
 .worktree
 docs
-justfile
+build
 LICENSE
 README.md
 tests

@@ -1,6 +1,5 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 # Reconcile Papirus and Catppuccin folder colors when archive checksums change;
 # unchanged assets skip installation and cache rebuilding. Default to the shared
 # Mocha accent. External archives refresh weekly; fetch now with:
@@ -19,8 +18,8 @@ main() {
         printf 'folder-color=cat-mocha-%s\n' '{{ .catppuccin.accent }}'
     )
     if [[ -f "${icons_dir}/Papirus/index.theme" &&
-          -f "${icons_dir}/Papirus-Dark/index.theme" &&
-          -f "${icons_dir}/Papirus-Light/index.theme" ]] &&
+        -f "${icons_dir}/Papirus-Dark/index.theme" &&
+        -f "${icons_dir}/Papirus-Light/index.theme" ]] &&
         printf '%s\n' "${checksum}" | cmp -s - "${stamp}"; then
         return 0
     fi
@@ -53,7 +52,7 @@ main() {
         done
     fi
     # Mark successful installs only; failed installs are retried next apply.
-    printf '%s\n' "${checksum}" > "${stamp}"
+    printf '%s\n' "${checksum}" >"${stamp}"
     log_info "Installed all 14 Mocha and 14 Latte folder colors"
 }
 

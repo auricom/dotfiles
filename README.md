@@ -98,10 +98,14 @@ Follow [AGENTS.md](AGENTS.md) for script conventions. Install check tools and ho
 ```sh
 mise trust
 mise install
-bash scripts/check-script-style.sh
+just check
 ```
 
-Render changed templates with `chezmoi execute-template` before running shell
-syntax checks, ShellCheck, or shfmt.
+`just check` runs the script-style check, renders shell templates for the
+server, workstation, and laptop form factors, and runs ShellCheck and shfmt
+on the rendered shell. Pass one form factor to check that profile only.
+Laptop rendering supplies a fake DMI chassis type because laptops are detected
+from the chassis, not chosen at the prompt. Rendered output is written under
+`build/rendered/` and is not applied.
 
 [Unlicense](LICENSE)

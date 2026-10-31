@@ -1,6 +1,5 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 # System configuration script
 # Configures system settings
 
@@ -38,7 +37,7 @@ set_hostname() {
     if sudo hostnamectl set-hostname "$new_hostname"; then
         log_info "Hostname set to: $new_hostname"
         mkdir -p "$(dirname "$flag_file")"
-        echo "$new_hostname" > "$flag_file"
+        echo "$new_hostname" >"$flag_file"
     else
         log_warn "Failed to set hostname"
     fi

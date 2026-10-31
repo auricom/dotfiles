@@ -1,6 +1,5 @@
 {{- if and (eq .chezmoi.os "linux") .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 # Install the root-owned sysext updater before user timers are enabled at step 24.
 # Only configuration changes rerun setup; updates belong to the user service/timer.
 # Images take effect at next boot; configure active Tailscale without restarting.
@@ -8,7 +7,7 @@
 # preparation cannot select an unlabelled image for the next boot.
 # Hash dependencies: {{ include "dot_local/lib/common_utils.sh.tmpl" | sha256sum }}
 
-SYSEXTS=({{ range .sysexts.flatcar }}"{{ . }}" {{ end }})
+SYSEXTS=({{ range $i, $name := .sysexts.flatcar }}{{ if $i }} {{ end }}"{{ $name }}"{{ end }})
 
 main() {
     log_section "Configuring sysext updates"

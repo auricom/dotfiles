@@ -1,6 +1,5 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 main() {
     log_section "Granting Dux Calendar read access to Dux Shell theme colors"
     require_command flatpak "Dux Calendar configuration"

@@ -1,6 +1,5 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 # Declarative Gear Lever AppImage lifecycle management.
 # Data hash: {{ include ".chezmoidata/packages_appimage.yaml" | sha256sum }}
 
@@ -8,7 +7,8 @@ readonly GEARLEVER_ID="it.mijorus.gearlever"
 readonly APPIMAGE_DIR="{{ .chezmoi.homeDir }}/AppImages"
 readonly STATE_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/chezmoi"
 readonly STATE_FILE="${STATE_DIR}/gearlever-appimages.json"
-DESIRED_JSON=$(cat <<'JSON'
+DESIRED_JSON=$(
+    cat <<'JSON'
 {{ .appimages | toJson }}
 JSON
 )

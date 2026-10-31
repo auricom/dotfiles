@@ -1,6 +1,5 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 # Git repositories management script
 # Clones and configures git repositories
 # Hash dependencies: {{ include ".chezmoidata/repositories.yaml" | sha256sum }}
