@@ -1,0 +1,27 @@
+{{- includeTemplate "script-header" . }}
+
+# Install, update, and remove Fisher plugins to match fish_plugins.
+# `fisher update` with no arguments reads that file.
+# Runs after Fisher itself is installed (run_once_after_20_fish).
+# Hash dependencies: {{ include "dot_config/fish/fish_plugins" | sha256sum }}
+
+main() {
+    log_section "Updating Fisher plugins"
+
+    local fish="{{ .brewPrefix }}/bin/fish"
+    if [[ ! -x $fish ]]; then
+        log_error "Fish is not installed, cannot update Fisher plugins"
+        return 1
+    fi
+
+    local fisher="{{ .chezmoi.homeDir }}/.config/fish/functions/fisher.fish"
+    if [[ ! -f $fisher ]]; then
+        log_error "Fisher is not installed, cannot update plugins"
+        return 1
+    fi
+
+    run_spin "Updating Fisher plugins..." "$fish" -c "fisher update"
+    log_info "Fisher plugins updated"
+}
+
+{{ includeTemplate "script-footer" . -}}

@@ -7,7 +7,7 @@ main() {
 
     # Install Fisher if not present
     if [[ ! -f "{{ .chezmoi.homeDir }}/.config/fish/functions/fisher.fish" ]]; then
-        run_spin "Installing Fisher package manager..." fish -c "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
+        run_spin "Installing Fisher package manager..." fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"
         log_info "Fisher installed"
     else
         log_info "Fisher already installed"
