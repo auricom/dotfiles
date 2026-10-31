@@ -5,7 +5,11 @@ HOMEBREW_NO_ANALYTICS=1
 ANSIBLE_FORCE_COLOR=true
 ANSIBLE_HOST_KEY_CHECKING=False
 PY_COLORS=true
-LC_ALL=${LC_ALL:-C.UTF-8}
+# Do not set LC_ALL. It overrides every category, including LANG, and forces
+# GUI apps onto the C locale so they lose French dates.
+LANG=${LANG:-fr_FR.UTF-8}
+LC_TIME=${LC_TIME:-fr_FR.UTF-8}
+LC_COLLATE=${LC_COLLATE:-C.UTF-8}
 BAT_THEME=auto
 BAT_THEME_DARK="Catppuccin Mocha"
 BAT_THEME_LIGHT="Catppuccin Latte"
