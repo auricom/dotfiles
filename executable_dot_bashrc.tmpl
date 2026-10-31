@@ -2,10 +2,12 @@
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
+    # shellcheck disable=SC1091
     . /etc/bashrc
 fi
 
 # User specific environment
+# shellcheck disable=SC2076 # Match the path text literally.
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
@@ -32,6 +34,7 @@ fi
 if [ -d ~/.bashrc.d ]; then
     for rc in ~/.bashrc.d/*; do
         if [ -f "$rc" ]; then
+            # shellcheck disable=SC1090
             . "$rc"
         fi
     done
@@ -67,7 +70,7 @@ if [[ $- == *i* ]]; then
     if command -v eza >/dev/null 2>&1; then
         eza() {
             # Keep desktop LS_COLORS from overriding the Catppuccin theme.
-            LS_COLORS= command eza "$@"
+            LS_COLORS='' command eza "$@"
         }
 
         alias ll='eza -l --icons=auto --group-directories-first'

@@ -1,6 +1,5 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 # Install missing declared apps in the user's Flathub installation, independently
 # of Homebrew: brew-proxy runs as linuxbrew without the user's Flatpak authorization.
 # Skip remote setup when all apps are present. Remove declared system duplicates
@@ -47,10 +46,10 @@ main() {
     while IFS= read -r ref; do
         package=${ref%%/*}
         if [[ -n ${ref} && $'\n'"${declared}"$'\n' == *$'\n'"${package}"$'\n'* &&
-              $'\n'"${user_refs}"$'\n' == *$'\n'"${ref}"$'\n'* ]]; then
+            $'\n'"${user_refs}"$'\n' == *$'\n'"${ref}"$'\n'* ]]; then
             duplicates+=("${ref}")
         fi
-    done <<< "${system_refs}"
+    done <<<"${system_refs}"
     if ((${#duplicates[@]})); then
         run_spin "Removing ${#duplicates[@]} duplicate system Flatpak packages..." \
             flatpak uninstall --system --app --assumeyes --noninteractive "${duplicates[@]}"

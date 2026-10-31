@@ -1,5 +1,4 @@
 {{- includeTemplate "script-header" . }}
-
 # Rclone configuration script
 # Generates rclone configuration from template and token
 # Hash dependencies for change detection:
@@ -89,7 +88,7 @@ generate_rclone_config() {
             print "token = " new_token
         }
     }
-    ' "$rclone_base" > "${rclone_conf}.tmp"
+    ' "$rclone_base" >"${rclone_conf}.tmp"
 
     # Atomically move the new configuration into place
     mv "${rclone_conf}.tmp" "$rclone_conf"

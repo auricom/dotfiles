@@ -52,8 +52,9 @@ rendered, then executed). Do not convert those to modify-templates.
   also runs this check before commits. Keep this check and the documented
   exceptions in sync.
 - Render changed chezmoi templates with `chezmoi execute-template` before
-  running `bash -n`, ShellCheck, or shfmt on them. Check affected workstation
-  and server branches; never pass unrendered Go templates to shell tooling.
+  running `bash -n`, ShellCheck, or shfmt on them. `just check` does this for
+  the server, workstation, and laptop form factors. Never pass unrendered Go
+  templates to shell tooling.
 - Run focused checks with temporary fixtures or mocked external commands.
   Do not run unrelated lifecycle operations, installs, or service restarts
   just to verify formatting. Preserve existing local changes.

@@ -6,7 +6,7 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart={{ .brewPrefix }}/bin/mise exec github:duxlabs-dev/dux-files -- dfiles run --session --hidden --keep-running
+ExecStart=%h/.local/share/mise/shims/dfiles run --session --hidden --keep-running
 Environment="PATH={{ includeTemplate "brew-path" . | trim }}"
 Restart=on-failure
 RestartSec=2

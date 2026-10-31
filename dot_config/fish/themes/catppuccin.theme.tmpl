@@ -1,0 +1,38 @@
+# name: 'Catppuccin'
+# url: 'https://github.com/catppuccin/fish'
+# Palette from .chezmoidata/flavors.yaml.
+# [light] is latte. [dark] and [unknown] are mocha (terminal-theme defaults to dark).
+# Command and host use the configured accent so they follow the rest of the desktop.
+{{- range list (dict "name" "light" "flavor" "latte") (dict "name" "dark" "flavor" "mocha") (dict "name" "unknown" "flavor" "mocha") }}
+{{- $p := index $.catppuccin.palette .flavor }}
+{{- $accent := index $p $.catppuccin.accent }}
+
+[{{ .name }}]
+# preferred_background: {{ $p.base }}
+fish_color_normal {{ $p.text }}
+fish_color_command {{ $accent }}
+fish_color_param {{ $p.flamingo }}
+fish_color_keyword {{ $p.mauve }}
+fish_color_quote {{ $p.green }}
+fish_color_redirection {{ $p.pink }}
+fish_color_end {{ $p.peach }}
+fish_color_comment {{ $p.overlay1 }}
+fish_color_error {{ $p.red }}
+fish_color_gray {{ $p.overlay0 }}
+fish_color_selection --background={{ $p.surface0 }}
+fish_color_search_match --background={{ $p.surface0 }}
+fish_color_option {{ $p.green }}
+fish_color_operator {{ $p.pink }}
+fish_color_escape {{ $p.maroon }}
+fish_color_autosuggestion {{ $p.overlay0 }}
+fish_color_cancel {{ $p.red }}
+fish_color_cwd {{ $p.yellow }}
+fish_color_user {{ $p.teal }}
+fish_color_host {{ $accent }}
+fish_color_host_remote {{ $p.green }}
+fish_color_status {{ $p.red }}
+fish_pager_color_progress {{ $p.overlay0 }}
+fish_pager_color_prefix {{ $p.pink }}
+fish_pager_color_completion {{ $p.text }}
+fish_pager_color_description {{ $p.overlay0 }}
+{{- end }}

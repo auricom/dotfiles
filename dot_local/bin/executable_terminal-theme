@@ -83,6 +83,24 @@ main() {
     fi
 
     pkill -u "$(id -u)" -"$signal" -x foot || test "$?" -eq 1
+    publish_fish_theme "$mode"
+}
+
+# Fish 4.3 selects the [light] or [dark] section of catppuccin.theme from this
+# universal variable. Foot does not emit CSI 2031, so a running shell cannot
+# see the SIGUSR palette switch on its own. dankHooks already calls this script.
+publish_fish_theme() {
+    local mode=$1
+    local fish_bin
+    fish_bin=$(command -v fish 2>/dev/null || true)
+    if [[ -z $fish_bin && -n ${HOMEBREW_PREFIX-} && -x ${HOMEBREW_PREFIX}/bin/fish ]]; then
+        fish_bin=${HOMEBREW_PREFIX}/bin/fish
+    fi
+    if [[ -z $fish_bin ]]; then
+        log_warn "Fish is not installed, skipping shell theme"
+        return 0
+    fi
+    "$fish_bin" -c "set -U terminal_theme_mode $mode"
 }
 
 main "$@"

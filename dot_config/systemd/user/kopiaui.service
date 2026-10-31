@@ -1,0 +1,17 @@
+[Unit]
+Description=KopiaUI
+Documentation=https://kopia.io/
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/flatpak run io.kopia.KopiaUI
+Restart=on-failure
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+Slice=app.slice
+
+[Install]
+WantedBy=graphical-session.target

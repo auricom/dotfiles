@@ -1,5 +1,4 @@
 {{- includeTemplate "script-header" . }}
-
 # Hash dependencies: {{ include "dot_local/bin/executable_terminal-theme" | sha256sum }}
 # Hash dependencies: {{ include "dot_config/dms/modify_plugin_settings.json" | sha256sum }}
 # Hash dependencies: {{ include "dot_config/dms/modify_settings.json" | sha256sum }}
@@ -16,10 +15,9 @@ main() {
             if test "$key" = initial-color-theme; then
                 mode=$value
             fi
-        done < "$state"
+        done <"$state"
     fi
-
-{{ if .isWorkstation }}
+{{- if .isWorkstation }}
     local desktop_running=false
     local desktop_mode
     if command -v dms >/dev/null 2>&1; then
@@ -29,15 +27,15 @@ main() {
         fi
     fi
 {{ end }}
-
     "{{ .chezmoi.homeDir }}/.local/bin/terminal-theme" onLightModeChanged "$mode"
+{{- if .isWorkstation }}
 
-{{ if .isWorkstation }}
     if "$desktop_running"; then
         # DMS reads plugin_settings.json at startup, not on external edits.
         dms restart
     fi
-{{ end }}
+{{- end }}
+
     log_info "Terminal themes configured"
 }
 

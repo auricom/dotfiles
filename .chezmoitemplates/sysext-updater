@@ -9,7 +9,7 @@ set -Eeuo pipefail
 source /usr/local/lib/chezmoi/common_utils.sh
 trap 'report_error "$?" "$LINENO"' ERR
 
-SYSEXTS=({{ range .sysexts.flatcar }}"{{ . }}" {{ end }})
+SYSEXTS=({{ range $i, $name := .sysexts.flatcar }}{{ if $i }} {{ end }}"{{ $name }}"{{ end }})
 SYSEXT_ARCH="{{ get (dict "amd64" "x86-64" "arm64" "arm64") .chezmoi.arch }}"
 
 main() {
@@ -114,6 +114,5 @@ prepare_selinux_image() {
         return 1
     fi
 }
-
 
 main "$@"

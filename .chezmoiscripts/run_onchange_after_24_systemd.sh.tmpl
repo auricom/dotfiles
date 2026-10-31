@@ -1,6 +1,5 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 # Systemd services management script
 # Manages user systemd services and quadlets
 # Replaces vendor Brew timers with user timers. With brew-proxy, installs a
@@ -52,7 +51,8 @@ configure_brew_maintenance() {
 
     local rule_file="/etc/polkit-1/rules.d/49-chezmoi-brew-maintenance.rules"
     local rule
-    rule=$(cat <<'RULE'
+    rule=$(
+        cat <<'RULE'
 // Managed by chezmoi: allow unattended Brew updates for this user only.
 polkit.addRule(function(action, subject) {
     if (subject.user === {{ .chezmoi.username | toJson }}

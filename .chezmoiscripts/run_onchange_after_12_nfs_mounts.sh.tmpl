@@ -1,6 +1,5 @@
 {{- if eq .formFactor "workstation" }}
 {{- includeTemplate "script-header" . }}
-
 # NFS mounts configuration script
 # Configures NFS mounts as systemd system mount units
 # Data hash: {{ include ".chezmoidata/nfs.yaml" | sha256sum }}
