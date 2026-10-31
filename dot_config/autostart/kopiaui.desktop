@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=KopiaUI
-Exec=/bin/sh -c "sleep 15; exec /usr/bin/flatpak run io.kopia.KopiaUI"
-Icon=io.kopia.KopiaUI
-Terminal=false
-X-GNOME-Autostart-enabled=true
