@@ -1,6 +1,6 @@
 {{ includeTemplate "systemd-oneshot" (dict
     "description" "fisher update"
-    "after" (list "network-online.target")
+    "execPre" "/usr/bin/nm-online --quiet --timeout=30"
     "condition" "%h/.config/fish/functions/fisher.fish"
     "exec" (printf "%s/bin/fish -c \"fisher update\"" .brewPrefix)
     "path" (includeTemplate "brew-path" . | trim)

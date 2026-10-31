@@ -33,8 +33,8 @@ main() {
     for file in dot_local/bin/executable_*; do
         # These produce prompt data or transparently exec an application.
         case ${file##*/} in
-        executable_1password | executable_fishfy-path | executable_github-icon | \
-            executable_recur-app | executable_relative-time-commit) continue ;;
+        executable_1password | executable_github-icon | executable_recur-app | \
+            executable_relative-time-commit) continue ;;
         esac
         require_markers "$file" \
             '#!/usr/bin/env bash' \

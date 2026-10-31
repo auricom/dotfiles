@@ -1,0 +1,12 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $raw := .chezmoi.stdin | trim -}}
+{{- $data := dict -}}
+{{- if $raw -}}
+{{-   $data = fromJson $raw -}}
+{{- end -}}
+{{- $hook := joinPath .chezmoi.homeDir ".local/bin/terminal-theme" -}}
+{{- range .dux.plugins -}}
+{{-   $data = setValueAtPath (printf "%s.enabled" .) true $data -}}
+{{- end -}}
+{{- $data = setValueAtPath "dankHooks.lightMode" $hook $data -}}
+{{- setValueAtPath "dankHooks.dankHooksStarted" $hook $data | toPrettyJson }}

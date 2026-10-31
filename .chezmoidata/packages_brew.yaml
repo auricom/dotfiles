@@ -9,6 +9,7 @@ brew:
       - fish # Friendly interactive shell
       - wget # Internet file retriever
       - yq # YAML parsing
+      - jq # JSON parsing
 
   modern_cli:
     server: true

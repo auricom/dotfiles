@@ -162,11 +162,3 @@ format = "[$output]($style) "
 shell = ["bash", "--norc", "--noprofile"]
 style = "accent"
 when = 'git rev-parse --is-inside-work-tree 2> /dev/null'
-
-[custom.dir]
-command = """{{ joinPath .chezmoi.homeDir ".local/bin/fishfy-path" }}"""
-description = "Custom directory"
-format = "[$output]($style) "
-shell = ["bash", "--norc", "--noprofile"]
-style = "accent"
-when = 'true'

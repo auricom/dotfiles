@@ -1,6 +1,5 @@
 [Unit]
 Description=Update Flatpak applications every six hours
-Wants=network-online.target
 
 [Timer]
 OnBootSec=10min

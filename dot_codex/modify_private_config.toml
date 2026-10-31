@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Modify script: fromToml would drop comments and this file's layout.
 import copy
 import re
 import sys

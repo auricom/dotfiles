@@ -1,0 +1,7 @@
+{{ includeTemplate "systemd-oneshot" (dict
+    "description" "Gear Lever AppImage update"
+    "execPre" "/usr/bin/nm-online --quiet --timeout=30"
+    "condition" "/usr/bin/flatpak"
+    "exec" "/usr/bin/flatpak run it.mijorus.gearlever --update --all --yes"
+    "path" (includeTemplate "brew-path" . | trim)
+) -}}

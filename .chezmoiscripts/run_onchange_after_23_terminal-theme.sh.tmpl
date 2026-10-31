@@ -1,7 +1,7 @@
 {{- includeTemplate "script-header" . }}
 # Hash dependencies: {{ include "dot_local/bin/executable_terminal-theme" | sha256sum }}
-# Hash dependencies: {{ include "dot_config/dms/modify_plugin_settings.json.tmpl" | sha256sum }}
-# Hash dependencies: {{ include "dot_config/dms/modify_settings.json.tmpl" | sha256sum }}
+# Hash dependencies: {{ include "dot_config/dms/modify_plugin_settings.json" | sha256sum }}
+# Hash dependencies: {{ include "dot_config/dms/modify_settings.json" | sha256sum }}
 # Hash dependencies: {{ include ".chezmoidata/dux.yaml" | sha256sum }}
 
 main() {

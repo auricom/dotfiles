@@ -1,7 +1,6 @@
 {{ includeTemplate "systemd-oneshot" (dict
     "description" "Update DFiles from stable GitHub releases"
-    "after" (list "network-online.target")
-    "wants" "network-online.target"
+    "execPre" "/usr/bin/nm-online --quiet --timeout=30"
     "condition" "%h/.config/mise/conf.d/dfiles.toml"
     "exec" (printf "%s/bin/mise upgrade --global --yes github:duxlabs-dev/dux-files" .brewPrefix)
     "path" (includeTemplate "brew-path" . | trim)

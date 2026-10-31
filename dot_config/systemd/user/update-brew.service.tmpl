@@ -1,6 +1,6 @@
 {{ includeTemplate "systemd-oneshot" (dict
     "description" "Update Homebrew and installed packages"
-    "after" (list "network-online.target")
+    "execPre" "/usr/bin/nm-online --quiet --timeout=30"
     "exec" (list
         (printf "/usr/bin/env BREW_PROXY_NONINTERACTIVE=1 %s/bin/brew update" .brewPrefix)
         (printf "/usr/bin/env BREW_PROXY_NONINTERACTIVE=1 %s/bin/brew upgrade" .brewPrefix)

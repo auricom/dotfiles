@@ -35,10 +35,6 @@
     ''']
 {{- end }}
 
-# foot
-{{ includeTemplate "external-file" (dict "path" ".config/foot/catppuccin_frappe.ini" "url" "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-frappe.ini") }}
-{{ includeTemplate "external-file" (dict "path" ".config/foot/catppuccin_mocha.ini" "url" "https://raw.githubusercontent.com/catppuccin/foot/refs/heads/main/themes/catppuccin-mocha.ini") }}
-
 # opencode
 {{ includeTemplate "external-file" (dict "path" (printf ".config/opencode/themes/catppuccin-system-%s.json" .catppuccin.accent) "url" "https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/tui/src/theme/assets/catppuccin.json") }}
     filter.command = "{{ .brewPrefix }}/bin/jq"
@@ -67,7 +63,4 @@
 {{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_%s_userContent.css" $id $.catppuccin.accent) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/%s/userContent.css" $title (title $.catppuccin.accent))) }}
 {{ includeTemplate "external-file" (dict "path" (printf ".local/share/catppuccin/zen/%s_%s_zen-logo.svg" $id $.catppuccin.accent) "url" (printf "https://raw.githubusercontent.com/catppuccin/zen-browser/refs/heads/main/themes/%s/%s/zen-logo-%s.svg" $title (title $.catppuccin.accent) $id)) }}
 {{- end }}
-
-# zellij catppuccin theme
-{{ includeTemplate "external-file" (dict "path" ".config/zellij/catppuccin.kdl" "url" "https://raw.githubusercontent.com/catppuccin/zellij/refs/heads/main/catppuccin.kdl") }}
 {{ end }}

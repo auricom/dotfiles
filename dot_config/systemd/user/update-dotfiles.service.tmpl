@@ -1,6 +1,7 @@
 {{ includeTemplate "systemd-oneshot" (dict
     "description" "dotfiles update"
-    "after" (list "local-fs.target" "network-online.target")
+    "after" (list "local-fs.target")
+    "execPre" "/usr/bin/nm-online --quiet --timeout=30"
     "condition" "%h/.local/bin/update-dotfiles"
     "exec" "/usr/bin/bash -c \"%h/.local/bin/update-dotfiles\""
     "path" (includeTemplate "brew-path" . | trim)
