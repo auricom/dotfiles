@@ -106,7 +106,7 @@ download_url_for() {
 install_appimage() {
     local entry="$1"
     local filename url tmp_dir download_path
-    filename=$(jq -r '.update.filename // (.url | split("/")[-1])' <<<"${entry}")
+    filename=$(jq -r '.filename // .update.filename // (.url | split("/")[-1])' <<<"${entry}")
     if ! url=$(download_url_for "${entry}"); then
         log_error "Could not resolve a download URL for ${filename}"
         return 1
@@ -131,8 +131,21 @@ install_appimage() {
 configure_update_source() {
     local path="$1"
     local update="$2"
-    local source_type repo filename allow_prereleases
+    local source_type repo filename allow_prereleases static_url
     source_type=$(jq -r '.source' <<<"${update}")
+
+    if [[ ${source_type} == static ]]; then
+        static_url=$(jq -r '.url // empty' <<<"${update}")
+        if [[ -z ${static_url} ]]; then
+            log_error "Invalid AppImage update configuration"
+            return 1
+        fi
+        gearlever --set-update-source "${path}" \
+            --manager StaticFileUpdater \
+            "url=${static_url}"
+        return
+    fi
+
     repo=$(jq -r '.repo' <<<"${update}")
     filename=$(jq -r '.filename' <<<"${update}")
     allow_prereleases=$(jq -r '.allow_prereleases // false' <<<"${update}")
