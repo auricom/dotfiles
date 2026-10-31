@@ -1,6 +1,5 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 # Configuration: {{ include "dot_config/mise/conf.d/dfiles.toml.tmpl" | sha256sum }}
 
 main() {

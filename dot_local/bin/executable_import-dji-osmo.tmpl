@@ -50,8 +50,14 @@ process_dji_file() {
 main() {
     require_no_args "Import DJI Osmo media from the SD card." "$@"
     # Validate required directories
-    [[ -d "${DJI_SOURCE_DIR}" ]] || { log_error "Source not mounted" "path" "${DJI_SOURCE_DIR}"; exit 1; }
-    [[ -d "${SORT_DEST_DIR}" ]]  || { log_error "Destination not mounted" "path" "${SORT_DEST_DIR}"; exit 1; }
+    [[ -d "${DJI_SOURCE_DIR}" ]] || {
+        log_error "Source not mounted" "path" "${DJI_SOURCE_DIR}"
+        exit 1
+    }
+    [[ -d "${SORT_DEST_DIR}" ]] || {
+        log_error "Destination not mounted" "path" "${SORT_DEST_DIR}"
+        exit 1
+    }
 
     log_section "DJI Osmo Import"
 

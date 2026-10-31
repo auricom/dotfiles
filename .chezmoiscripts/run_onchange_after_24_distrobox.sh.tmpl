@@ -1,6 +1,5 @@
 {{- if .isDesktop }}
 {{- includeTemplate "script-header" . }}
-
 # Distrobox deployment script
 # Hash dependencies:
 {{- range glob (joinPath .chezmoi.sourceDir "dot_config/distrobox/*.ini.tmpl") }}

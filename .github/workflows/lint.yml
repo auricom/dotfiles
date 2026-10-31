@@ -1,0 +1,41 @@
+name: lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: lint (${{ matrix.profile }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [server, workstation, laptop]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install pinned tools
+        uses: jdx/mise-action@v5.2.4
+        with:
+          install: true
+          cache: true
+
+      - name: Install chezmoi
+        run: |
+          version=v2.66.1
+          archive="chezmoi_${version#v}_linux_amd64.tar.gz"
+          curl -fsSL -o /tmp/chezmoi.tgz \
+            "https://github.com/twpayne/chezmoi/releases/download/${version}/${archive}"
+          sudo tar -C /usr/local/bin -xzf /tmp/chezmoi.tgz chezmoi
+          chezmoi --version
+
+      - name: Check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: just check ${{ matrix.profile }}
