@@ -48,8 +48,7 @@ On Linux workstations and laptops, `chezmoi apply` configures stable
 updates using systemd-sysupdate. Versioned images live under `/opt/extensions`,
 with `/etc/extensions/tailscale.raw` selecting the image for the next boot.
 The user `update-sysexts.service` triggers the root-owned updater using
-noninteractive sudo. Passwordless sudo allows only
-`systemctl start update-sysexts.service`.
+noninteractive sudo (the workstation passwordless sudo configuration is required).
 Its user timer checks daily, with up to 30 minutes of randomized delay and
 catch-up after missed runs. `update-all` includes this user service.
 Setup runs only when its configuration changes; `chezmoi apply` does not

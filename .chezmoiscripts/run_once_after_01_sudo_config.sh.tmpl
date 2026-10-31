@@ -1,14 +1,10 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-
 # Sudo configuration script
-# Passwordless sudo is limited to: systemctl start update-sysexts.service
-# Rewrites /etc/sudoers.d/sudo-group when that content changes.
-# Also configures the root shell to use the user starship prompt.
+# Configures passwordless sudo for wheel group and root shell environment
 
 readonly SUDOERS_FILE="/etc/sudoers.d/sudo-group"
-readonly SUDOERS_CONTENT='# Managed by chezmoi. Passwordless sudo only starts the sysext updater.
-%wheel ALL=(ALL) NOPASSWD: /usr/bin/systemctl start update-sysexts.service'
+readonly SUDOERS_CONTENT="%wheel  ALL=(ALL)       NOPASSWD: ALL"
 readonly STARSHIP_CONFIG="{{ .chezmoi.homeDir }}/.config/starship.toml"
 readonly ROOT_STARSHIP_CONFIG="/root/.config/starship.toml"
 readonly ROOT_BASHRC="/root/.bashrc"
@@ -20,37 +16,35 @@ readonly BASHRC_SOURCE='[[ -f ~/.bashrc ]] && source ~/.bashrc'
 
 main() {
     log_section "Configuring sudo permissions"
-    configure_sudo_permissions
+
+    if [[ -f "$SUDOERS_FILE" ]]; then
+        log_info "Sudo configuration already exists"
+    else
+        configure_sudo_permissions
+        log_info "Sudo configuration completed"
+    fi
 
     log_section "Configuring starship for root"
     configure_root_starship
 }
 
 configure_sudo_permissions() {
-    local tmp
-    tmp=$(mktemp)
-    printf '%s\n' "$SUDOERS_CONTENT" >"$tmp"
+    log_info "Creating sudo configuration for wheel group"
 
-    if ! sudo visudo -c -f "$tmp"; then
-        rm -f "$tmp"
-        log_error "Sudo configuration validation failed"
-        return 1
-    fi
+    # Create the sudoers file with proper permissions
+    echo "$SUDOERS_CONTENT" | sudo tee "$SUDOERS_FILE" >/dev/null
 
-    if sudo cmp -s "$tmp" "$SUDOERS_FILE"; then
-        rm -f "$tmp"
-        log_info "Sudo configuration already up to date"
-        return 0
-    fi
+    # Set proper permissions (440 is standard for sudoers files)
+    sudo chmod 440 "$SUDOERS_FILE"
 
-    log_info "Installing sudo configuration for the sysext updater"
-    if ! sudo install -o root -g root -m 0440 "$tmp" "$SUDOERS_FILE"; then
-        rm -f "$tmp"
-        log_error "Failed to install sudo configuration"
-        return 1
+    # Validate the sudoers file
+    if sudo visudo -c -f "$SUDOERS_FILE"; then
+        log_info "Sudo configuration created and validated successfully"
+    else
+        log_error "Sudo configuration validation failed, removing file"
+        sudo rm -f "$SUDOERS_FILE"
+        exit 1
     fi
-    rm -f "$tmp"
-    log_info "Sudo configuration updated"
 }
 
 configure_root_starship() {
