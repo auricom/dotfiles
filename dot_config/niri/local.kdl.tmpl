@@ -34,6 +34,12 @@ window-rule {
     open-floating true
 }
 
+window-rule {
+    match app-id=r#"^dev.duxlabs.files$"# title=r#"^(Open Folder)$"#
+
+    open-floating true
+}
+
 {{ if .isLaptop -}}
 window-rule {
     match app-id=r#"^dev\.zed\.Zed$"#
