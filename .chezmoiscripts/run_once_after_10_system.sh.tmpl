@@ -2,13 +2,12 @@
 {{- includeTemplate "script-header" . }}
 
 # System configuration script
-# Configures system settings
+# Sets the hostname. Leave swap and zram alone: `swapoff -a` disables zram too.
 
 main() {
     log_section "Configuring system settings"
 
     set_hostname
-    deactivate_swap
 
     log_info "System configuration completed"
 }
@@ -41,23 +40,6 @@ set_hostname() {
         echo "$new_hostname" > "$flag_file"
     else
         log_warn "Failed to set hostname"
-    fi
-}
-
-deactivate_swap() {
-    log_info "Checking system memory for swap configuration"
-
-    # Check if swap is currently active
-    if swapon --show | grep -q .; then
-        log_info "Deactivating active swap"
-        if sudo swapoff -a; then
-            log_info "Successfully deactivated swap"
-        else
-            log_warn "Failed to deactivate swap"
-            return
-        fi
-    else
-        log_info "No active swap found"
     fi
 }
 
