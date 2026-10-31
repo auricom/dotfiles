@@ -3,11 +3,13 @@
 
 # Distrobox deployment script
 # Hash dependencies:
-{{- range glob "dot_config/distrobox/*.ini.tmpl" }}
-# {{ . }}: {{ include . | sha256sum }}
+{{- range glob (joinPath .chezmoi.sourceDir "dot_config/distrobox/*.ini.tmpl") }}
+{{- $source := trimPrefix (printf "%s/" $.chezmoi.sourceDir) . }}
+# {{ $source }}: {{ include $source | sha256sum }}
 {{- end }}
-{{- range glob "dot_config/systemd/user/*.service" }}
-# {{ . }}: {{ include . | sha256sum }}
+{{- range glob (joinPath .chezmoi.sourceDir "dot_config/systemd/user/*.service") }}
+{{- $source := trimPrefix (printf "%s/" $.chezmoi.sourceDir) . }}
+# {{ $source }}: {{ include $source | sha256sum }}
 {{- end }}
 
 # Prefer the host's rootless Podman over Homebrew's client.

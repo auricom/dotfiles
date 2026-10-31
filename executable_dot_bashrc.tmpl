@@ -56,10 +56,6 @@ if [[ $- == *i* ]]; then
         eval "$(direnv hook bash)"
     fi
 
-    if command -v thefuck >/dev/null 2>&1; then
-        eval "$(thefuck --alias)"
-    fi
-
     # Clear the previous per-shell selector when reloading an existing session.
     unset -f __apply_terminal_theme __starship_apply_theme
     unset starship_precmd_user_func STARSHIP_CONFIG EZA_CONFIG_DIR
