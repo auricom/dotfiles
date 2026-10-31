@@ -1,0 +1,10 @@
+# Machine-local fragments. The first obtained value wins, so these override the defaults below.
+Include config.d/*
+
+LogLevel ERROR
+
+Host *
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_ed25519
+  IdentityFile ~/.ssh/id_hetzner
+  StrictHostKeyChecking accept-new

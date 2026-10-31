@@ -1,8 +1,0 @@
-#!/bin/sh
-jq -s --argjson plugins '{{ .dux.plugins | toJson }}' \
-    --arg hook '{{ .chezmoi.homeDir }}/.local/bin/terminal-theme' '
-    (.[0] // {})
-    | reduce $plugins[] as $plugin (.; .[$plugin].enabled = true)
-    | .dankHooks.lightMode = $hook
-    | .dankHooks.dankHooksStarted = $hook
-'

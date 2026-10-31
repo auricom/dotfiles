@@ -1,10 +1,15 @@
 {{- /* One-shot user systemd unit scaffold.
-Args: description, after (list), wants (optional), condition (optional),
+Args: description, after (optional list), wants (optional), condition (optional),
+      execPre (optional command or list; runs before exec),
       exec (command or list of sequential commands),
-      path (PATH value, typically includeTemplate "brew-path" | trim). */ -}}
+      note (optional comment in the service section),
+      timeout (optional TimeoutStartSec),
+      path (PATH value, typically includeTemplate "brew-path" | trim).
+User units cannot order on the system network-online.target. Callers that need
+the network pass execPre "/usr/bin/nm-online --quiet --timeout=30". */ -}}
 [Unit]
 Description={{ .description }}
-{{- range .after }}
+{{- range index . "after" }}
 After={{ . }}
 {{- end }}
 {{- with index . "wants" }}
@@ -17,6 +22,15 @@ OnFailure=notify-failure@%p.service
 
 [Service]
 Type=oneshot
+{{- with index . "execPre" }}
+{{- if kindIs "slice" . }}
+{{- range . }}
+ExecStartPre={{ . }}
+{{- end }}
+{{- else }}
+ExecStartPre={{ . }}
+{{- end }}
+{{- end }}
 {{- if kindIs "slice" .exec }}
 {{- range .exec }}
 ExecStart={{ . }}
@@ -25,6 +39,12 @@ ExecStart={{ . }}
 ExecStart={{ .exec }}
 {{- end }}
 Environment="PATH={{ .path }}"
+{{- with index . "note" }}
+# {{ . }}
+{{- end }}
+{{- with index . "timeout" }}
+TimeoutStartSec={{ . }}
+{{- end }}
 
 [Install]
 WantedBy=default.target

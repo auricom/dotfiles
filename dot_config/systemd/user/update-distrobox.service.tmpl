@@ -1,7 +1,6 @@
 {{ includeTemplate "systemd-oneshot" (dict
     "description" "distrobox upgrade"
-    "after" (list "network-online.target")
-    "wants" "network-online.target"
+    "execPre" "/usr/bin/nm-online --quiet --timeout=30"
     "condition" "%h/.local/bin/update-distrobox"
     "exec" "/usr/bin/bash -c \"%h/.local/bin/update-distrobox\""
     "path" (printf "/usr/bin:%s" (includeTemplate "brew-path" . | trim))

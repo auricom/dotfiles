@@ -4,11 +4,9 @@ AGENTS.md
 .lefthook.toml
 .shellcheckrc
 .mise
-.justfile
 scripts
 .worktree
 docs
-justfile
 LICENSE
 README.md
 tests

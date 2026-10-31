@@ -1,0 +1,8 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $raw := .chezmoi.stdin | trim -}}
+{{- $data := dict -}}
+{{- if $raw -}}
+{{-   $data = fromJson $raw -}}
+{{- end -}}
+{{- $data = setValueAtPath "registryThemeVariants.catppuccin.dark.accent" .catppuccin.accent $data -}}
+{{- setValueAtPath "registryThemeVariants.catppuccin.light.accent" .catppuccin.accent $data | toPrettyJson }}

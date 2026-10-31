@@ -1,0 +1,9 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $raw := .chezmoi.stdin | trim -}}
+{{- $data := dict -}}
+{{- if $raw -}}
+{{-   $data = fromJson $raw -}}
+{{- end -}}
+{{- $theme := printf "catppuccin-system-%s" .catppuccin.accent -}}
+{{- $data = setValueAtPath "theme.name" $theme $data -}}
+{{- setValueAtPath "theme.mode" "system" $data | toPrettyJson }}

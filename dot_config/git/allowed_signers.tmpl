@@ -1,0 +1,6 @@
+{{- $pub := joinPath .chezmoi.homeDir ".ssh/id_ed25519.pub" -}}
+{{- if not (stat $pub) -}}
+{{-   fail (printf "missing SSH public key for allowed signers: %s" $pub) -}}
+{{- end -}}
+# Managed by chezmoi from .chezmoidata/git.yaml and ~/.ssh/id_ed25519.pub.
+{{ .gitUser.email }} {{ output "cat" $pub | trim }}

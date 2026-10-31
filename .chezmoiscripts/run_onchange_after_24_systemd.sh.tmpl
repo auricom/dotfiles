@@ -8,6 +8,8 @@
 # retain the vendor policy. Initial migration and rule installation require sudo.
 # .chezmoiremove deletes former Brew/Flatpak units and enablement symlinks.
 # Stop any loaded copies before reloading and enabling update-<tool> timers.
+# The podman-auto-update user timer is no longer used. Disable it when a
+# previous apply left it enabled.
 
 # Hash dependencies for change detection:
 {{- range glob (joinPath .chezmoi.sourceDir "dot_config/systemd/user/*") }}
@@ -27,11 +29,17 @@ main() {
 
     enable_system_services
     enable_container_services
-
-    log_info "Enabling podman auto-update timer"
-    systemd_enable_start "podman-auto-update.timer"
+    retire_podman_auto_update
 
     log_info "Systemd configuration completed"
+}
+
+retire_podman_auto_update() {
+    local unit="podman-auto-update.timer"
+    if systemctl --user is-enabled --quiet "$unit"; then
+        log_info "Disabling former podman auto-update timer"
+        systemctl --user disable --now "$unit"
+    fi
 }
 
 configure_brew_maintenance() {

@@ -1,5 +1,0 @@
-#!/bin/sh
-jq -s --arg theme 'catppuccin-system-{{ .catppuccin.accent }}' '
-    (.[0] // {})
-    | .theme = ((.theme // {}) + {name: $theme, mode: "system"})
-'

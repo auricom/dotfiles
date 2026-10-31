@@ -44,3 +44,8 @@ mise.toml
 .config/fish/conf.d/interactive_zoxide.fish
 .config/fish/conf.d/trunk.fish
 .config/fish/conf.d/interactive_thefuck.fish
+.local/bin/fishfy-path
+.config/foot/catppuccin_frappe.ini
+.config/foot/catppuccin_mocha.ini
+.config/zellij/catppuccin.kdl
+.config/systemd/user/timers.target.wants/podman-auto-update.timer

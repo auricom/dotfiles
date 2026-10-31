@@ -2,7 +2,8 @@
 
 This is a chezmoi source repository. Read the shared helpers and script header
 comments before changing shell scripts. Reuse existing helpers and nearby patterns.
-Use shell for repository scripts; do not add Python scripts.
+Use shell for repository scripts. Do not add Python scripts except the Codex
+TOML and Zed JSONC modify scripts described below.
 
 ## Shell presentation
 
@@ -27,11 +28,23 @@ Use shell for repository scripts; do not add Python scripts.
 - Confirmation defaults to no: handle status 0 (yes), 1 (no), and greater than 1
   (unavailable or interrupted) explicitly. Input requires terminal stdin and stderr.
 - Keep script-specific usage and operational notes in script header comments.
-- POSIX prompt-data utilities (`github-icon`, `fishfy-path`,
-  `relative-time-commit`) and transparent launchers (`1password`, `recur-app`)
-  are exceptions to the operational framework. Keep their output contracts.
+- POSIX prompt-data utilities (`github-icon`, `relative-time-commit`) and
+  transparent launchers (`1password`, `recur-app`) are exceptions to the
+  operational framework. Keep their output contracts.
   The `terminal-theme` background hook uses shared diagnostics but stays silent
   on success.
+
+## Partial configuration
+
+Plain JSON edits are chezmoi modify-templates. The source file is named
+`modify_` with no `.tmpl` suffix, contains `chezmoi:modify-template`, reads
+`.chezmoi.stdin`, and writes the whole file. Claude, OpenCode, and DMS settings
+use these. `jq` is declared in `.chezmoidata/packages_brew.yaml` for scripts and
+external filters that still parse JSON.
+
+Python modify scripts stay only where rewriting the file would drop comments or
+layout: Codex TOML, and Zed JSONC (`modify_private_settings.json.tmpl` is
+rendered, then executed). Do not convert those to modify-templates.
 
 ## Verification
 

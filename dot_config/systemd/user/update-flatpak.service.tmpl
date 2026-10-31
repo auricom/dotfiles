@@ -1,0 +1,8 @@
+{{ includeTemplate "systemd-oneshot" (dict
+    "description" "Update Flatpak applications"
+    "after" (list "local-fs.target")
+    "execPre" "/usr/bin/nm-online --quiet --timeout=30"
+    "condition" "/usr/bin/flatpak"
+    "exec" "/usr/bin/flatpak upgrade --user --assumeyes"
+    "path" (includeTemplate "brew-path" . | trim)
+) -}}

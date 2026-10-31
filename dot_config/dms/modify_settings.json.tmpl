@@ -1,6 +1,0 @@
-#!/bin/sh
-jq -s --arg accent '{{ .catppuccin.accent }}' '
-    (.[0] // {})
-    | .registryThemeVariants.catppuccin.dark.accent = $accent
-    | .registryThemeVariants.catppuccin.light.accent = $accent
-'

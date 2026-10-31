@@ -1,2 +1,7 @@
-#!/bin/sh
-jq -s '(.[0] // {}) | .theme = "custom:catppuccin-system"'
+{{- /* chezmoi:modify-template */ -}}
+{{- $raw := .chezmoi.stdin | trim -}}
+{{- $data := dict -}}
+{{- if $raw -}}
+{{-   $data = fromJson $raw -}}
+{{- end -}}
+{{- setValueAtPath "theme" "custom:catppuccin-system" $data | toPrettyJson }}

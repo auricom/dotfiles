@@ -1,6 +1,5 @@
 [Unit]
 Description=distrobox upgrade daily
-Wants=network-online.target
 
 [Timer]
 OnCalendar=daily

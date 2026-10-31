@@ -1,0 +1,9 @@
+{{ includeTemplate "systemd-oneshot" (dict
+    "description" "Stage system extension updates for next boot"
+    "execPre" "/usr/bin/nm-online --quiet --timeout=30"
+    "condition" "/usr/local/libexec/update-sysexts"
+    "exec" "/usr/bin/sudo -n /usr/bin/systemctl start update-sysexts.service"
+    "note" "The root updater allows 15 minutes; wait for its completion."
+    "timeout" "20min"
+    "path" (includeTemplate "brew-path" . | trim)
+) -}}

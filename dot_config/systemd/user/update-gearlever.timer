@@ -1,6 +1,5 @@
 [Unit]
 Description=Gear Lever AppImage update weekly
-Wants=network-online.target
 
 [Timer]
 OnCalendar=weekly
