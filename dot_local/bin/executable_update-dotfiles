@@ -34,7 +34,7 @@ collect_chezmoi_status() {
 
     local -a CHEZMOI_STATUS_LINES=()
     local chezmoi_output
-    chezmoi_output="$("${CHEZMOI_BIN}" status)" || chezmoi_output=""
+    chezmoi_output="$("${CHEZMOI_BIN}" status)"
     if [[ -n ${chezmoi_output} ]]; then
         mapfile -t CHEZMOI_STATUS_LINES <<<"${chezmoi_output}"
     fi
@@ -83,6 +83,8 @@ chezmoi_warn_skipped() {
     skipped_list="${skipped_list%, }"
 
     log_warn "${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
+    notify_desktop_message normal 'Dotfiles update skipped files' \
+        "${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
     notify_message "${HOSTNAME}: chezmoi update skipped ${skipped_count} file(s) with local changes: ${skipped_list}"
 }
 

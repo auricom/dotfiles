@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Called by notify-failure@.service for scheduled automation failures.
+# Usage: notify-service-failure <unit.service>
+# Systemd owns failure alerts; update commands only notify about skipped work.
+
+set -Eeuo pipefail
+
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
+
+# shellcheck source=notifications.sh
+source "${HOME}/.local/lib/notifications.sh"
+
+main() {
+    if (($# == 1)) && [[ $1 == --help || $1 == -h ]]; then
+        printf 'Usage: %s <unit.service>\n\nNotify about a failed systemd user service.\n' "${0##*/}"
+        return 0
+    fi
+    if (($# != 1)) || [[ $1 == -* || $1 != *.service ]]; then
+        log_error "Usage: ${0##*/} <unit.service>"
+        return 2
+    fi
+
+    local unit="$1" body
+    if ! body=$(journalctl --user -u "${unit}" -n 3 --no-pager -o cat |
+        tr '\n' ' ' | sed 's/  */ /g' | cut -c1-250); then
+        log_warn "Could not read journal for ${unit}"
+        body=''
+    fi
+    if [[ -z ${body//[[:space:]]/} ]]; then
+        body="No journal details available. Inspect with: journalctl --user -u ${unit}"
+    fi
+    notify_desktop_message critical "${unit} failed" "${body:0:250}"
+}
+
+main "$@"

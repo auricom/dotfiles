@@ -6,6 +6,9 @@ set -Eeuo pipefail
 source "${HOME}/.local/lib/common_utils.sh"
 trap 'report_error "$?" "$LINENO"' ERR
 
+# shellcheck source=notifications.sh
+source "${HOME}/.local/lib/notifications.sh"
+
 main() {
     require_no_args "Update the agents repository when it has no local changes." "$@"
     log_section "Updating agents repository"
@@ -15,11 +18,9 @@ main() {
     status=$(git status --porcelain --untracked-files=all)
     if [[ -n ${status} ]]; then
         log_warn "Skipping agents update: repository has local changes"
-        if ! notify-send --app-name='Agents update' --urgency=normal \
+        notify_desktop_message normal \
             'Agents update skipped' \
-            'The agents repository has local changes. Commit or stash them to resume automatic updates.'; then
-            log_warn "Could not send desktop notification for skipped agents update"
-        fi
+            'The agents repository has local changes. Commit or stash them to resume automatic updates.'
         return 0
     fi
 

@@ -33,8 +33,8 @@ main() {
     for file in dot_local/bin/executable_*; do
         # These produce prompt data or transparently exec an application.
         case ${file##*/} in
-        executable_1password | executable_github-icon | executable_recur-app | \
-            executable_relative-time-commit) continue ;;
+            executable_1password | executable_github-icon | executable_recur-app | \
+                executable_relative-time-commit) continue ;;
         esac
         require_markers "$file" \
             '#!/usr/bin/env bash' \
@@ -47,6 +47,27 @@ main() {
             require_markers "$file" 'source "${HOME}/.local/lib/notifications.sh"' || status=1
         else
             require_markers "$file" "trap 'report_error" || status=1
+        fi
+    done
+
+    # Every timer-driven user service must use the shared desktop failure handler.
+    local service
+    for file in dot_config/systemd/user/*.timer; do
+        service=${file%.timer}.service
+        if [[ -f ${service}.tmpl ]]; then
+            service+=.tmpl
+        fi
+        if [[ ! -f $service ]]; then
+            printf '%s: missing service %s\n' "$file" "$service" >&2
+            status=1
+            continue
+        fi
+        text=$(<"$service")
+        if [[ $text == *'includeTemplate "systemd-oneshot"'* ]]; then
+            require_markers .chezmoitemplates/systemd-oneshot \
+                'OnFailure=notify-failure@%p.service' || status=1
+        else
+            require_markers "$service" 'OnFailure=notify-failure@%p.service' || status=1
         fi
     done
 

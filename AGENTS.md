@@ -17,6 +17,10 @@ TOML and Zed JSONC modify scripts described below.
   and a final `main "$@"` entry point.
   Commands that explicitly opt into `notifications.sh` may use its `notify_error`
   trap, which also calls the shared error reporter.
+- Scheduled user services use `OnFailure=notify-failure@%p.service` for one
+  critical desktop alert per failed service. The handler runs
+  `notify-service-failure`; update scripts use `notify_desktop_message` only for
+  normal skipped-work warnings. Desktop delivery never needs Pushover credentials.
 - Use `log_section`, `log_info`, `log_warn`, `log_error`, `log_debug`, and
   `run_spin` for human-facing progress and diagnostics. Use `confirm` and
   `prompt_input` for interaction. Do not call gum directly or invent formatting;
@@ -56,5 +60,7 @@ rendered, then executed). Do not convert those to modify-templates.
   the server, workstation, and laptop form factors. Never pass unrendered Go
   templates to shell tooling.
 - Run focused checks with temporary fixtures or mocked external commands.
+  `bash scripts/check-notifications.sh build/rendered/workstation/dot_local/lib/common_utils.sh`
+  checks automation notifications after `just render workstation`.
   Do not run unrelated lifecycle operations, installs, or service restarts
   just to verify formatting. Preserve existing local changes.

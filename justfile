@@ -156,8 +156,10 @@ check profile="":
     profile={{ quote(profile) }}
     if [[ -n $profile ]]; then
         just lint "$profile"
+        bash scripts/check-notifications.sh "build/rendered/$profile/dot_local/lib/common_utils.sh"
     else
         for profile in {{ profiles }}; do
             just lint "$profile"
+            bash scripts/check-notifications.sh "build/rendered/$profile/dot_local/lib/common_utils.sh"
         done
     fi
