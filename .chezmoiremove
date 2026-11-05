@@ -49,4 +49,5 @@ mise.toml
 .config/foot/catppuccin_mocha.ini
 .config/zellij/catppuccin.kdl
 .config/systemd/user/timers.target.wants/podman-auto-update.timer
-.config/autostart/kopiaui.desktop
+.config/systemd/user/kopiaui.service
+.config/systemd/user/graphical-session.target.wants/kopiaui.service
