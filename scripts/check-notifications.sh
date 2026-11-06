@@ -33,6 +33,7 @@ case ${0##*/} in
         exit "${JOURNAL_STATUS:-0}"
         ;;
     chezmoi)
+        printf '%s\n' "$@" >>"$CHEZMOI_LOG"
         [[ $1 != "${FAIL_STEP:-none}" ]] || exit 42
         if [[ $1 == status ]]; then
             printf '%s' "${CHEZMOI_STATUS-}"
@@ -53,13 +54,14 @@ EOF
         ln -s mock "$fixture/bin/$command"
     done
 
-    export NOTIFY_LOG="$fixture/notify" PUSHOVER_LOG="$fixture/pushover" JOURNAL_LOG="$fixture/journal"
+    export NOTIFY_LOG="$fixture/notify" PUSHOVER_LOG="$fixture/pushover" JOURNAL_LOG="$fixture/journal" CHEZMOI_LOG="$fixture/chezmoi"
     local result=0
     run_case() {
         local expected=$1
         shift
         : >"$NOTIFY_LOG"
         : >"$PUSHOVER_LOG"
+        : >"$CHEZMOI_LOG"
         result=0
         env HOME="$fixture/home" PATH="$fixture/bin:$PATH" CHEZMOI_BIN=chezmoi \
             UPDATE_CUSTOM_STEPS='' UPDATE_CUSTOM_SKIP='' "$@" \
@@ -110,11 +112,21 @@ EOF
     done
     run_case 0 CHEZMOI_STATUS='' bash "$updater"
     [[ ! -s $NOTIFY_LOG && ! -s $PUSHOVER_LOG ]]
-    run_case 0 CHEZMOI_STATUS='M  .config/example' bash "$updater"
-    [[ $(<"$NOTIFY_LOG") == *$'--urgency=normal\n--\nDotfiles update skipped files\n1 file(s) skipped due to local changes: .config/example'* ]]
+    run_case 0 CHEZMOI_STATUS=$'M  .config/example\nA  .config/existing' bash "$updater"
+    [[ ! -s $NOTIFY_LOG && ! -s $PUSHOVER_LOG ]]
+    [[ $(<"$CHEZMOI_LOG") != *apply* ]]
+    run_case 0 CHEZMOI_STATUS='MM .config/example' bash "$updater"
+    [[ $(<"$NOTIFY_LOG") == *$'--urgency=normal\n--\nDotfiles update skipped files\n1 file(s) skipped due to local changes or deletions: .config/example'* ]]
     [[ -s $PUSHOVER_LOG ]]
     [[ ! -s $fixture/stdout ]]
-    run_case 0 NOTIFY_STATUS=1 CHEZMOI_STATUS='M  .config/example' bash "$updater"
+    [[ $(<"$CHEZMOI_LOG") != *apply* ]]
+    run_case 0 NOTIFY_STATUS=1 CHEZMOI_STATUS='MM .config/example' bash "$updater"
+    run_case 0 CHEZMOI_STATUS='DA .config/deleted' bash "$updater"
+    [[ $(<"$NOTIFY_LOG") == *'local changes or deletions: .config/deleted'* ]]
+    [[ $(<"$CHEZMOI_LOG") != *apply* ]]
+    run_case 0 CHEZMOI_STATUS=' M .config/example' bash "$updater"
+    [[ $(<"$CHEZMOI_LOG") == *$'apply\n'*'/home/.config/example'* ]]
+    [[ ! -s $NOTIFY_LOG ]]
 
     updater="$root/dot_local/bin/executable_update-agents"
     run_case 0 GIT_STATUS=' M example' bash "$updater"

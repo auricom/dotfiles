@@ -2,6 +2,9 @@
 
 set -Eeuo pipefail
 
+# Apply pending updates only when the destination has no local changes.
+# Preserve local edits and deletions; ignore entries already at their target state.
+
 # shellcheck source=common_utils.sh
 source "${HOME}/.local/lib/common_utils.sh"
 
@@ -41,6 +44,7 @@ collect_chezmoi_status() {
     local line status_char path
     for line in "${CHEZMOI_STATUS_LINES[@]}"; do
         [[ -z ${line} ]] && continue
+        [[ ${line:1:1} == " " ]] && continue
         status_char="${line:0:1}"
         path="${line:3}"
         [[ -z ${path} ]] && continue
@@ -82,10 +86,10 @@ chezmoi_warn_skipped() {
     skipped_list="$(printf '%s, ' "${SKIPPED_FILES[@]:0:10}")"
     skipped_list="${skipped_list%, }"
 
-    log_warn "${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
+    log_warn "${skipped_count} file(s) skipped due to local changes or deletions: ${skipped_list}"
     notify_desktop_message normal 'Dotfiles update skipped files' \
-        "${skipped_count} file(s) skipped due to local changes: ${skipped_list}"
-    notify_message "${HOSTNAME}: chezmoi update skipped ${skipped_count} file(s) with local changes: ${skipped_list}"
+        "${skipped_count} file(s) skipped due to local changes or deletions: ${skipped_list}"
+    notify_message "${HOSTNAME}: chezmoi update skipped ${skipped_count} file(s) with local changes or deletions: ${skipped_list}"
 }
 
 build_steps() {
