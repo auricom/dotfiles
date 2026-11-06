@@ -153,6 +153,7 @@ check profile="":
     set -euo pipefail
     cd {{ root }}
     bash scripts/check-script-style.sh
+    bash scripts/check-dms-settings.sh
     profile={{ quote(profile) }}
     if [[ -n $profile ]]; then
         just lint "$profile"

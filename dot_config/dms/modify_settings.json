@@ -4,5 +4,11 @@
 {{- if $raw -}}
 {{-   $data = fromJson $raw -}}
 {{- end -}}
+{{- $before := toJson $data -}}
 {{- $data = setValueAtPath "registryThemeVariants.catppuccin.dark.accent" .catppuccin.accent $data -}}
-{{- setValueAtPath "registryThemeVariants.catppuccin.light.accent" .catppuccin.accent $data | toPrettyJson }}
+{{- $data = setValueAtPath "registryThemeVariants.catppuccin.light.accent" .catppuccin.accent $data -}}
+{{- if eq $before (toJson $data) -}}
+{{- .chezmoi.stdin -}}
+{{- else -}}
+{{- $data | toPrettyJson }}
+{{ end -}}
