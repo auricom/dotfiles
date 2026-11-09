@@ -124,8 +124,11 @@ merges; it returns once the updater stages the new release's image and you
 reboot again. If auricom/sysexts has not published that release yet,
 the updater fails and sends one desktop alert.
 
-To switch from the community image, remove the old instance first, because the
-new image has the same filename and sysupdate would treat it as already installed:
+To switch from the community image, first confirm the auricom/sysexts
+`1password-gui` release is published (its `1password-gui.conf` must not 404);
+otherwise the apply stages nothing and 1Password is gone after reboot. Then remove
+the old instance, because the new image has the same filename and sysupdate would
+treat it as already installed:
 
 ```sh
 sudo rm -f /etc/extensions/1password-gui.raw
