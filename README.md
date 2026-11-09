@@ -41,7 +41,7 @@ Declare Dux Shell plugins in `.chezmoidata/dux.yaml`, then run `chezmoi apply`
 to install and enable them on workstations and laptops. Existing plugins are
 not updated, disabled, or uninstalled when the list changes.
 
-### Tailscale system extension
+### System extensions (Tailscale)
 
 On Linux workstations and laptops, `chezmoi apply` configures stable
 [Flatcar Tailscale sysext](https://flatcar.github.io/sysext-bakery/tailscale/)
@@ -90,6 +90,32 @@ sudo rm -f /etc/systemd/system/tailscaled.service.d/20-chezmoi-sysext.conf
 The packaged version takes over at the next boot. Keep `/var/lib/tailscale`
 intact during rollback. Do not remove other extensions
 or disable their shared `systemd-sysext.service`.
+
+### 1Password system extension
+
+`1password-gui` comes from the
+[fedora-sysexts community](https://fedora-sysexts.github.io/community/) repository,
+a third-party build of the official 1Password RPM with the application moved to
+`/usr/lib/1Password` and launchers in `/usr/bin`. The same updater stages it under
+`/opt/extensions/1password-gui` and selects it with
+`/etc/extensions/1password-gui.raw`; only Tailscale gets boot-time service setup.
+The launcher, autostart entry, Quick Access keybind and `onepassword://` handlers
+use `/usr/bin/1password`.
+
+Community images are built per Fedora release, so the image name includes the
+host's `VERSION_ID`. After a major Fedora rebase the previous image no longer
+merges; it returns once the updater stages the new release's image and you
+reboot again. If the community repository has not published that release yet,
+the updater fails and sends one desktop alert.
+
+To migrate from the distrobox: run `chezmoi apply` and
+`systemctl --user start update-sysexts.service`, then reboot. Next run
+`distrobox rm 1password` followed by `chezmoi apply` again, because distrobox
+removes `~/.local/share/applications/1password.desktop`. Settings in
+`~/.config/1Password` and the SSH agent socket carry over. To roll back, restore
+the old 1Password files from git, remove `1password-gui` from
+`.chezmoidata/sysexts.yaml`, run `sudo rm -f /etc/extensions/1password-gui.raw`
+and reboot.
 
 ## Contributing
 

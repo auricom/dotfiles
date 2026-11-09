@@ -2,4 +2,7 @@
 {{ range .sysexts.flatcar -}}
 {{ includeTemplate "external-file" (dict "path" (printf ".local/share/sysexts/%s/%s.conf" . .) "url" (printf "https://github.com/flatcar/sysext-bakery/releases/download/%s/%s.conf" . .)) }}
 {{ end -}}
+{{ range .sysexts.fedora -}}
+{{ includeTemplate "external-file" (dict "path" (printf ".local/share/sysexts/%s/%s.conf" . .) "url" (printf "https://extensions.fcos.fr/community/%s.conf" .)) }}
+{{ end -}}
 {{ end -}}

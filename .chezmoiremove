@@ -51,3 +51,6 @@ mise.toml
 .config/systemd/user/timers.target.wants/podman-auto-update.timer
 .config/systemd/user/kopiaui.service
 .config/systemd/user/graphical-session.target.wants/kopiaui.service
+.local/bin/1password
+.local/share/applications/com.onepassword.OnePassword.desktop
+.config/autostart/1password-distrobox.desktop

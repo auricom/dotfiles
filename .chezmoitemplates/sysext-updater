@@ -9,7 +9,7 @@ set -Eeuo pipefail
 source /usr/local/lib/chezmoi/common_utils.sh
 trap 'report_error "$?" "$LINENO"' ERR
 
-SYSEXTS=({{ range $i, $name := .sysexts.flatcar }}{{ if $i }} {{ end }}"{{ $name }}"{{ end }})
+SYSEXTS=({{ range $i, $name := concat .sysexts.flatcar .sysexts.fedora }}{{ if $i }} {{ end }}"{{ $name }}"{{ end }})
 SYSEXT_ARCH="{{ get (dict "amd64" "x86-64" "arm64" "arm64") .chezmoi.arch }}"
 
 main() {
@@ -46,8 +46,9 @@ main() {
 }
 
 stage_sysext() {
-    local name="$1" version image
+    local name="$1" version image pattern version_id
     local link="/etc/extensions/${name}.raw"
+    local transfer="/etc/sysupdate.${name}.d/${name}.transfer"
 
     if [[ -e "$link" && ! -L "$link" ]]; then
         log_error "Expected a symlink: $link"
@@ -56,7 +57,14 @@ stage_sysext() {
     run_spin "Checking $name sysext updates" /usr/lib/systemd/systemd-sysupdate -C "$name" update >&2
     # Query installed versions because sysupdate does nothing when the image is cached.
     version=$(/usr/lib/systemd/systemd-sysupdate -C "$name" --offline --json=short list | jq -er '.current')
-    image="/opt/extensions/${name}/${name}-${version}-${SYSEXT_ARCH}.raw"
+    # The last MatchPattern is Target's when present, else Source's.
+    # simplify: only @v, %a and %w are expanded; other specifiers fail the -f check below.
+    version_id=$(. /etc/os-release && printf '%s' "${VERSION_ID-}")
+    pattern=$(sed -n 's/^MatchPattern=//p' "$transfer" | tail -n 1)
+    pattern=${pattern//@v/$version}
+    pattern=${pattern//%a/$SYSEXT_ARCH}
+    pattern=${pattern//%w/$version_id}
+    image="/opt/extensions/${name}/${pattern}"
     if [[ ! -f "$image" ]]; then
         log_error "Sysupdate did not install a usable image: $image"
         return 1
