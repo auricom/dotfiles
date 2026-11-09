@@ -7,6 +7,7 @@ sysexts:
   # https://fedora-sysexts.github.io/community/ (images are per Fedora release)
   fedora:
     - 1password-gui
-  # https://github.com/auricom/sysexts (releases hold zen-browser.conf)
+  # https://github.com/auricom/sysexts (releases hold <name>.conf)
   auricom:
     - zen-browser
+    - recur

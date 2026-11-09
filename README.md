@@ -129,6 +129,20 @@ Fedora release, so the 1Password note about major Fedora rebases applies. To rem
 it, drop `zen-browser` from `.chezmoidata/sysexts.yaml`, run
 `sudo rm -f /etc/extensions/zen-browser.raw` and reboot.
 
+### Recur system extension
+
+`recur` comes from [auricom/sysexts](https://github.com/auricom/sysexts), a build of
+the [celestiaorg/recur-releases](https://github.com/celestiaorg/recur-releases)
+package with Recur moved to `/usr/lib/recur`. Its `recur.conf` and images are
+published in that repository's `recur` release and staged by the same updater as the
+other sysexts. Images are built per Fedora release, so the 1Password note about major
+Fedora rebases applies.
+
+`recur-app` still enters the `recur` distrobox. After `chezmoi apply` and a reboot,
+check that `/usr/bin/recur` runs on the host; once it does, point `recur-app` at it
+and remove the `recur` box. To remove the sysext, drop `recur` from
+`.chezmoidata/sysexts.yaml`, run `sudo rm -f /etc/extensions/recur.raw` and reboot.
+
 ## Contributing
 
 Follow [AGENTS.md](AGENTS.md) for script conventions. Install check tools and hooks:
