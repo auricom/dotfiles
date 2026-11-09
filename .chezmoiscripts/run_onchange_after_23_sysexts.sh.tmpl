@@ -3,11 +3,12 @@
 # Install the root-owned sysext updater before user timers are enabled at step 24.
 # Only configuration changes rerun setup; updates belong to the user service/timer.
 # Images take effect at next boot; configure active Tailscale without restarting.
+# Other sysexts (e.g. 1password-gui) only stage images under /opt/extensions/<name>.
 # Keep the raw sysupdate download symlink outside /etc/extensions so a failed
 # preparation cannot select an unlabelled image for the next boot.
 # Hash dependencies: {{ include "dot_local/lib/common_utils.sh.tmpl" | sha256sum }}
 
-SYSEXTS=({{ range $i, $name := .sysexts.flatcar }}{{ if $i }} {{ end }}"{{ $name }}"{{ end }})
+SYSEXTS=({{ range $i, $name := concat .sysexts.flatcar .sysexts.fedora }}{{ if $i }} {{ end }}"{{ $name }}"{{ end }})
 
 main() {
     log_section "Configuring sysext updates"
@@ -44,7 +45,8 @@ SYSEXT_UPDATER
     for name in "${SYSEXTS[@]}"; do
         conf_src="{{ .chezmoi.homeDir }}/.local/share/sysexts/${name}/${name}.conf"
         sudo mkdir -p "/etc/sysupdate.${name}.d"
-        sed "s|^CurrentSymlink=.*|CurrentSymlink=/opt/extensions/${name}/download.raw|" "$conf_src" |
+        sed -e "s|^CurrentSymlink=.*|CurrentSymlink=/opt/extensions/${name}/download.raw|" \
+            -e "/^\[Target\]/,\$ s|^Path=.*|Path=/opt/extensions/${name}|" "$conf_src" |
             sudo install -o root -g root -m 0644 /dev/stdin "/etc/sysupdate.${name}.d/${name}.transfer"
         sudo rm -f "/etc/sysupdate.${name}.d/${name}.conf"
         if [[ "$name" == tailscale ]]; then
