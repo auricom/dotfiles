@@ -4,3 +4,6 @@ sysexts:
     # - docker-buildx
     # - docker-compose
     - tailscale
+  # https://fedora-sysexts.github.io/community/ (images are per Fedora release)
+  fedora:
+    - 1password-gui
