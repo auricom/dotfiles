@@ -4,7 +4,7 @@ set -Eeuo pipefail
 
 # Stage sysext updates for next boot. Never merge images or restart workloads.
 # Installed root-owned by chezmoi; invoked by update-sysexts.service or manually.
-# Requires systemd-sysupdate, jq, flock and (on SELinux hosts) squashfs-tools/setfiles.
+# Requires systemd-sysupdate, jq, flock and (on SELinux hosts) squashfs-tools/setfiles and systemd-dissect.
 # shellcheck source=common_utils.sh
 source /usr/local/lib/chezmoi/common_utils.sh
 trap 'report_error "$?" "$LINENO"' ERR
@@ -26,7 +26,7 @@ main() {
         require_command "$command" "sysext updates"
     done
     if [[ -r /sys/fs/selinux/enforce ]]; then
-        for command in unsquashfs mksquashfs setfiles; do
+        for command in systemd-dissect mksquashfs setfiles; do
             require_command "$command" "sysext preparation"
         done
     fi
@@ -81,7 +81,7 @@ stage_sysext() {
 }
 
 prepare_selinux_image() {
-    local image="$1" prepared directory policy contexts unsquashfs mksquashfs
+    local image="$1" prepared directory policy contexts mksquashfs
     if [[ ! -r /sys/fs/selinux/enforce ]]; then
         printf '%s\n' "$image"
         return 0
@@ -102,14 +102,15 @@ prepare_selinux_image() {
         return 0
     fi
 
-    unsquashfs=$(command -v unsquashfs)
     mksquashfs=$(command -v mksquashfs)
     mkdir -p "${prepared%/*}" || return
     directory=$(mktemp -d "${prepared%/*}/.prepare.XXXXXX") || return
     # Atomic desktops expose /opt through /var/opt; setfiles needs the real root.
     directory=$(readlink -f "$directory") || return
     log_info "Preparing sysext with the host file contexts"
-    if "$unsquashfs" -no-progress -d "$directory/root" "$image" >&2 &&
+    # Images may be squashfs (Flatcar) or erofs (Fedora); dissect reads both.
+    if mkdir "$directory/root" &&
+        systemd-dissect --copy-from "$image" / "$directory/root" >&2 &&
         setfiles -F -r "$directory/root" "$contexts" "$directory/root" >&2 &&
         "$mksquashfs" "$directory/root" "$directory/image.raw" -noappend -no-progress -xattrs -processors 2 >&2 &&
         chmod 0644 "$directory/image.raw" &&
