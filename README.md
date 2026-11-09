@@ -65,8 +65,8 @@ options belong in `/etc/default/tailscaled`, which overrides the shipped default
 For a new node, reboot after installation, then run `sudo tailscale up` interactively.
 
 Download or preparation failure leaves the previous boot image selected.
-On SELinux hosts, the script uses `unsquashfs`, `setfiles` and `mksquashfs` to
-prepare a local copy under `/opt/extensions/tailscale/selinux/` with the host's
+On SELinux hosts, the script uses `systemd-dissect` (squashfs or erofs), `setfiles` and `mksquashfs`
+to prepare a local copy under `/opt/extensions/<name>/selinux/` with the host's
 file contexts. Tailscale binaries are unchanged, and the original download stays
 intact for sysupdate. Each downloaded version is prepared once; the active
 symlink selects the prepared copy. Raw downloads use a separate staging symlink,
