@@ -143,6 +143,21 @@ check that `/usr/bin/recur` runs on the host; once it does, point `recur-app` at
 and remove the `recur` box. To remove the sysext, drop `recur` from
 `.chezmoidata/sysexts.yaml`, run `sudo rm -f /etc/extensions/recur.raw` and reboot.
 
+### Resilio Sync system extension
+
+`resilio-sync` comes from [auricom/sysexts](https://github.com/auricom/sysexts), built
+from the upstream signed `resilio-sync` RPM. Its `resilio-sync.conf` and images are
+published in that repository's `resilio-sync` release and staged by the same updater
+as the other sysexts. Images are built per Fedora release (currently only 45 on
+x86-64), so the 1Password note about major Fedora rebases applies.
+
+Nothing is enabled by default and the distrobox-based `resilio-sync.service` stays in
+place. After `chezmoi apply` and a reboot, run `sudo systemd-sysusers` and
+`sudo systemd-tmpfiles --create`, then switch from the distrobox service to the
+packaged one. To remove the sysext, drop `resilio-sync` from
+`.chezmoidata/sysexts.yaml`, run `sudo rm -f /etc/extensions/resilio-sync.raw` and
+reboot.
+
 ## Contributing
 
 Follow [AGENTS.md](AGENTS.md) for script conventions. Install check tools and hooks:

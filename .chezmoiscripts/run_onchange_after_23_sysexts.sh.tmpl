@@ -4,7 +4,7 @@
 # Only configuration changes rerun setup; updates belong to the user service/timer.
 # Sysexts without a boot selection (first install or newly added) are staged here.
 # Images take effect at next boot; configure active Tailscale without restarting.
-# Other sysexts (e.g. 1password-gui, zen-browser, recur) only stage images under /opt/extensions/<name>.
+# Other sysexts (e.g. 1password-gui, zen-browser, recur, resilio-sync) only stage images under /opt/extensions/<name>.
 # Keep the raw sysupdate download symlink outside /etc/extensions so a failed
 # preparation cannot select an unlabelled image for the next boot.
 # Hash dependencies: {{ include "dot_local/lib/common_utils.sh.tmpl" | sha256sum }}
