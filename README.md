@@ -95,20 +95,47 @@ or disable their shared `systemd-sysext.service`.
 
 ### 1Password system extension
 
-`1password-gui` comes from the
-[fedora-sysexts community](https://fedora-sysexts.github.io/community/) repository,
-a third-party build of the official 1Password RPM with the application moved to
-`/usr/lib/1Password` and launchers in `/usr/bin`. The same updater stages it under
-`/opt/extensions/1password-gui` and selects it with
+`1password-gui` comes from [auricom/sysexts](https://github.com/auricom/sysexts), a
+build of the official signed 1Password RPM with the application moved to
+`/usr/lib/1Password` and launchers in `/usr/bin`. Its `1password-gui.conf` and
+images are published in that repository's `1password-gui` release. The same updater
+stages it under `/opt/extensions/1password-gui` and selects it with
 `/etc/extensions/1password-gui.raw`; only Tailscale gets boot-time service setup.
 The launcher, autostart entry, Quick Access keybind and `onepassword://` handlers
 use `/usr/bin/1password`.
 
-Community images are built per Fedora release, so the image name includes the
+The community `fedora-sysexts` image is not used because it ships
+`1Password-BrowserSupport` without its setgid `onepassword` group. The RPM
+scriptlet that sets this up never runs in a sysext, so the helper aborts with
+"running without libc's security" and browser integration fails. The auricom image
+sets the helper to setgid `onepassword` (GID 1500, created at boot from a
+`sysusers.d` entry baked into the image). If `getent group onepassword` is empty
+after a reboot, run `sudo systemd-sysusers`.
+
+`/etc` cannot come from a sysext, so `run_onchange_after_04_1password.sh.tmpl`
+writes `/etc/1password/custom_allowed_browsers` containing `zen-bin`. Zen is not on
+1Password's built-in browser list and its launcher execs `zen-bin`. Add other
+browsers to that script. Integration only works in the sysext Zen (`zen-browser`),
+not the Flatpak.
+
+Images are built per Fedora release, so the image name includes the
 host's `VERSION_ID`. After a major Fedora rebase the previous image no longer
 merges; it returns once the updater stages the new release's image and you
-reboot again. If the community repository has not published that release yet,
+reboot again. If auricom/sysexts has not published that release yet,
 the updater fails and sends one desktop alert.
+
+To switch from the community image, first confirm the auricom/sysexts
+`1password-gui` release is published (its `1password-gui.conf` must not 404);
+otherwise the apply stages nothing and 1Password is gone after reboot. Then remove
+the old instance, because the new image has the same filename and sysupdate would
+treat it as already installed:
+
+```sh
+sudo rm -f /etc/extensions/1password-gui.raw
+sudo rm -rf /opt/extensions/1password-gui
+chezmoi apply
+systemctl reboot
+```
 
 To migrate from the distrobox: run `chezmoi apply`, which stages the image,
 then reboot. Next run

@@ -5,10 +5,10 @@ sysexts:
     # - docker-compose
     - tailscale
   # https://fedora-sysexts.github.io/community/ (images are per Fedora release)
-  fedora:
-    - 1password-gui
+  fedora: []
   # https://github.com/auricom/sysexts (releases hold <name>.conf)
   auricom:
+    - 1password-gui
     - zen-browser
     - recur
     - resilio-sync
