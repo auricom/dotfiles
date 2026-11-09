@@ -51,8 +51,10 @@ The user `update-sysexts.service` triggers the root-owned updater using
 noninteractive sudo (the workstation passwordless sudo configuration is required).
 Its user timer checks daily, with up to 30 minutes of randomized delay and
 catch-up after missed runs. `update-all` includes this user service.
-Setup runs only when its configuration changes; `chezmoi apply` does not
-directly start sysext updates. The timer is enabled after the updater is installed.
+Setup runs only when its configuration changes. It stages sysexts that have no
+`/etc/extensions/<name>.raw` selection yet (first install or a newly added
+sysext); otherwise `chezmoi apply` does not start sysext updates. Reboot to
+activate newly staged images. The timer is enabled after the updater is installed.
 Updates only download, prepare and select the next image: they never refresh
 sysext mounts, restart Tailscale or reboot. Tailscale's own automatic updater is
 disabled so it cannot bypass this boot-only update policy. Servers are excluded.
@@ -108,8 +110,8 @@ merges; it returns once the updater stages the new release's image and you
 reboot again. If the community repository has not published that release yet,
 the updater fails and sends one desktop alert.
 
-To migrate from the distrobox: run `chezmoi apply` and
-`systemctl --user start update-sysexts.service`, then reboot. Next run
+To migrate from the distrobox: run `chezmoi apply`, which stages the image,
+then reboot. Next run
 `distrobox rm 1password` followed by `chezmoi apply` again, because distrobox
 removes `~/.local/share/applications/1password.desktop`. Settings in
 `~/.config/1Password` and the SSH agent socket carry over. To roll back, restore

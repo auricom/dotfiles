@@ -2,6 +2,7 @@
 {{- includeTemplate "script-header" . }}
 # Install the root-owned sysext updater before user timers are enabled at step 24.
 # Only configuration changes rerun setup; updates belong to the user service/timer.
+# Sysexts without a boot selection (first install or newly added) are staged here.
 # Images take effect at next boot; configure active Tailscale without restarting.
 # Other sysexts (e.g. 1password-gui) only stage images under /opt/extensions/<name>.
 # Keep the raw sysupdate download symlink outside /etc/extensions so a failed
@@ -57,6 +58,21 @@ SYSEXT_UPDATER
     sudo systemctl daemon-reload
     sudo systemctl enable systemd-sysext.service >&2
     log_info "Sysext updater configured; updates are scheduled by the user timer"
+    stage_new_sysexts
+}
+
+# Failure is non-fatal: the previous boot selection stays and the user timer retries.
+stage_new_sysexts() {
+    local name missing=()
+    for name in "${SYSEXTS[@]}"; do
+        [[ -e "/etc/extensions/${name}.raw" ]] || missing+=("$name")
+    done
+    ((${#missing[@]})) || return 0
+    if run_spin "Staging new sysexts: ${missing[*]}" sudo systemctl start update-sysexts.service; then
+        log_info "New sysexts are staged; reboot to activate them"
+    else
+        log_warn "Initial sysext staging failed; see journalctl -u update-sysexts.service"
+    fi
 }
 
 configure_tailscale_boot() {
