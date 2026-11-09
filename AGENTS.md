@@ -33,7 +33,7 @@ TOML and Zed JSONC modify scripts described below.
   (unavailable or interrupted) explicitly. Input requires terminal stdin and stderr.
 - Keep script-specific usage and operational notes in script header comments.
 - POSIX prompt-data utilities (`github-icon`, `relative-time-commit`) and
-  transparent launchers (`1password`, `recur-app`) are exceptions to the
+  transparent launcher (`recur-app`) are exceptions to the
   operational framework. Keep their output contracts.
   The `terminal-theme` background hook uses shared diagnostics but stays silent
   on success.
