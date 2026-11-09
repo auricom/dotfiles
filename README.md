@@ -124,18 +124,12 @@ merges; it returns once the updater stages the new release's image and you
 reboot again. If auricom/sysexts has not published that release yet,
 the updater fails and sends one desktop alert.
 
-To switch from the community image, first confirm the auricom/sysexts
-`1password-gui` release is published (its `1password-gui.conf` must not 404);
-otherwise the apply stages nothing and 1Password is gone after reboot. Then remove
-the old instance, because the new image has the same filename and sysupdate would
-treat it as already installed:
-
-```sh
-sudo rm -f /etc/extensions/1password-gui.raw
-sudo rm -rf /opt/extensions/1password-gui
-chezmoi apply
-systemctl reboot
-```
+When a sysext's `[Source] Path=` changes (for example from the community image),
+`chezmoi apply` deletes its old images and boot selection, because the new source
+can publish the same filenames that sysupdate would treat as already installed. It
+then stages the image from the new source; reboot to activate it. If staging fails,
+the sysext is missing after reboot until `systemctl --user start update-sysexts.service`
+succeeds.
 
 To migrate from the distrobox: run `chezmoi apply`, which stages the image,
 then reboot. Next run

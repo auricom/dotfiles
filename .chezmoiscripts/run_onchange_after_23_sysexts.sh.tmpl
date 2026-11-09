@@ -7,13 +7,13 @@
 # Other sysexts (e.g. 1password-gui, zen-browser, recur, resilio-sync) only stage images under /opt/extensions/<name>.
 # Keep the raw sysupdate download symlink outside /etc/extensions so a failed
 # preparation cannot select an unlabelled image for the next boot.
-# Hash dependencies: {{ include "dot_local/lib/common_utils.sh.tmpl" | sha256sum }}
+# Hash dependencies: {{ include "dot_local/lib/common_utils.sh.tmpl" | sha256sum }} {{ include ".chezmoidata/sysexts.yaml" | sha256sum }}
 
 SYSEXTS=({{ range $i, $name := concat .sysexts.flatcar .sysexts.fedora .sysexts.auricom }}{{ if $i }} {{ end }}"{{ $name }}"{{ end }})
 
 main() {
     log_section "Configuring sysext updates"
-    local name conf_src
+    local name conf_src transfer
     require_command sudo "sysext management"
     require_command systemctl "sysext management"
     for name in "${SYSEXTS[@]}"; do
@@ -45,10 +45,18 @@ SYSEXT_UPDATER
 
     for name in "${SYSEXTS[@]}"; do
         conf_src="{{ .chezmoi.homeDir }}/.local/share/sysexts/${name}/${name}.conf"
+        transfer="/etc/sysupdate.${name}.d/${name}.transfer"
+        # A new source can publish the same image names: drop the old images and
+        # selection so stage_new_sysexts fetches from the new source.
+        if [[ -r "$transfer" && $(source_path "$transfer") != "$(source_path "$conf_src")" ]]; then
+            log_info "$name source changed; replacing its images"
+            sudo rm -rf "/opt/extensions/${name}"
+            sudo rm -f "/etc/extensions/${name}.raw"
+        fi
         sudo mkdir -p "/etc/sysupdate.${name}.d"
         sed -e "s|^CurrentSymlink=.*|CurrentSymlink=/opt/extensions/${name}/download.raw|" \
             -e "/^\[Target\]/,\$ s|^Path=.*|Path=/opt/extensions/${name}|" "$conf_src" |
-            sudo install -o root -g root -m 0644 /dev/stdin "/etc/sysupdate.${name}.d/${name}.transfer"
+            sudo install -o root -g root -m 0644 /dev/stdin "$transfer"
         sudo rm -f "/etc/sysupdate.${name}.d/${name}.conf"
         if [[ "$name" == tailscale ]]; then
             configure_tailscale_boot
@@ -73,6 +81,10 @@ stage_new_sysexts() {
     else
         log_warn "Initial sysext staging failed; see journalctl -u update-sysexts.service"
     fi
+}
+
+source_path() {
+    sed -n '/^\[Source\]/,/^\[/ s/^Path=//p' "$1"
 }
 
 configure_tailscale_boot() {
