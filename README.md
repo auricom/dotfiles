@@ -119,6 +119,16 @@ the old 1Password files from git, remove `1password-gui` from
 `.chezmoidata/sysexts.yaml`, run `sudo rm -f /etc/extensions/1password-gui.raw`
 and reboot.
 
+### Zen Browser system extension
+
+`zen-browser` comes from [auricom/sysexts](https://github.com/auricom/sysexts), a
+build of the `sneexy/zen-browser` COPR package with Zen moved to `/usr/lib/zen`.
+Its `zen-browser.conf` and images are published in that repository's `zen-browser`
+release and staged by the same updater as the other sysexts. Images are built per
+Fedora release, so the 1Password note about major Fedora rebases applies. To remove
+it, drop `zen-browser` from `.chezmoidata/sysexts.yaml`, run
+`sudo rm -f /etc/extensions/zen-browser.raw` and reboot.
+
 ## Contributing
 
 Follow [AGENTS.md](AGENTS.md) for script conventions. Install check tools and hooks:

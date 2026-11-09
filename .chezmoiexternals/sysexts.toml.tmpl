@@ -5,4 +5,7 @@
 {{ range .sysexts.fedora -}}
 {{ includeTemplate "external-file" (dict "path" (printf ".local/share/sysexts/%s/%s.conf" . .) "url" (printf "https://extensions.fcos.fr/community/%s.conf" .)) }}
 {{ end -}}
+{{ range .sysexts.auricom -}}
+{{ includeTemplate "external-file" (dict "path" (printf ".local/share/sysexts/%s/%s.conf" . .) "url" (printf "https://github.com/auricom/sysexts/releases/download/%s/%s.conf" . .)) }}
+{{ end -}}
 {{ end -}}
