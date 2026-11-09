@@ -11,3 +11,4 @@ sysexts:
   auricom:
     - zen-browser
     - recur
+    - resilio-sync
