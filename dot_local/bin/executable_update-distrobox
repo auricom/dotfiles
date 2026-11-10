@@ -6,7 +6,7 @@ set -Eeuo pipefail
 source "${HOME}/.local/lib/common_utils.sh"
 trap 'report_error "$?" "$LINENO"' ERR
 
-readonly RECUR_BOXES=(recur recur-dev)
+readonly RECUR_BOXES=(recur-dev)
 
 # Distrobox must use the host's rootless Podman, not Homebrew's client.
 export PATH="/usr/bin:${PATH}"

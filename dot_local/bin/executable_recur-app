@@ -3,15 +3,14 @@
 set -Eeuo pipefail
 
 readonly RECUR_BIN="/usr/bin/recur"
-RECUR_BOX="recur"
 
+# The release build comes from the recur sysext and runs on the host.
+# Only the development box still needs distrobox.
 if [[ "${1-}" == "--dev" ]]; then
     shift
-    RECUR_BOX="recur-dev"
+    # Distrobox must use the host's rootless Podman, not Homebrew's client.
+    export PATH="/usr/bin:${PATH}"
+    exec distrobox enter --no-tty recur-dev -- "${RECUR_BIN}" "$@"
 fi
-readonly RECUR_BOX
 
-# Distrobox must use the host's rootless Podman, not Homebrew's client.
-export PATH="/usr/bin:${PATH}"
-
-exec distrobox enter --no-tty "${RECUR_BOX}" -- "${RECUR_BIN}" "$@"
+exec "${RECUR_BIN}" "$@"
