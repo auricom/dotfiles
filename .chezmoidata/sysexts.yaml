@@ -1,8 +1,5 @@
 sysexts:
   flatcar:
-    # - docker
-    # - docker-buildx
-    # - docker-compose
     - tailscale
   # https://fedora-sysexts.github.io/community/ (images are per Fedora release)
   fedora: []
