@@ -109,8 +109,14 @@ prepare_selinux_image() {
     directory=$(readlink -f "$directory") || return
     log_info "Preparing sysext with the host file contexts"
     # Images may be squashfs (Flatcar) or erofs (Fedora); dissect reads both.
+    # Atomic hosts link /usr/local to /var/usrlocal; an image shipping usr/local
+    # would hide it (and this updater), so move its content into /usr.
+    # simplify: only prepared (SELinux) images are relocated; add it to the raw path if non-SELinux atomic hosts appear.
     if mkdir "$directory/root" &&
         systemd-dissect --copy-from "$image" / "$directory/root" >&2 &&
+        { [[ ! -d "$directory/root/usr/local" ]] ||
+            { cp -a "$directory/root/usr/local/." "$directory/root/usr/" &&
+                rm -rf -- "$directory/root/usr/local"; }; } &&
         setfiles -F -r "$directory/root" "$contexts" "$directory/root" >&2 &&
         "$mksquashfs" "$directory/root" "$directory/image.raw" -noappend -no-progress -xattrs -processors 2 >&2 &&
         chmod 0644 "$directory/image.raw" &&

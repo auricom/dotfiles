@@ -1,0 +1,5 @@
+# Sysext images are loop-attached by systemd-dissect (sysext updater) and
+# systemd-sysext; udiskie only skips /var/lib/extensions by default.
+ignore_device:
+  - loop_file: /var/opt/extensions/*
+  - loop_file: /opt/extensions/*

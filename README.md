@@ -72,6 +72,12 @@ intact for sysupdate. Each downloaded version is prepared once; the active
 symlink selects the prepared copy. Raw downloads use a separate staging symlink,
 so incomplete preparation cannot select an unlabelled boot image. SELinux
 enforcement is unchanged. A lock serializes timer and manual updates.
+Preparation moves `/usr/local` content (for example the Flatcar `docker-buildx` and
+`docker-compose` CLI plugins) into `/usr`: on atomic hosts `/usr/local` links to
+`/var/usrlocal`, which a merged `/usr/local` directory would hide along with the
+updater. Delete an existing `/opt/extensions/<name>/selinux/` copy to re-prepare it.
+`~/.config/udiskie/config.yml` makes udiskie ignore sysext loop devices, so
+updates raise no mount notifications or password prompts.
 Check `systemd-sysext status`, `tailscale version`,
 `systemctl status tailscaled.service`, and `tailscale status` after applying and
 again after the next reboot. Check the updater with
