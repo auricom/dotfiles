@@ -32,6 +32,11 @@ main() {
         sudo systemctl daemon-reload
     fi
 
+    if [[ ! -L /usr/local ]] && ! sudo test -w /usr/local; then
+        log_error "/usr/local is read-only: a merged sysext ships usr/local and hides the host link. Run 'sudo systemd-sysext refresh' and retry."
+        return 1
+    fi
+
     sudo mkdir -p /etc/extensions /opt/extensions /usr/local/libexec /usr/local/lib/chezmoi
     sudo install -Z -o root -g root -m 0644 "{{ .chezmoi.homeDir }}/.local/lib/common_utils.sh" /usr/local/lib/chezmoi/common_utils.sh
     sudo install -Z -o root -g root -m 0755 /dev/stdin /usr/local/libexec/update-sysexts <<'SYSEXT_UPDATER'
