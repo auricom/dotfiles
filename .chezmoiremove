@@ -55,4 +55,3 @@ mise.toml
 .local/bin/1password
 .local/share/applications/com.onepassword.OnePassword.desktop
 .config/autostart/1password-distrobox.desktop
-.config/autostart/1password.desktop
