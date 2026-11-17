@@ -35,6 +35,7 @@ mise.toml
 .config/containers/systemd/resilio-sync.container
 .config/fish/conf.d/interactive_direnv.fish
 .local/libexec/install-recur-release
+.local/share/applications/auricom-recur.desktop
 .config/fish/config.fish
 .config/fish/conf.d/interactive_krew.fish
 .config/fish/conf.d/interactive_fzf.fish
