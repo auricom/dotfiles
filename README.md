@@ -107,7 +107,7 @@ build of the official signed 1Password RPM with the application moved to
 images are published in that repository's `1password-gui` release. The same updater
 stages it under `/opt/extensions/1password-gui` and selects it with
 `/etc/extensions/1password-gui.raw`; only Tailscale gets boot-time service setup.
-The launcher, autostart entry, Quick Access keybind and `onepassword://` handlers
+The launcher, Quick Access keybind and `onepassword://` handlers
 use `/usr/bin/1password`.
 
 The community `fedora-sysexts` image is not used because it ships
