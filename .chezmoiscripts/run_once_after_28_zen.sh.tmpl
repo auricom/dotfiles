@@ -1,17 +1,20 @@
 {{- if .isWorkstation }}
 {{- includeTemplate "script-header" . }}
-# Theme Zen Flatpak profiles with automatic Latte/Mocha CSS and the shared accent
+# Theme native Zen profiles once with automatic Latte/Mocha CSS and the shared accent
 # from .chezmoidata/flavors.yaml. Initialize a default profile headlessly if needed.
 # Manage only our user.js block; skip unchanged files. Restart an existing Zen
 # session after the first install; later light/dark switches follow the system.
+# New profiles require explicitly rerunning setup. Sysext must be active first.
 main() {
     local theme_dir="{{ .chezmoi.homeDir }}/.local/share/catppuccin/zen"
-    local profile_root="{{ .chezmoi.homeDir }}/.var/app/app.zen_browser.zen/.zen"
+    local profile_root="{{ .chezmoi.homeDir }}/.config/zen"
     local accent="{{ .catppuccin.accent }}"
 
     local flavor asset profile_dir stylesheet prefs_source current
     local configured=false
     local -a profile_dirs
+
+    require_command zen-browser "Zen profile setup (activate the Zen sysext first)"
 
     # Validate all assets before changing profiles.
     for flavor in latte mocha; do
@@ -27,15 +30,11 @@ main() {
     shopt -s nullglob
     profile_dirs=("$profile_root"/????????.*/)
     if [[ ! -f "$profile_root/profiles.ini" ]] || ((${#profile_dirs[@]} == 0)); then
-        if ! command -v flatpak >/dev/null || ! flatpak info app.zen_browser.zen >/dev/null 2>&1; then
-            log_warn "Zen Flatpak is not installed; skipping theme setup"
-            exit 0
-        fi
         log_section "Configuring Zen browser theme"
         configured=true
-        run_spin "Initializing Zen default profile" timeout 60s flatpak run app.zen_browser.zen --headless --no-remote --screenshot /dev/null about:blank
+        run_spin "Initializing Zen default profile" timeout 60s zen-browser --headless --no-remote --screenshot /dev/null about:blank
         profile_dirs=("$profile_root"/????????.*/)
-        if ((${#profile_dirs[@]} == 0)); then
+        if [[ ! -f "$profile_root/profiles.ini" ]] || ((${#profile_dirs[@]} == 0)); then
             log_error "Zen did not create a profile; theme setup failed"
             exit 1
         fi
@@ -51,7 +50,7 @@ main() {
         cp "$theme_dir/${flavor}_${accent}_zen-logo.svg" "$ZEN_THEME_TMP_DIR/zen-logo-$flavor.svg"
     done
 
-    # Run on every apply so profiles created after the initial setup are themed too.
+    # Configure profiles present at first setup; later profiles are left alone.
     for profile_dir in "${profile_dirs[@]}"; do
         profile_dir=${profile_dir%/}
 

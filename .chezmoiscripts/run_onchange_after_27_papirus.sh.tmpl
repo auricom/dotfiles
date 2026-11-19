@@ -7,6 +7,11 @@
 # List colors with papirus-folders --list; choose one with, for example:
 #   papirus-folders -C cat-latte-blue --theme Papirus-Light
 # Reinstallation reapplies the shared Mocha accent.
+# Hash installed archives after update-dotfiles applies external file changes.
+{{ range $name := list "icon-theme.tar.gz" "folder-colors.tar.gz" -}}
+{{ $path := joinPath $.chezmoi.homeDir ".local/share/chezmoi-assets/papirus" $name -}}
+# {{ $name }}: {{ if stat $path }}{{ include $path | sha256sum }}{{ else }}missing{{ end }}
+{{ end -}}
 main() {
     local assets_dir="{{ .chezmoi.homeDir }}/.local/share/chezmoi-assets/papirus"
     local icons_dir="{{ .chezmoi.homeDir }}/.local/share/icons"

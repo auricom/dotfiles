@@ -36,7 +36,19 @@ case ${0##*/} in
         printf '%s\n' "$@" >>"$CHEZMOI_LOG"
         [[ $1 != "${FAIL_STEP:-none}" ]] || exit 42
         if [[ $1 == status ]]; then
-            printf '%s' "${CHEZMOI_STATUS-}"
+            status=${CHEZMOI_STATUS-}
+            if [[ ${CHEZMOI_AFTER_FILES_STATUS+x} && $(<"$CHEZMOI_LOG") == *$'apply\n'* ]]; then
+                status=$CHEZMOI_AFTER_FILES_STATUS
+            fi
+            while IFS= read -r line; do
+                [[ -n $line ]] || continue
+                if [[ ${line:3} == .chezmoiscripts/* ]]; then
+                    [[ ${2-} != --exclude ]] || continue
+                else
+                    [[ ${2-} != --include ]] || continue
+                fi
+                printf '%s\n' "$line"
+            done <<<"$status"
         fi
         ;;
     git)
@@ -125,8 +137,14 @@ EOF
     [[ $(<"$NOTIFY_LOG") == *'local changes or deletions: .config/deleted'* ]]
     [[ $(<"$CHEZMOI_LOG") != *apply* ]]
     run_case 0 CHEZMOI_STATUS=' M .config/example' bash "$updater"
-    [[ $(<"$CHEZMOI_LOG") == *$'apply\n'*'/home/.config/example'* ]]
+    [[ $(<"$CHEZMOI_LOG") == *$'apply\n--exclude\nscripts\n'*'/home/.config/example'* ]]
     [[ ! -s $NOTIFY_LOG ]]
+    run_case 0 CHEZMOI_STATUS=' M .config/example' \
+        CHEZMOI_AFTER_FILES_STATUS=' R .chezmoiscripts/27_papirus.sh' bash "$updater"
+    [[ $(<"$CHEZMOI_LOG") == *$'apply\n--exclude\nscripts\n'*$'/home/.config/example\nstatus\n--include\nscripts\napply\n--include\nscripts\n'*'/home/.chezmoiscripts/27_papirus.sh'* ]]
+    run_case 0 CHEZMOI_STATUS=' R .chezmoiscripts/28_zen.sh' bash "$updater"
+    [[ $(<"$CHEZMOI_LOG") != *$'apply\n--exclude'* ]]
+    [[ $(<"$CHEZMOI_LOG") == *$'apply\n--include\nscripts\n'*'/home/.chezmoiscripts/28_zen.sh'* ]]
 
     updater="$root/dot_local/bin/executable_update-agents"
     run_case 0 GIT_STATUS=' M example' bash "$updater"

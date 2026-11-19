@@ -4,6 +4,7 @@ set -Eeuo pipefail
 
 # Apply pending updates only when the destination has no local changes.
 # Preserve local edits and deletions; ignore entries already at their target state.
+# Apply files before selecting scripts so dependency hashes see refreshed assets.
 
 # shellcheck source=common_utils.sh
 source "${HOME}/.local/lib/common_utils.sh"
@@ -37,7 +38,7 @@ collect_chezmoi_status() {
 
     local -a CHEZMOI_STATUS_LINES=()
     local chezmoi_output
-    chezmoi_output="$("${CHEZMOI_BIN}" status)"
+    chezmoi_output="$("${CHEZMOI_BIN}" status "$@")"
     if [[ -n ${chezmoi_output} ]]; then
         mapfile -t CHEZMOI_STATUS_LINES <<<"${chezmoi_output}"
     fi
@@ -62,16 +63,31 @@ chezmoi_pull() {
 }
 
 chezmoi_apply_clean() {
-    collect_chezmoi_status
+    collect_chezmoi_status --exclude scripts
+
+    local updated=false f
+    local -a skipped_files=("${SKIPPED_FILES[@]}")
 
     if [[ ${#CLEAN_FILES[@]} -gt 0 ]]; then
         log_section "Updating files without local changes"
-        local f
+        updated=true
         for f in "${CLEAN_FILES[@]}"; do
             log_info "${f}"
-            "${CHEZMOI_BIN}" apply "${HOME}/${f}"
+            "${CHEZMOI_BIN}" apply --exclude scripts "${HOME}/${f}"
         done
-    else
+    fi
+
+    collect_chezmoi_status --include scripts
+    SKIPPED_FILES=("${skipped_files[@]}" "${SKIPPED_FILES[@]}")
+    if [[ ${#CLEAN_FILES[@]} -gt 0 ]]; then
+        log_section "Running pending setup scripts"
+        updated=true
+        for f in "${CLEAN_FILES[@]}"; do
+            log_info "${f}"
+            "${CHEZMOI_BIN}" apply --include scripts "${HOME}/${f}"
+        done
+    fi
+    if ! "$updated"; then
         log_info "No files to update without local changes"
     fi
 }
