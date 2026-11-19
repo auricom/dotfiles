@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# shellcheck source=common_utils.sh
+source "${HOME}/.local/lib/common_utils.sh"
+trap 'report_error "$?" "$LINENO"' ERR
+
+# Recover Bluetooth audio when a headset reports "connected" but only the LE
+# link is up, so PipeWire never creates a sink and the default stays on
+# Dummy Output. Forces a full reconnect, then makes the headset sink the
+# default.
+#
+# Usage: bt-audio [--help]
+#
+# Environment:
+#   BT_DEVICE            MAC address to use instead of discovering a connected
+#                        audio device. Useful with several devices connected.
+#   BT_RECONNECT_TIMEOUT Seconds to wait for the BR/EDR link and sink (20).
+
+readonly RECONNECT_TIMEOUT="${BT_RECONNECT_TIMEOUT:-20}"
+readonly POLL_INTERVAL="0.5"
+
+main() {
+    require_no_args "Reconnect the Bluetooth headset and make its sink the default." "$@"
+    require_command bluetoothctl "Bluetooth recovery"
+    require_command wpctl "Bluetooth recovery"
+    require_command pw-dump "Bluetooth recovery"
+    require_command jq "Bluetooth recovery"
+
+    log_section "Bluetooth audio"
+
+    local sink_id
+    if sink_id=$(bluez_sink_id) && [[ -n ${sink_id} ]]; then
+        log_info "Bluetooth sink already available" id "${sink_id}"
+        set_default_sink "${sink_id}"
+        return 0
+    fi
+
+    local device
+    if ! device=$(find_audio_device); then
+        log_error "No connected Bluetooth audio device found"
+        return 1
+    fi
+
+    reconnect "${device}"
+    log_info "Waiting for a Bluetooth sink" timeout "${RECONNECT_TIMEOUT}s"
+
+    if ! sink_id=$(wait_for_sink); then
+        log_error "No Bluetooth sink appeared after reconnect" device "${device}"
+        return 1
+    fi
+
+    set_default_sink "${sink_id}"
+    log_info "Bluetooth audio restored" device "${device}" sink "${sink_id}"
+}
+
+# Print the id of the first Bluetooth sink, if any.
+bluez_sink_id() {
+    pw-dump 2>/dev/null | jq -r '
+        .[]
+        | select(.type == "PipeWire:Interface:Node")
+        | select(.info.props["media.class"] == "Audio/Sink")
+        | select(.info.props["device.api"] == "bluez5")
+        | .id' | head -n 1
+}
+
+# Print the MAC address of a connected device exposing an audio icon.
+find_audio_device() {
+    if [[ -n ${BT_DEVICE-} ]]; then
+        printf '%s\n' "${BT_DEVICE}"
+        return 0
+    fi
+
+    local mac
+    while read -r mac; do
+        [[ -n ${mac} ]] || continue
+        if device_info "${mac}" | grep -qE '^[[:space:]]+Icon: audio-'; then
+            printf '%s\n' "${mac}"
+            return 0
+        fi
+    done < <(bluetoothctl devices Connected 2>/dev/null | awk '{print $2}')
+    return 1
+}
+
+device_info() {
+    bluetoothctl info "$1" 2>/dev/null || true
+}
+
+# Disconnect and reconnect, then wait for the audio link to come up.
+reconnect() {
+    local mac="$1"
+
+    log_info "Forcing a full reconnect" device "${mac}"
+    bluetoothctl disconnect "${mac}" >/dev/null 2>&1 || true
+    sleep 1
+
+    # Connect can report failure while the device still comes up, so poll.
+    bluetoothctl connect "${mac}" >/dev/null 2>&1 || true
+
+    local deadline=$((SECONDS + RECONNECT_TIMEOUT))
+    while ((SECONDS < deadline)); do
+        if device_info "${mac}" | grep -q 'BREDR.Connected: yes'; then
+            log_info "BR/EDR link established" device "${mac}"
+            return 0
+        fi
+        sleep "${POLL_INTERVAL}"
+    done
+
+    log_error "BR/EDR link did not come up" device "${mac}" timeout "${RECONNECT_TIMEOUT}s"
+    return 1
+}
+
+wait_for_sink() {
+    local deadline=$((SECONDS + RECONNECT_TIMEOUT))
+    local id
+
+    while ((SECONDS < deadline)); do
+        if id=$(bluez_sink_id) && [[ -n ${id} ]]; then
+            printf '%s\n' "${id}"
+            return 0
+        fi
+        sleep "${POLL_INTERVAL}"
+    done
+    return 1
+}
+
+set_default_sink() {
+    wpctl set-default "$1"
+    log_info "Default sink set" id "$1"
+}
+
+main "$@"
