@@ -40,7 +40,11 @@ install_plugins() {
 
 greeter() {
     log_info "Syncing greeter configuration..."
-    sudo usermod -aG greeter {{ .chezmoi.username }}
+    local groups
+    groups=$(id -nG "{{ .chezmoi.username }}")
+    if [[ " ${groups} " != *" greeter "* ]]; then
+        sudo usermod -aG greeter "{{ .chezmoi.username }}"
+    fi
     DMS_PRIVESC=sudo dms-greeter sync --auth
     log_info "Greeter configured"
 }

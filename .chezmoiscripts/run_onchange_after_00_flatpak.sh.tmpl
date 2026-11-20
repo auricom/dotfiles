@@ -2,8 +2,7 @@
 {{- includeTemplate "script-header" . }}
 # Install missing declared apps in the user's Flathub installation, independently
 # of Homebrew: brew-proxy runs as linuxbrew without the user's Flatpak authorization.
-# Skip remote setup when all apps are present. Remove declared system duplicates
-# only after matching user refs exist (same architecture/branch); preserve app data.
+# Skip remote setup when all apps are present.
 # Hash dependencies: {{ include ".chezmoidata/packages_flatpak.yaml" | sha256sum }}
 
 main() {
@@ -34,25 +33,6 @@ main() {
         flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
         run_spin "Installing ${#missing[@]} missing Flatpak packages..." \
             flatpak install --user --assumeyes --noninteractive flathub "${missing[@]}"
-    fi
-
-    # Remove managed system copies only after the same user ref is installed.
-    # Without --delete-data, application settings and data are preserved.
-    local user_refs system_refs declared ref
-    local -a duplicates=()
-    user_refs=$(flatpak list --user --app --columns=ref)
-    system_refs=$(flatpak list --system --app --columns=ref)
-    declared=$(printf '%s\n' "${packages[@]}")
-    while IFS= read -r ref; do
-        package=${ref%%/*}
-        if [[ -n ${ref} && $'\n'"${declared}"$'\n' == *$'\n'"${package}"$'\n'* &&
-            $'\n'"${user_refs}"$'\n' == *$'\n'"${ref}"$'\n'* ]]; then
-            duplicates+=("${ref}")
-        fi
-    done <<<"${system_refs}"
-    if ((${#duplicates[@]})); then
-        run_spin "Removing ${#duplicates[@]} duplicate system Flatpak packages..." \
-            flatpak uninstall --system --app --assumeyes --noninteractive "${duplicates[@]}"
     fi
 }
 

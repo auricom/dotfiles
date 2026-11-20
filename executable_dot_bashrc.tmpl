@@ -59,10 +59,6 @@ if [[ $- == *i* ]]; then
         eval "$(direnv hook bash)"
     fi
 
-    # Clear the previous per-shell selector when reloading an existing session.
-    unset -f __apply_terminal_theme __starship_apply_theme
-    unset starship_precmd_user_func STARSHIP_CONFIG EZA_CONFIG_DIR
-
     if command -v starship >/dev/null 2>&1; then
         eval "$(starship init bash)"
     fi

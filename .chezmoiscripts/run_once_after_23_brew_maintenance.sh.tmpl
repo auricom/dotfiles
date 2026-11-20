@@ -1,0 +1,56 @@
+{{- if .isWorkstation }}
+{{- includeTemplate "script-header" . }}
+# Hand off vendor Brew maintenance to the user timer before step 24 enables it.
+# Hosts with brew-proxy need a user-scoped Polkit rule for unattended updates.
+
+main() {
+    log_section "Configuring Brew maintenance"
+    local unit states status
+    for unit in brew-update.timer brew-upgrade.timer brew-update.service brew-upgrade.service; do
+        states=$(systemctl show --property=UnitFileState,ActiveState "$unit") || {
+            status=$?
+            [[ $status == 4 ]] && continue # systemctl: unit not found
+            return "$status"
+        }
+        case "$unit:$states" in
+            *.timer:*UnitFileState=enabled-runtime*)
+                log_info "Disabling system $unit"
+                sudo systemctl disable --runtime --now "$unit"
+                ;;
+            *.timer:*UnitFileState=enabled*)
+                log_info "Disabling system $unit"
+                sudo systemctl disable --now "$unit"
+                ;;
+            *ActiveState=active* | *ActiveState=activating* | *ActiveState=reloading* | *ActiveState=refreshing*)
+                log_info "Stopping system $unit"
+                sudo systemctl stop "$unit"
+                ;;
+        esac
+    done
+
+    command_exists brew-proxy || return 0
+
+    local rule_file="/etc/polkit-1/rules.d/49-chezmoi-brew-maintenance.rules"
+    local rule
+    rule=$(
+        cat <<'RULE'
+// Managed by chezmoi: allow unattended Brew updates for this user only.
+polkit.addRule(function(action, subject) {
+    if (subject.user === {{ .chezmoi.username | toJson }}
+        && (action.id === "sh.brew.BrewProxy.update"
+            || action.id === "sh.brew.BrewProxy.upgrade")) {
+        return polkit.Result.YES;
+    }
+});
+RULE
+    )
+    if printf '%s\n' "$rule" | sudo cmp -s - "$rule_file"; then
+        return 0
+    fi
+    log_info "Authorizing unattended Brew update and upgrade"
+    sudo mkdir -p /etc/polkit-1/rules.d
+    printf '%s\n' "$rule" | sudo install -o root -g root -m 0644 /dev/stdin "$rule_file"
+}
+
+{{ includeTemplate "script-footer" . -}}
+{{- end -}}

@@ -154,6 +154,7 @@ check profile="":
     cd {{ root }}
     bash scripts/check-script-style.sh
     bash scripts/check-dms-settings.sh
+    bash scripts/check-brew-maintenance.sh
     bash scripts/check-theme-setup.sh
     profile={{ quote(profile) }}
     if [[ -n $profile ]]; then

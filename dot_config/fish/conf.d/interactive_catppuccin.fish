@@ -1,12 +1,5 @@
 status is-interactive; or return
 
-# Fish 4.3 copies old universal colors here once. Those globals shadow
-# `fish_config theme choose` and pin a single light or dark variant.
-set -l frozen_theme "$__fish_config_dir/conf.d/fish_frozen_theme.fish"
-if test -f "$frozen_theme"
-    rm -f "$frozen_theme"
-end
-
 if not test -r "$__fish_config_dir/themes/catppuccin.theme"
     return
 end

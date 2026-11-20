@@ -5,6 +5,19 @@ comments before changing shell scripts. Reuse existing helpers and nearby patter
 Use shell for repository scripts. Do not add Python scripts except the Codex
 TOML and Zed JSONC modify scripts described below.
 
+## Migrations
+
+Keep one-time transitions from an older configuration in dedicated migration
+files. Never embed historical cleanup in an existing setup script, update
+command, service, shell startup file, or configuration template.
+
+For an automatic migration, add a dedicated `run_once_` script under
+`.chezmoiscripts/`. Name it for the transition, scope it to the affected
+profiles, and make it safe to retry after a partial run. For a manual migration,
+put the steps in a dedicated migration note. Once all supported hosts have
+migrated, remove the migration file. Keep any setup a fresh host still needs
+in the regular configuration.
+
 ## Shell presentation
 
 - Every `.chezmoiscripts/*.sh.tmpl` lifecycle script must include
