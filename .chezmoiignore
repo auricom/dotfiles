@@ -31,6 +31,7 @@ mise.toml
 .config/containers/systemd/resilio-sync*
 .config/distrobox/
 .config/dms/
+.config/fcitx5/
 .config/foot/
 .config/git/
 .config/gtk*/
